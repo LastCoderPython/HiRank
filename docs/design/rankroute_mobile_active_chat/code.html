@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RankRoute Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "text-heading": "#1A237E",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#fb6b00",
+                        "inverse-on-surface": "#f2eff8",
+                        "on-background": "#1b1b21",
+                        "surface-container-highest": "#e4e1ea",
+                        "surface-tint": "#4c56af",
+                        "surface": "#fbf8ff",
+                        "inverse-primary": "#bdc2ff",
+                        "secondary-fixed-dim": "#00daf3",
+                        "surface-variant": "#e4e1ea",
+                        "outline-variant": "#c6c5d4",
+                        "on-primary-fixed": "#000767",
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "on-primary-fixed-variant": "#343d96",
+                        "on-secondary-fixed": "#001f24",
+                        "error-container": "#ffdad6",
+                        "accent-orange": "#FF6D00",
+                        "sidebar-indigo": "#1A237E",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#8690ee",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbcb",
+                        "outline": "#767683",
+                        "surface-container-high": "#eae7ef",
+                        "surface-container-low": "#f5f2fb",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#dbd9e1",
+                        "on-surface": "#1b1b21",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "surface-bright": "#fbf8ff",
+                        "secondary": "#006875",
+                        "background-light": "#F8F9FA",
+                        "accent-cyan": "#00E5FF",
+                        "tertiary-container": "#551f00",
+                        "secondary-fixed": "#9cf0ff",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "secondary-container": "#00e3fd",
+                        "background": "#fbf8ff",
+                        "surface-container": "#efecf5",
+                        "primary-fixed": "#e0e0ff",
+                        "primary": "#000666",
+                        "on-surface-variant": "#454652",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "background-dark": "#121212",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#331000",
+                        "primary-container": "#1a237e",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-midnight": "#1E1E24",
+                        "on-secondary-container": "#00616d",
+                        "inverse-surface": "#303036",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-on-surface h-screen flex flex-col font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-midnight/80 backdrop-blur-xl md:hidden font-headline-md font-bold text-accent-cyan docked full-width top-0 backdrop-blur-xl border-b border-white/5 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full z-40">
+<button class="text-on-surface-variant hover:text-accent-cyan transition-colors cursor-pointer active:opacity-70 p-2 -ml-2 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<span class="md:hidden font-headline-md font-bold text-accent-cyan tracking-tight">RankRoute</span>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:text-accent-cyan transition-colors cursor-pointer active:opacity-70 p-2 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-accent-cyan transition-colors cursor-pointer active:opacity-70 p-2 -mr-2 flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Desktop Layout Wrapper -->
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Hidden on Mobile) -->
+<nav class="hidden md:flex bg-sidebar-indigo dark:bg-sidebar-indigo Headlines: font-headline-md text-headline-md. Body: font-body-md text-body-md. Labels: font-label-md text-label-md fixed left-0 top-0 h-full w-[250px] bg-sidebar-indigo border-r border-white/10 shadow-lg shadow-on-primary/10 flex flex-col h-full p-4 z-50">
+<div class="mb-8 px-4 flex flex-col gap-1">
+<span class="text-headline-md font-headline-md font-bold text-accent-cyan tracking-tight">RankRoute</span>
+<span class="font-label-md text-label-md text-on-primary/70">AI Admissions Advisor</span>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-white/10 text-accent-cyan rounded-lg font-bold transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add</span>
+<span class="font-label-md text-label-md">New Chat</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan transition-all duration-200 active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan transition-all duration-200 active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">school</span>
+<span class="font-label-md text-label-md">Scholarships</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan transition-all duration-200 active:scale-95 rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+<div class="mt-auto flex flex-col gap-2 pt-4 border-t border-white/10">
+<button class="w-full py-3 px-4 rounded-lg bg-accent-cyan text-sidebar-indigo font-label-md text-label-md font-bold text-center shadow-[0_0_15px_rgba(0,229,255,0.2)] hover:shadow-[0_0_20px_rgba(0,229,255,0.4)] transition-all duration-200 active:scale-95">
+                    Upgrade to Premium
+                </button>
+<div class="flex flex-col gap-1 mt-2">
+<a class="flex items-center gap-3 px-4 py-2 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+<span class="font-label-md text-label-md">Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan rounded-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Chat Area -->
+<main class="flex-1 flex flex-col h-full md:ml-[250px] relative bg-background-dark">
+<!-- Atmospheric Gradient Background Effect -->
+<div class="absolute inset-0 z-0 pointer-events-none opacity-30 mix-blend-screen" style="background: radial-gradient(circle at 50% -20%, rgba(26, 35, 126, 0.4) 0%, rgba(0, 229, 255, 0.1) 40%, transparent 70%);"></div>
+<!-- Chat Scroll Area -->
+<div class="flex-1 overflow-y-auto px-margin-mobile py-6 md:px-margin-desktop z-10 space-y-6 flex flex-col w-full max-w-container-max mx-auto">
+<!-- User Message -->
+<div class="flex justify-end w-full">
+<div class="max-w-[85%] md:max-w-[70%] bg-surface-midnight rounded-2xl rounded-tr-sm p-4 shadow-lg border border-white/5 text-inverse-surface">
+<p class="font-body-md text-body-md text-surface-container-high leading-relaxed">
+                            I got 1500 rank in Assam CEE. Can I get Computer Science in a government college?
+                        </p>
+</div>
+</div>
+<!-- AI Response -->
+<div class="flex justify-start w-full gap-3">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-sidebar-indigo flex items-center justify-center border border-accent-cyan/30 shadow-[0_0_10px_rgba(0,229,255,0.2)] mt-1">
+<span class="material-symbols-outlined text-[18px] text-accent-cyan" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="max-w-[85%] md:max-w-[70%] space-y-4">
+<p class="font-body-md text-body-md text-surface-container-high leading-relaxed bg-surface-midnight/40 backdrop-blur-md rounded-2xl rounded-tl-sm p-4 border border-white/5 inline-block">
+                            Based on previous year cutoffs, here are your top matches for Computer Science:
+                        </p>
+<!-- Recommendation Card -->
+<div class="w-full bg-surface-midnight rounded-xl overflow-hidden border border-white/10 shadow-lg shadow-sidebar-indigo/20 relative group">
+<!-- Image Header -->
+<div class="h-32 w-full relative">
+<img alt="Campus" class="w-full h-full object-cover" data-alt="A modern university campus courtyard during golden hour, bathed in warm, soft sunlight. Students walk casually along paved paths surrounded by lush green lawns and contemporary glass-and-steel academic buildings. The scene conveys a prestigious, inviting educational environment aligned with a modern, high-tech aesthetic. The color palette emphasizes rich greens, warm sunlit golds, and cool architectural grays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEDO6b31L36pW19boJOqpLFH2Vv4hiHUQICdidC9x8odF0uzXTFYT-TYY4orzXOX_5i3FWHhdeRlzW5zs5aloGY3wAs4Du2mOmdIpufi2zbvS9d8ChccHglasoSjwzw0EMMgxmrmVzfIEzlNdn3iGFfD1ElJ-7YFCJ_AypJ_QPPfnjcOvCjnt4wjE0QsF0fUy8l2Z3XLHdIoiyL9d57-wX6_MnIUsC2Q-ALCP1Al15XPYGbB5Mp9sYZozkG4mC-aWa-c1iksdqhBs"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-midnight to-transparent"></div>
+<div class="absolute top-3 right-3 bg-accent-cyan/10 text-accent-cyan font-label-md text-label-md px-2.5 py-1 rounded-full border border-accent-cyan/30 flex items-center gap-1 backdrop-blur-md shadow-[0_0_10px_rgba(0,229,255,0.2)]">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                                    95% Match
+                                </div>
+</div>
+<!-- Card Content -->
+<div class="p-4 space-y-3 relative z-10 bg-surface-midnight/80 backdrop-blur-xl">
+<div>
+<h3 class="font-headline-md text-headline-md text-surface-container-high text-[20px] leading-tight mb-1">Assam Engineering College (AEC)</h3>
+<div class="flex items-center text-on-surface-variant font-label-md text-label-md text-[13px] gap-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                        Guwahati, Assam
+                                    </div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-sidebar-indigo/50 text-inverse-primary border border-primary-fixed/20 px-2.5 py-1 rounded-md font-label-md text-label-md text-[12px]">Government</span>
+<span class="bg-surface-tint/20 text-inverse-primary border border-surface-tint/30 px-2.5 py-1 rounded-md font-label-md text-label-md text-[12px]">Avg Fees: ₹12,000/yr</span>
+</div>
+<div class="flex items-center gap-3 pt-2">
+<button class="flex-1 bg-sidebar-indigo hover:bg-primary-container text-accent-cyan font-label-md text-label-md font-bold py-2.5 px-4 rounded-lg transition-colors border border-accent-cyan/20 text-center flex justify-center items-center gap-2">
+                                        View Details
+                                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<button class="p-2.5 rounded-lg border border-white/10 text-on-surface-variant hover:text-surface-container-high hover:border-white/30 transition-colors flex items-center justify-center bg-surface-midnight">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Spacer for fixed bottom input -->
+<div class="h-20"></div>
+</div>
+<!-- Fixed Bottom Input -->
+<div class="absolute bottom-0 left-0 w-full bg-surface-midnight/90 backdrop-blur-xl border-t border-white/10 px-margin-mobile py-4 md:px-margin-desktop z-40">
+<div class="max-w-container-max mx-auto relative flex items-center w-full">
+<button class="absolute left-3 text-on-surface-variant hover:text-accent-cyan transition-colors p-2 flex items-center justify-center">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<input class="w-full bg-background-dark/50 border border-white/10 rounded-full py-3 pl-12 pr-14 text-surface-container-high font-body-md text-body-md focus:outline-none focus:border-accent-cyan/50 focus:ring-1 focus:ring-accent-cyan/50 placeholder:text-on-surface-variant transition-all shadow-inner" placeholder="Ask a follow-up question..." type="text"/>
+<button class="absolute right-2 bg-sidebar-indigo text-accent-cyan hover:bg-primary-container p-2 rounded-full flex items-center justify-center transition-colors border border-accent-cyan/20">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

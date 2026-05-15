@@ -1,0 +1,33 @@
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+pydantic-settings
+
+# LangChain & RAG - latest compatible versions
+langchain
+langchain-community
+langchain-groq
+langchain-huggingface
+sentence-transformers
+
+# Vector Database
+chromadb
+
+# Data Processing
+pandas
+numpy
+python-dotenv
+
+# async support
+aiofiles
+httpx
+sse-starlette
+
+# Authentication
+supabase
+PyJWT
+
+# Agent platform
+sqlalchemy
+aiosqlite

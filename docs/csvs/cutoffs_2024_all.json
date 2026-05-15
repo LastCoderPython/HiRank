@@ -1,0 +1,2902 @@
+{
+  "data": [
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 309,
+      "cut_off_marks": 205,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 414,
+      "cut_off_marks": 193,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 562,
+      "cut_off_marks": 178,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 411,
+      "cut_off_marks": 194,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 507,
+      "cut_off_marks": 184,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 534,
+      "cut_off_marks": 181,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 80,
+      "cut_off_marks": 271,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 96,
+      "cut_off_marks": 258,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 366,
+      "cut_off_marks": 198,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 545,
+      "cut_off_marks": 180,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 548,
+      "cut_off_marks": 180,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 584,
+      "cut_off_marks": 176,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 763,
+      "cut_off_marks": 163,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 779,
+      "cut_off_marks": 161,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 144,
+      "cut_off_marks": 240,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 188,
+      "cut_off_marks": 229,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 267,
+      "cut_off_marks": 213,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2365,
+      "cut_off_marks": 99,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2992,
+      "cut_off_marks": 87,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3103,
+      "cut_off_marks": 85,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2488,
+      "cut_off_marks": 97,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3192,
+      "cut_off_marks": 84,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3444,
+      "cut_off_marks": 80,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1344,
+      "cut_off_marks": 130,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1676,
+      "cut_off_marks": 118,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1683,
+      "cut_off_marks": 118,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2015,
+      "cut_off_marks": 108,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2588,
+      "cut_off_marks": 95,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2850,
+      "cut_off_marks": 90,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1482,
+      "cut_off_marks": 125,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2046,
+      "cut_off_marks": 107,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2144,
+      "cut_off_marks": 105,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1984,
+      "cut_off_marks": 109,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2527,
+      "cut_off_marks": 96,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2537,
+      "cut_off_marks": 96,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1732,
+      "cut_off_marks": 117,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2261,
+      "cut_off_marks": 102,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2369,
+      "cut_off_marks": 99,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2038,
+      "cut_off_marks": 107,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2750,
+      "cut_off_marks": 92,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2883,
+      "cut_off_marks": 89,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2515,
+      "cut_off_marks": 96,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2920,
+      "cut_off_marks": 89,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3157,
+      "cut_off_marks": 85,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2615,
+      "cut_off_marks": 95,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3261,
+      "cut_off_marks": 83,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3303,
+      "cut_off_marks": 83,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1651,
+      "cut_off_marks": 119,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2131,
+      "cut_off_marks": 105,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2256,
+      "cut_off_marks": 102,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1826,
+      "cut_off_marks": 114,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1882,
+      "cut_off_marks": 112,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2240,
+      "cut_off_marks": 102,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1917,
+      "cut_off_marks": 111,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2088,
+      "cut_off_marks": 106,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2707,
+      "cut_off_marks": 92,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2239,
+      "cut_off_marks": 102,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2849,
+      "cut_off_marks": 90,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2907,
+      "cut_off_marks": 89,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 720,
+      "cut_off_marks": 166,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 837,
+      "cut_off_marks": 157,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 935,
+      "cut_off_marks": 151,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 745,
+      "cut_off_marks": 164,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 968,
+      "cut_off_marks": 149,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 993,
+      "cut_off_marks": 148,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 223,
+      "cut_off_marks": 221,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 323,
+      "cut_off_marks": 204,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 337,
+      "cut_off_marks": 202,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 583,
+      "cut_off_marks": 176,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 730,
+      "cut_off_marks": 165,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 738,
+      "cut_off_marks": 164,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1082,
+      "cut_off_marks": 142,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1379,
+      "cut_off_marks": 128,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1434,
+      "cut_off_marks": 126,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1220,
+      "cut_off_marks": 135,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1538,
+      "cut_off_marks": 123,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1602,
+      "cut_off_marks": 121,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 961,
+      "cut_off_marks": 150,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1209,
+      "cut_off_marks": 135,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1342,
+      "cut_off_marks": 130,
+      "category": "GENERAL"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 895,
+      "cut_off_marks": 153,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1124,
+      "cut_off_marks": 140,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 861,
+      "cut_off_marks": 155,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1026,
+      "cut_off_marks": 145,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 90,
+      "cut_off_marks": 261,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 697,
+      "cut_off_marks": 167,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 884,
+      "cut_off_marks": 154,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 932,
+      "cut_off_marks": 151,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1118,
+      "cut_off_marks": 140,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1214,
+      "cut_off_marks": 135,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 456,
+      "cut_off_marks": 189,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 631,
+      "cut_off_marks": 172,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2966,
+      "cut_off_marks": 88,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3534,
+      "cut_off_marks": 79,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3761,
+      "cut_off_marks": 76,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3087,
+      "cut_off_marks": 86,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3625,
+      "cut_off_marks": 78,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3913,
+      "cut_off_marks": 74,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1889,
+      "cut_off_marks": 111,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2428,
+      "cut_off_marks": 98,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2363,
+      "cut_off_marks": 99,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3352,
+      "cut_off_marks": 82,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3755,
+      "cut_off_marks": 76,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1951,
+      "cut_off_marks": 110,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2139,
+      "cut_off_marks": 105,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2569,
+      "cut_off_marks": 95,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2552,
+      "cut_off_marks": 95,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3176,
+      "cut_off_marks": 85,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3430,
+      "cut_off_marks": 81,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2237,
+      "cut_off_marks": 102,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2564,
+      "cut_off_marks": 95,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2695,
+      "cut_off_marks": 93,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2625,
+      "cut_off_marks": 94,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3032,
+      "cut_off_marks": 87,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3613,
+      "cut_off_marks": 78,
+      "category": "OBC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 86,
+      "cut_off_marks": 266,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 901,
+      "cut_off_marks": 153,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1300,
+      "cut_off_marks": 131,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1230,
+      "cut_off_marks": 135,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1385,
+      "cut_off_marks": 128,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 761,
+      "cut_off_marks": 163,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 911,
+      "cut_off_marks": 152,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3210,
+      "cut_off_marks": 84,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3536,
+      "cut_off_marks": 79,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3631,
+      "cut_off_marks": 78,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3436,
+      "cut_off_marks": 81,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3671,
+      "cut_off_marks": 77,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3760,
+      "cut_off_marks": 76,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1849,
+      "cut_off_marks": 113,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2157,
+      "cut_off_marks": 104,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2541,
+      "cut_off_marks": 96,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2943,
+      "cut_off_marks": 88,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3536,
+      "cut_off_marks": 79,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1980,
+      "cut_off_marks": 109,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2545,
+      "cut_off_marks": 96,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2486,
+      "cut_off_marks": 97,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2795,
+      "cut_off_marks": 91,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2931,
+      "cut_off_marks": 88,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2193,
+      "cut_off_marks": 103,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2414,
+      "cut_off_marks": 98,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2558,
+      "cut_off_marks": 95,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2664,
+      "cut_off_marks": 93,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3152,
+      "cut_off_marks": 85,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3196,
+      "cut_off_marks": 84,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3241,
+      "cut_off_marks": 84,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3848,
+      "cut_off_marks": 75,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3934,
+      "cut_off_marks": 74,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2741,
+      "cut_off_marks": 92,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3241,
+      "cut_off_marks": 84,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3310,
+      "cut_off_marks": 83,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2925,
+      "cut_off_marks": 88,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3035,
+      "cut_off_marks": 87,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3199,
+      "cut_off_marks": 84,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2674,
+      "cut_off_marks": 93,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2925,
+      "cut_off_marks": 88,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3369,
+      "cut_off_marks": 82,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2949,
+      "cut_off_marks": 88,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3640,
+      "cut_off_marks": 78,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3671,
+      "cut_off_marks": 77,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1428,
+      "cut_off_marks": 126,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1486,
+      "cut_off_marks": 125,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1452,
+      "cut_off_marks": 126,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1492,
+      "cut_off_marks": 125,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 947,
+      "cut_off_marks": 150,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 981,
+      "cut_off_marks": 149,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1442,
+      "cut_off_marks": 126,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1452,
+      "cut_off_marks": 126,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1671,
+      "cut_off_marks": 118,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1690,
+      "cut_off_marks": 118,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1828,
+      "cut_off_marks": 114,
+      "category": "SC"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1137,
+      "cut_off_marks": 139,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1396,
+      "cut_off_marks": 127,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1401,
+      "cut_off_marks": 127,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1267,
+      "cut_off_marks": 133,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1283,
+      "cut_off_marks": 132,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1352,
+      "cut_off_marks": 129,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 391,
+      "cut_off_marks": 195,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 502,
+      "cut_off_marks": 185,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1033,
+      "cut_off_marks": 144,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1279,
+      "cut_off_marks": 132,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1283,
+      "cut_off_marks": 132,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1432,
+      "cut_off_marks": 126,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1472,
+      "cut_off_marks": 125,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1552,
+      "cut_off_marks": 122,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 731,
+      "cut_off_marks": 165,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 952,
+      "cut_off_marks": 150,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3698,
+      "cut_off_marks": 77,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 4056,
+      "cut_off_marks": 72,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 4327,
+      "cut_off_marks": 69,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3922,
+      "cut_off_marks": 74,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 4164,
+      "cut_off_marks": 70,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 4641,
+      "cut_off_marks": 65,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2299,
+      "cut_off_marks": 101,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2639,
+      "cut_off_marks": 94,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3243,
+      "cut_off_marks": 84,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3370,
+      "cut_off_marks": 82,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3941,
+      "cut_off_marks": 73,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 4185,
+      "cut_off_marks": 70,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2423,
+      "cut_off_marks": 98,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2513,
+      "cut_off_marks": 96,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2843,
+      "cut_off_marks": 90,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3063,
+      "cut_off_marks": 86,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3140,
+      "cut_off_marks": 85,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3748,
+      "cut_off_marks": 76,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3175,
+      "cut_off_marks": 85,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3592,
+      "cut_off_marks": 78,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3759,
+      "cut_off_marks": 76,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3348,
+      "cut_off_marks": 82,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3636,
+      "cut_off_marks": 78,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 4394,
+      "cut_off_marks": 68,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3757,
+      "cut_off_marks": 76,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 4096,
+      "cut_off_marks": 71,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 4180,
+      "cut_off_marks": 70,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3933,
+      "cut_off_marks": 74,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 4208,
+      "cut_off_marks": 70,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 4670,
+      "cut_off_marks": 65,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2957,
+      "cut_off_marks": 88,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3673,
+      "cut_off_marks": 77,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3723,
+      "cut_off_marks": 76,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3529,
+      "cut_off_marks": 79,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3895,
+      "cut_off_marks": 74,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3391,
+      "cut_off_marks": 81,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3469,
+      "cut_off_marks": 80,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3786,
+      "cut_off_marks": 75,
+      "category": "STP"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2085,
+      "cut_off_marks": 106,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3151,
+      "cut_off_marks": 85,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3530,
+      "cut_off_marks": 79,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2461,
+      "cut_off_marks": 97,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2676,
+      "cut_off_marks": 93,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 4121,
+      "cut_off_marks": 71,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3510,
+      "cut_off_marks": 80,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3515,
+      "cut_off_marks": 80,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3963,
+      "cut_off_marks": 73,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 7109,
+      "cut_off_marks": 33,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 6975,
+      "cut_off_marks": 38,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3918,
+      "cut_off_marks": 74,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 6210,
+      "cut_off_marks": 46,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 7285,
+      "cut_off_marks": 29,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 6392,
+      "cut_off_marks": 44,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 6975,
+      "cut_off_marks": 35,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 5560,
+      "cut_off_marks": 55,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 6066,
+      "cut_off_marks": 48,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 7083,
+      "cut_off_marks": 34,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 7350,
+      "cut_off_marks": 27,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 4539,
+      "cut_off_marks": 66,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 4958,
+      "cut_off_marks": 61,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 5333,
+      "cut_off_marks": 57,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 6759,
+      "cut_off_marks": 39,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2662,
+      "cut_off_marks": 93,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2748,
+      "cut_off_marks": 92,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 4275,
+      "cut_off_marks": 69,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 4924,
+      "cut_off_marks": 61,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 5927,
+      "cut_off_marks": 50,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3356,
+      "cut_off_marks": 82,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3570,
+      "cut_off_marks": 79,
+      "category": "STH"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 667,
+      "cut_off_marks": 169,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 733,
+      "cut_off_marks": 165,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 590,
+      "cut_off_marks": 176,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 614,
+      "cut_off_marks": 174,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 625,
+      "cut_off_marks": 173,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 100,
+      "cut_off_marks": 255,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 140,
+      "cut_off_marks": 240,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 491,
+      "cut_off_marks": 186,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 620,
+      "cut_off_marks": 173,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 820,
+      "cut_off_marks": 158,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 851,
+      "cut_off_marks": 156,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 969,
+      "cut_off_marks": 149,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 407,
+      "cut_off_marks": 194,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Assam Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 510,
+      "cut_off_marks": 184,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2812,
+      "cut_off_marks": 90,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3471,
+      "cut_off_marks": 80,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3663,
+      "cut_off_marks": 77,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2942,
+      "cut_off_marks": 88,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3449,
+      "cut_off_marks": 79,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3758,
+      "cut_off_marks": 76,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2063,
+      "cut_off_marks": 107,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2228,
+      "cut_off_marks": 102,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2292,
+      "cut_off_marks": 101,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2624,
+      "cut_off_marks": 94,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3061,
+      "cut_off_marks": 86,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Barak Valley Engineering College",
+      "branch_name": "Electronics & Telecommunication Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3422,
+      "cut_off_marks": 81,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1825,
+      "cut_off_marks": 114,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2060,
+      "cut_off_marks": 107,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2187,
+      "cut_off_marks": 103,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2827,
+      "cut_off_marks": 90,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1976,
+      "cut_off_marks": 109,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2647,
+      "cut_off_marks": 94,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2956,
+      "cut_off_marks": 88,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2360,
+      "cut_off_marks": 100,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3217,
+      "cut_off_marks": 84,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Bineswar Brahma Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3376,
+      "cut_off_marks": 82,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2969,
+      "cut_off_marks": 88,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3351,
+      "cut_off_marks": 82,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3538,
+      "cut_off_marks": 79,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 3001,
+      "cut_off_marks": 87,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3477,
+      "cut_off_marks": 80,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3686,
+      "cut_off_marks": 77,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2110,
+      "cut_off_marks": 105,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2385,
+      "cut_off_marks": 99,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Dhemaji Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2841,
+      "cut_off_marks": 90,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2107,
+      "cut_off_marks": 106,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2276,
+      "cut_off_marks": 101,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2298,
+      "cut_off_marks": 101,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2600,
+      "cut_off_marks": 95,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 2740,
+      "cut_off_marks": 92,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 2845,
+      "cut_off_marks": 90,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 2629,
+      "cut_off_marks": 94,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 3313,
+      "cut_off_marks": 83,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Golaghat Engineering College",
+      "branch_name": "Chemical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 3551,
+      "cut_off_marks": 79,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 876,
+      "cut_off_marks": 155,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 994,
+      "cut_off_marks": 147,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1084,
+      "cut_off_marks": 142,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1097,
+      "cut_off_marks": 141,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 357,
+      "cut_off_marks": 199,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Computer Science Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 454,
+      "cut_off_marks": 189,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 785,
+      "cut_off_marks": 161,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Engineering College",
+      "branch_name": "Electrical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 983,
+      "cut_off_marks": 148,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1238,
+      "cut_off_marks": 134,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1561,
+      "cut_off_marks": 122,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Civil Engineering",
+      "round_no": 3,
+      "year": 2024,
+      "cut_off_rank": 1632,
+      "cut_off_marks": 120,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 1,
+      "year": 2024,
+      "cut_off_rank": 1369,
+      "cut_off_marks": 128,
+      "category": "EWS"
+    },
+    {
+      "institute_name": "Jorhat Institute Of Science & Technology",
+      "branch_name": "Mechanical Engineering",
+      "round_no": 2,
+      "year": 2024,
+      "cut_off_rank": 1725,
+      "cut_off_marks": 117,
+      "category": "EWS"
+    }
+  ]
+}

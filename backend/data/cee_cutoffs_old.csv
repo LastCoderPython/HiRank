@@ -1,0 +1,42 @@
+College_Name,College_Code,Branch,Category,Opening_Rank,Closing_Rank,Year,Seat_Type
+Assam Engineering College,AEC,Computer Science,General,450,1200,2023,Government
+Assam Engineering College,AEC,Computer Science,OBC,550,1400,2023,Government
+Assam Engineering College,AEC,Computer Science,SC,1500,2800,2023,Government
+Assam Engineering College,AEC,Computer Science,ST,2000,3500,2023,Government
+Assam Engineering College,AEC,Electrical,General,1800,2600,2023,Government
+Assam Engineering College,AEC,Electrical,OBC,2000,2900,2023,Government
+Assam Engineering College,AEC,Mechanical,General,2500,3250,2023,Government
+Assam Engineering College,AEC,Mechanical,OBC,2800,3600,2023,Government
+Assam Engineering College,AEC,Civil,General,3200,4100,2023,Government
+Assam Engineering College,AEC,Civil,OBC,3500,4500,2023,Government
+Assam Engineering College,AEC,Electronics,General,2200,3000,2023,Government
+Assam Engineering College,AEC,Electronics,OBC,2500,3300,2023,Government
+Jorhat Engineering College,JEC,Computer Science,General,1200,2100,2023,Government
+Jorhat Engineering College,JEC,Computer Science,OBC,1400,2400,2023,Government
+Jorhat Engineering College,JEC,Computer Science,SC,2500,4000,2023,Government
+Jorhat Engineering College,JEC,Mechanical,General,3000,3800,2023,Government
+Jorhat Engineering College,JEC,Mechanical,OBC,3200,4100,2023,Government
+Jorhat Engineering College,JEC,Civil,General,3800,4800,2023,Government
+Jorhat Engineering College,JEC,Electronics,General,2500,3400,2023,Government
+Jorhat Engineering College,JEC,Electrical,General,2800,3500,2023,Government
+Gauhati University Institute of Science and Technology,GUIST,Computer Science,General,1000,1800,2023,Government
+Gauhati University Institute of Science and Technology,GUIST,Computer Science,OBC,1200,2100,2023,Government
+Gauhati University Institute of Science and Technology,GUIST,Electronics,General,2200,3100,2023,Government
+Gauhati University Institute of Science and Technology,GUIST,Biotechnology,General,3500,4500,2023,Government
+Gauhati University Institute of Science and Technology,GUIST,Information Technology,General,1600,2500,2023,Government
+Dibrugarh University Institute of Engineering and Technology,DUIET,Computer Science,General,1500,2400,2023,Government
+Dibrugarh University Institute of Engineering and Technology,DUIET,Computer Science,OBC,1700,2700,2023,Government
+Dibrugarh University Institute of Engineering and Technology,DUIET,Mechanical,General,3200,4200,2023,Government
+Dibrugarh University Institute of Engineering and Technology,DUIET,Civil,General,4000,5200,2023,Government
+Dibrugarh University Institute of Engineering and Technology,DUIET,Electrical,General,2900,3800,2023,Government
+Assam University Silchar,AUS,Computer Science,General,2000,3000,2023,Government
+Assam University Silchar,AUS,Computer Science,OBC,2200,3300,2023,Government
+Assam University Silchar,AUS,Electronics,General,3000,4000,2023,Government
+Assam University Silchar,AUS,Information Technology,General,2500,3500,2023,Government
+Assam University Silchar,AUS,Civil,General,4500,5500,2023,Government
+Assam Engineering College,AEC,Computer Science,General,420,1150,2022,Government
+Assam Engineering College,AEC,Computer Science,OBC,520,1350,2022,Government
+Assam Engineering College,AEC,Mechanical,General,2400,3150,2022,Government
+Assam Engineering College,AEC,Electrical,General,1750,2550,2022,Government
+Jorhat Engineering College,JEC,Computer Science,General,1150,2050,2022,Government
+Jorhat Engineering College,JEC,Mechanical,General,2900,3750,2022,Government

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RankRoute - AI Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#00e3fd",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "surface-container": "#efecf5",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c6c5d4",
+                        "outline": "#767683",
+                        "inverse-primary": "#bdc2ff",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e4e1ea",
+                        "surface-container-high": "#eae7ef",
+                        "secondary": "#006875",
+                        "surface-container-low": "#f5f2fb",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf8ff",
+                        "accent-cyan": "#00E5FF",
+                        "on-background": "#1b1b21",
+                        "secondary-fixed-dim": "#00daf3",
+                        "on-secondary-fixed": "#001f24",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-midnight": "#1E1E24",
+                        "sidebar-indigo": "#1A237E",
+                        "error-container": "#ffdad6",
+                        "inverse-on-surface": "#f2eff8",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "primary-container": "#1a237e",
+                        "primary-fixed": "#e0e0ff",
+                        "tertiary-container": "#551f00",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-surface-variant": "#454652",
+                        "surface-tint": "#4c56af",
+                        "accent-orange": "#FF6D00",
+                        "on-primary-fixed": "#000767",
+                        "tertiary": "#331000",
+                        "on-secondary-container": "#00616d",
+                        "surface-variant": "#e4e1ea",
+                        "surface": "#fbf8ff",
+                        "primary": "#000666",
+                        "background-light": "#F8F9FA",
+                        "surface-dim": "#dbd9e1",
+                        "text-heading": "#1A237E",
+                        "on-primary-container": "#8690ee",
+                        "background-dark": "#121212",
+                        "error": "#ba1a1a",
+                        "surface-bright": "#fbf8ff",
+                        "inverse-surface": "#303036",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#fb6b00",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "on-surface": "#1b1b21",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-primary-fixed-variant": "#343d96"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "32px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-midnight text-on-primary font-body-md text-body-md h-screen w-screen overflow-hidden flex relative selection:bg-accent-cyan/30">
+<!-- Ambient Background Blur -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] right-[-5%] w-[800px] h-[800px] rounded-full bg-sidebar-indigo/20 blur-[120px] mix-blend-screen"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-accent-cyan/5 blur-[100px] mix-blend-screen"></div>
+</div>
+<!-- Mobile Top App Bar (From JSON, hidden on md) -->
+<header class="md:hidden flex justify-between items-center px-margin-mobile h-16 w-full z-40 bg-surface-midnight/80 backdrop-blur-xl border-b border-white/5 absolute top-0 left-0">
+<div class="flex items-center gap-3">
+<button class="text-on-surface-variant hover:text-accent-cyan transition-colors cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-accent-cyan">RankRoute</span>
+</div>
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-accent-cyan transition-colors cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:text-accent-cyan transition-colors cursor-pointer active:opacity-70">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (From JSON) -->
+<aside class="hidden md:flex fixed left-0 top-0 h-full w-[250px] bg-sidebar-indigo border-r border-white/10 shadow-lg shadow-on-primary/10 flex-col z-50 transition-all duration-300">
+<div class="flex flex-col h-full p-4 relative z-10">
+<!-- Header -->
+<div class="flex items-center gap-3 mb-8 px-2 pt-2">
+<div class="w-8 h-8 rounded-lg bg-accent-cyan/20 flex items-center justify-center border border-accent-cyan/30">
+<span class="material-symbols-outlined text-accent-cyan" style="font-size: 18px;">auto_awesome</span>
+</div>
+<div>
+<h1 class="text-headline-md font-headline-md font-bold text-accent-cyan tracking-tight">RankRoute</h1>
+<p class="font-label-md text-label-md text-on-primary/60 text-[10px] uppercase tracking-wider mt-0.5">AI Admissions Advisor</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<nav class="flex flex-col gap-2 flex-1">
+<!-- Active Tab: New Chat -->
+<a class="flex items-center gap-3 px-4 py-3 bg-white/10 text-accent-cyan rounded-lg font-bold transition-all duration-200 active:scale-95 group relative overflow-hidden" href="#">
+<div class="absolute inset-0 bg-accent-cyan/10 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
+<span class="material-symbols-outlined relative z-10" style="font-variation-settings: 'FILL' 1;">add</span>
+<span class="font-label-md text-label-md relative z-10">New Chat</span>
+</a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-accent-cyan transition-colors">history</span>
+<span class="font-label-md text-label-md">History</span>
+</a>
+<!-- User Requested History Items -->
+<div class="flex flex-col gap-1 pl-11 pr-2 mt-1 mb-2">
+<p class="text-on-primary/50 text-[11px] font-label-md uppercase tracking-wider mb-1">Recent</p>
+<a class="text-on-primary/60 hover:text-on-primary text-[13px] font-body-md truncate py-1.5 transition-colors" href="#">Assam CEE Engineering Options</a>
+<a class="text-on-primary/60 hover:text-on-primary text-[13px] font-body-md truncate py-1.5 transition-colors" href="#">NEET BDS Cutoffs</a>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan rounded-lg group mt-2" href="#">
+<span class="material-symbols-outlined group-hover:text-accent-cyan transition-colors">school</span>
+<span class="font-label-md text-label-md">Scholarships</span>
+</a>
+<div class="mt-auto flex flex-col gap-2">
+<div class="w-full h-px bg-white/10 my-2"></div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:text-on-primary transition-colors hover:bg-white/5 hover:text-accent-cyan rounded-lg group" href="#">
+<span class="material-symbols-outlined group-hover:text-accent-cyan transition-colors">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Footer Upgrade CTA -->
+<div class="mt-4 p-4 rounded-xl bg-gradient-to-br from-white/5 to-white/0 border border-white/10 relative overflow-hidden group cursor-pointer">
+<div class="absolute inset-0 bg-accent-cyan/0 group-hover:bg-accent-cyan/10 transition-colors duration-300"></div>
+<div class="flex items-center gap-3 relative z-10">
+<span class="material-symbols-outlined text-accent-cyan">diamond</span>
+<div>
+<p class="font-label-md text-label-md text-on-primary">Upgrade to Premium</p>
+<p class="text-[11px] text-on-primary/60 mt-0.5">Unlock deep analytics</p>
+</div>
+</div>
+</div>
+<!-- User Profile -->
+<div class="mt-4 flex items-center gap-3 px-2 py-2 hover:bg-white/5 rounded-lg cursor-pointer transition-colors">
+<div class="w-9 h-9 rounded-full bg-surface-midnight border border-white/20 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-on-primary/70" style="font-size: 20px;">person</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-label-md text-label-md text-on-primary truncate">Student User</p>
+</div>
+</div>
+</div>
+<!-- Subtle sidebar background noise/texture -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
+</aside>
+<!-- Main Chat Area -->
+<main class="flex-1 flex flex-col relative z-10 w-full h-full md:ml-[250px] pt-16 md:pt-0">
+<!-- Center Canvas -->
+<div class="flex-1 flex flex-col items-center justify-center p-6 md:p-12 overflow-y-auto pb-32">
+<!-- Greeting Logo/Icon -->
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-sidebar-indigo border border-white/10 shadow-[0_0_30px_rgba(0,229,255,0.15)] flex items-center justify-center mb-8 relative">
+<div class="absolute inset-0 bg-accent-cyan/10 rounded-2xl blur-md"></div>
+<span class="material-symbols-outlined text-accent-cyan relative z-10" style="font-size: 40px; font-variation-settings: 'FILL' 1;">neurology</span>
+</div>
+<!-- Greeting Text -->
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-primary text-center max-w-2xl mb-12 tracking-tight">
+                How can I help you navigate your college admissions today?
+            </h2>
+<!-- Suggestion Chips Container -->
+<div class="flex flex-wrap justify-center gap-3 md:gap-4 max-w-3xl w-full">
+<!-- Chip 1 -->
+<button class="group flex items-center gap-3 px-5 py-3.5 rounded-full bg-white/5 border border-white/10 hover:border-accent-cyan/50 hover:bg-white/10 transition-all duration-300 backdrop-blur-md cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,229,255,0.1)]">
+<span class="material-symbols-outlined text-on-primary/50 group-hover:text-accent-cyan transition-colors" style="font-size: 18px;">trending_up</span>
+<span class="font-label-md text-label-md text-on-primary/80 group-hover:text-on-primary transition-colors">I got 4500 rank in CEE...</span>
+</button>
+<!-- Chip 2 -->
+<button class="group flex items-center gap-3 px-5 py-3.5 rounded-full bg-white/5 border border-white/10 hover:border-accent-cyan/50 hover:bg-white/10 transition-all duration-300 backdrop-blur-md cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,229,255,0.1)]">
+<span class="material-symbols-outlined text-on-primary/50 group-hover:text-accent-cyan transition-colors" style="font-size: 18px;">local_hospital</span>
+<span class="font-label-md text-label-md text-on-primary/80 group-hover:text-on-primary transition-colors">Best medical colleges for 600 in NEET?</span>
+</button>
+<!-- Chip 3 -->
+<button class="group flex items-center gap-3 px-5 py-3.5 rounded-full bg-white/5 border border-white/10 hover:border-accent-cyan/50 hover:bg-white/10 transition-all duration-300 backdrop-blur-md cursor-pointer hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,229,255,0.1)]">
+<span class="material-symbols-outlined text-on-primary/50 group-hover:text-accent-cyan transition-colors" style="font-size: 18px;">account_balance</span>
+<span class="font-label-md text-label-md text-on-primary/80 group-hover:text-on-primary transition-colors">CUET options for B.A. Economics</span>
+</button>
+</div>
+</div>
+<!-- Bottom Input Area -->
+<div class="absolute bottom-0 left-0 right-0 p-4 md:p-8 bg-gradient-to-t from-surface-midnight via-surface-midnight/80 to-transparent pt-12 pointer-events-none">
+<div class="max-w-3xl mx-auto relative pointer-events-auto">
+<!-- Input Glassmorphic Container -->
+<div class="bg-sidebar-indigo/40 backdrop-blur-xl border border-white/15 rounded-2xl p-2 flex items-end shadow-2xl shadow-black/50 focus-within:border-accent-cyan/50 focus-within:shadow-[0_0_20px_rgba(0,229,255,0.15)] transition-all duration-300">
+<!-- Optional Attachment Icon -->
+<button class="p-3 text-on-primary/50 hover:text-on-primary transition-colors rounded-xl hover:bg-white/5 mb-0.5">
+<span class="material-symbols-outlined" style="font-size: 22px;">attach_file</span>
+</button>
+<!-- Textarea -->
+<textarea class="flex-1 bg-transparent border-none text-on-primary font-body-lg text-body-lg placeholder:text-on-primary/40 focus:ring-0 resize-none py-3.5 px-2 max-h-[150px]" placeholder="Type your rank, exam, and preferred course..." rows="1" style="min-height: 52px; outline: none;"></textarea>
+<!-- Submit Button -->
+<button class="p-3 bg-accent-cyan text-sidebar-indigo rounded-xl hover:bg-secondary-container transition-colors shadow-[0_0_15px_rgba(0,229,255,0.3)] hover:shadow-[0_0_25px_rgba(0,229,255,0.5)] mb-0.5 ml-2 flex items-center justify-center active:scale-95 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+<div class="text-center mt-3">
+<p class="font-label-md text-label-md text-on-primary/40 text-[11px]">RankRoute AI can make mistakes. Consider verifying important deadlines and cutoffs.</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>
