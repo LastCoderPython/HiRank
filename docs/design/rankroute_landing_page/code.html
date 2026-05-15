@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RankRoute AI - Admission Guidance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-mesh {
+            background-color: #fbf8ff;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(236,66%,29%,0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(186,100%,50%,0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, hsla(236,66%,29%,0.08) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(186,100%,50%,0.08) 0px, transparent 50%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fbf8ff",
+                        "accent-orange": "#FF6D00",
+                        "inverse-on-surface": "#f2eff8",
+                        "secondary-container": "#00e3fd",
+                        "on-background": "#1b1b21",
+                        "on-tertiary-container": "#fb6b00",
+                        "on-surface": "#1b1b21",
+                        "on-secondary-fixed": "#001f24",
+                        "surface-midnight": "#1E1E24",
+                        "on-tertiary-fixed-variant": "#7a3000",
+                        "surface-container-low": "#f5f2fb",
+                        "outline-variant": "#c6c5d4",
+                        "surface-container-highest": "#e4e1ea",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "primary-container": "#1a237e",
+                        "background-dark": "#121212",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#00616d",
+                        "tertiary": "#331000",
+                        "on-tertiary-fixed": "#341100",
+                        "secondary": "#006875",
+                        "surface-dim": "#dbd9e1",
+                        "text-heading": "#1A237E",
+                        "primary-fixed": "#e0e0ff",
+                        "secondary-fixed-dim": "#00daf3",
+                        "on-primary-container": "#8690ee",
+                        "surface": "#fbf8ff",
+                        "tertiary-fixed": "#ffdbcb",
+                        "background-light": "#F8F9FA",
+                        "surface-container": "#efecf5",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e4e1ea",
+                        "inverse-primary": "#bdc2ff",
+                        "outline": "#767683",
+                        "accent-cyan": "#00E5FF",
+                        "on-primary": "#ffffff",
+                        "primary": "#000666",
+                        "surface-tint": "#4c56af",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#343d96",
+                        "on-surface-variant": "#454652",
+                        "on-secondary": "#ffffff",
+                        "sidebar-indigo": "#1A237E",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-primary-fixed": "#000767",
+                        "surface-container-high": "#eae7ef",
+                        "on-error": "#ffffff",
+                        "background": "#fbf8ff",
+                        "inverse-surface": "#303036",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#551f00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "margin-desktop": "32px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-mesh min-h-screen flex flex-col text-on-surface antialiased">
+<!-- Main Content Canvas -->
+<main class="flex-grow flex items-center justify-center relative overflow-hidden px-margin-mobile md:px-margin-desktop py-16">
+<!-- Decorative blurred orbs for AI feel -->
+<div class="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-sidebar-indigo/10 rounded-full blur-[80px] mix-blend-multiply pointer-events-none"></div>
+<div class="absolute bottom-1/4 right-1/4 w-[250px] h-[250px] bg-accent-cyan/10 rounded-full blur-[60px] mix-blend-multiply pointer-events-none"></div>
+<!-- Glassmorphism Container -->
+<div class="relative z-10 w-full max-w-3xl bg-surface-bright/60 backdrop-blur-xl border border-outline-variant/30 rounded-2xl shadow-[0_8px_32px_rgba(26,35,126,0.05)] p-8 md:p-16 text-center">
+<div class="mb-8">
+<span class="inline-flex items-center gap-2 bg-sidebar-indigo/5 text-sidebar-indigo px-4 py-2 rounded-full font-label-md text-label-md mb-6 border border-sidebar-indigo/10">
+<span class="material-symbols-outlined text-accent-cyan" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    RankRoute AI Guidance
+                </span>
+<h1 class="font-display-lg text-display-lg text-text-heading mb-6">
+                    Tell us your rank. We'll find your college.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mx-auto">
+                    AI-powered admission guidance for JEE, NEET, CUET, and Assam CEE. Get personalized, data-driven college predictions instantly.
+                </p>
+</div>
+<div class="flex flex-col items-center justify-center space-y-4">
+<button class="flex items-center justify-center gap-3 w-full max-w-sm bg-surface-container-lowest hover:bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md py-4 px-6 rounded-xl transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(0,229,255,0.1)] group">
+<svg class="w-6 h-6" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+<span>Continue with Google</span>
+</button>
+<p class="font-body-md text-sm text-on-surface-variant/70 mt-4">
+                    Secure, one-click access. No credit card required.
+                </p>
+</div>
+<!-- Features Bento Preview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12 text-left">
+<div class="bg-surface-container-low/50 p-4 rounded-xl border border-outline-variant/20">
+<span class="material-symbols-outlined text-accent-cyan mb-2">radar</span>
+<h3 class="font-label-md text-label-md text-text-heading mb-1">Precision Tracking</h3>
+<p class="font-body-md text-[13px] text-on-surface-variant">Real-time rank cut-off analysis.</p>
+</div>
+<div class="bg-surface-container-low/50 p-4 rounded-xl border border-outline-variant/20">
+<span class="material-symbols-outlined text-accent-cyan mb-2">school</span>
+<h3 class="font-label-md text-label-md text-text-heading mb-1">Institution Mapping</h3>
+<p class="font-body-md text-[13px] text-on-surface-variant">Identify reach, target, and safety colleges.</p>
+</div>
+<div class="bg-surface-container-low/50 p-4 rounded-xl border border-outline-variant/20">
+<span class="material-symbols-outlined text-accent-cyan mb-2">insights</span>
+<h3 class="font-label-md text-label-md text-text-heading mb-1">Predictive Analytics</h3>
+<p class="font-body-md text-[13px] text-on-surface-variant">AI-driven admission probabilities.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Component Generated from JSON -->
+<footer class="bg-surface-bright/80 dark:bg-surface-midnight/80 backdrop-blur-xl w-full mt-auto border-t border-outline-variant/20 dark:border-outline/10 flat no shadows">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-base flex flex-col md:flex-row justify-between items-center gap-gutter">
+<div class="font-headline-md text-headline-md font-bold text-sidebar-indigo dark:text-accent-cyan flex items-center gap-2">
+<span class="material-symbols-outlined text-accent-cyan" style="font-variation-settings: 'FILL' 1;">route</span>
+                RankRoute
+            </div>
+<nav class="flex flex-wrap justify-center gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-accent-cyan dark:hover:text-secondary-fixed-dim transition-colors duration-200" href="#">Privacy Policy</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-accent-cyan dark:hover:text-secondary-fixed-dim transition-colors duration-200" href="#">Terms of Service</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-accent-cyan dark:hover:text-secondary-fixed-dim transition-colors duration-200" href="#">Contact Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-accent-cyan dark:hover:text-secondary-fixed-dim transition-colors duration-200" href="#">About AI Guidance</a>
+</nav>
+<div class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant text-sm">
+                © 2024 RankRoute AI. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>

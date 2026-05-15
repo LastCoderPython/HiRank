@@ -1,0 +1,99 @@
+{
+  "branches": {
+    "Computer Science": {
+      "full_name": "Computer Science and Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Computer Science Engineering deals with the design, development, and maintenance of software and hardware systems. It encompasses programming, algorithms, data structures, databases, artificial intelligence, machine learning, and computer networks.",
+      "core_subjects": ["Data Structures and Algorithms", "Database Management Systems", "Operating Systems", "Computer Networks", "Software Engineering", "Theory of Computation", "Compiler Design", "Computer Architecture"],
+      "emerging_areas": ["Artificial Intelligence", "Machine Learning", "Data Science", "Cybersecurity", "Cloud Computing", "Blockchain", "IoT", "Big Data Analytics"],
+      "career_opportunities": ["Software Developer", "Data Scientist", "Machine Learning Engineer", "Full Stack Developer", "DevOps Engineer", "Cybersecurity Analyst", "Research Scientist", "System Architect"],
+      "industries": ["IT Companies", "Banking and Finance", "E-commerce", "Healthcare IT", "Gaming", "Research Labs", "Startups"],
+      "higher_studies": ["M.Tech (CS/CSE)", "MS (abroad)", "MBA", "Ph.D.", "Specialized certifications in AI/ML, Cloud, etc."],
+      "average_salary_range": "4-15 LPA for freshers (varies by college)"
+    },
+    "Electronics": {
+      "full_name": "Electronics and Communication Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Electronics and Communication Engineering focuses on electronic devices, circuits, communication equipment, and systems. It covers analog and digital electronics, embedded systems, VLSI design, and communication technologies.",
+      "core_subjects": ["Electronic Devices", "Digital Electronics", "Analog Circuits", "Communication Systems", "Signals and Systems", "Electromagnetic Theory", "VLSI Design", "Embedded Systems"],
+      "emerging_areas": ["5G/6G Communication", "IoT", "Robotics", "Automation", "Chip Design", "Satellite Communication", "Defense Electronics"],
+      "career_opportunities": ["Electronics Engineer", "Communication Engineer", "VLSI Design Engineer", "Embedded Systems Engineer", "Network Engineer", "RF Engineer", "Research Scientist"],
+      "industries": ["Telecommunications", "Consumer Electronics", "Defense", "Space Research", "Automotive", "Healthcare Equipment"],
+      "higher_studies": ["M.Tech (VLSI/Communication)", "MS abroad", "Research positions", "MBA"],
+      "average_salary_range": "3.5-12 LPA for freshers"
+    },
+    "Electrical": {
+      "full_name": "Electrical Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Electrical Engineering deals with the study and application of electricity, electronics, and electromagnetism. It covers power generation, transmission, distribution, electrical machines, and control systems.",
+      "core_subjects": ["Electrical Machines", "Power Systems", "Control Systems", "Electrical Drives", "Power Electronics", "High Voltage Engineering", "Switchgear and Protection", "Instrumentation"],
+      "emerging_areas": ["Renewable Energy", "Smart Grids", "Electric Vehicles", "Power System Automation", "Energy Storage Systems", "Green Technology"],
+      "career_opportunities": ["Power Plant Engineer", "Electrical Design Engineer", "Control Engineer", "Testing and Commissioning Engineer", "Research Engineer", "Project Manager"],
+      "industries": ["Power Generation", "Power Distribution", "Railways", "Automotive", "Manufacturing", "Consulting"],
+      "higher_studies": ["M.Tech (Power Systems/Control)", "MBA", "Research positions in PSUs"],
+      "average_salary_range": "3.5-10 LPA for freshers"
+    },
+    "Mechanical": {
+      "full_name": "Mechanical Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Mechanical Engineering is one of the oldest and broadest engineering disciplines. It involves the design, analysis, manufacturing, and maintenance of mechanical systems including engines, machines, and tools.",
+      "core_subjects": ["Engineering Mechanics", "Strength of Materials", "Thermodynamics", "Fluid Mechanics", "Machine Design", "Manufacturing Technology", "Heat Transfer", "Theory of Machines"],
+      "emerging_areas": ["Robotics and Automation", "3D Printing/Additive Manufacturing", "Electric Vehicles", "Sustainable Manufacturing", "Mechatronics", "Nanotechnology"],
+      "career_opportunities": ["Design Engineer", "Manufacturing Engineer", "Quality Engineer", "Project Engineer", "Research and Development", "Maintenance Engineer"],
+      "industries": ["Automotive", "Manufacturing", "Aerospace", "Energy", "Oil and Gas", "Railways", "Defense"],
+      "higher_studies": ["M.Tech (Thermal/Design/Manufacturing)", "MS abroad", "MBA for management roles"],
+      "average_salary_range": "3-9 LPA for freshers"
+    },
+    "Civil": {
+      "full_name": "Civil Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Civil Engineering is a professional engineering discipline that deals with the design, construction, and maintenance of the physical and naturally built environment, including roads, bridges, dams, airports, and buildings.",
+      "core_subjects": ["Structural Analysis", "Design of Steel and Concrete Structures", "Geotechnical Engineering", "Transportation Engineering", "Water Resources Engineering", "Environmental Engineering", "Construction Management", "Surveying"],
+      "emerging_areas": ["Smart Cities", "Green Buildings", "Sustainable Construction", "Earthquake-resistant Design", "Prefabricated Structures", "Water Conservation"],
+      "career_opportunities": ["Structural Engineer", "Site Engineer", "Project Manager", "Urban Planner", "Environmental Engineer", "Geotechnical Engineer", "Construction Manager"],
+      "industries": ["Construction", "Infrastructure", "Real Estate", "Government PWD/CPWD", "Consulting", "Oil and Gas"],
+      "higher_studies": ["M.Tech (Structures/Transportation/Geotech)", "MBA", "UPSC for IES/IAS"],
+      "average_salary_range": "3-8 LPA for freshers"
+    },
+    "Chemical": {
+      "full_name": "Chemical Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Chemical Engineering combines chemistry, physics, mathematics, and economics to design and operate processes for producing chemicals, materials, and energy.",
+      "core_subjects": ["Mass Transfer", "Heat Transfer", "Fluid Mechanics", "Chemical Reaction Engineering", "Process Control", "Thermodynamics", "Plant Design"],
+      "career_opportunities": ["Process Engineer", "Plant Manager", "Quality Control", "Research Scientist", "Safety Engineer"],
+      "industries": ["Petrochemicals", "Pharmaceuticals", "Food Processing", "Fertilizers", "Oil and Gas"],
+      "higher_studies": ["M.Tech (Chemical/Petrochemical)", "MS abroad"],
+      "average_salary_range": "3.5-9 LPA for freshers"
+    },
+    "Instrumentation": {
+      "full_name": "Instrumentation Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Instrumentation Engineering deals with the design and maintenance of instruments and control systems used in industrial processes.",
+      "core_subjects": ["Process Control", "Instrumentation Devices", "Industrial Electronics", "Biomedical Instrumentation", "SCADA and PLC"],
+      "career_opportunities": ["Instrumentation Engineer", "Control Systems Engineer", "Automation Engineer", "Calibration Engineer"],
+      "industries": ["Manufacturing", "Oil and Gas", "Pharmaceuticals", "Process Industries"],
+      "higher_studies": ["M.Tech (Control Systems/Instrumentation)"],
+      "average_salary_range": "3.5-9 LPA for freshers"
+    },
+    "Petroleum": {
+      "full_name": "Petroleum Engineering",
+      "duration": "4 years (8 semesters)",
+      "about": "Petroleum Engineering involves the exploration, extraction, and production of oil and natural gas.",
+      "core_subjects": ["Drilling Engineering", "Reservoir Engineering", "Production Engineering", "Petroleum Geology", "Well Logging"],
+      "career_opportunities": ["Drilling Engineer", "Reservoir Engineer", "Production Engineer", "Field Engineer"],
+      "industries": ["Oil and Gas", "Consulting", "Research"],
+      "higher_studies": ["M.Tech (Petroleum Engineering)", "MS abroad"],
+      "average_salary_range": "5-15 LPA for freshers (highly paid in ONGC, Oil India)"
+    }
+  },
+  "branch_selection_tips": [
+    "Choose branch based on interest, not just placement statistics",
+    "Research curriculum and career paths before finalizing",
+    "Consider higher studies plans when choosing branch",
+    "Computer Science has most versatile career options",
+    "Core branches (Mechanical, Electrical, Civil) offer stable government job opportunities",
+    "Electronics offers good balance of hardware and software",
+    "Chemical and Petroleum have specialized but high-paying opportunities",
+    "Consider location preferences - some branches have limited colleges"
+  ]
+}

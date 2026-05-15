@@ -1,0 +1,18 @@
+Institute_Name,Branch,Category,Quota,Opening_Rank,Closing_Rank,Year,Seat_Type
+NIT Silchar,Computer Science and Engineering,General,Home State,5000,12000,2023,Government
+NIT Silchar,Computer Science and Engineering,General,Other State,3000,8000,2023,Government
+NIT Silchar,Computer Science and Engineering,OBC,Home State,7000,15000,2023,Government
+NIT Silchar,Computer Science and Engineering,OBC,Other State,5000,11000,2023,Government
+NIT Silchar,Electronics and Communication Engineering,General,Home State,8000,18000,2023,Government
+NIT Silchar,Electronics and Communication Engineering,General,Other State,6000,14000,2023,Government
+NIT Silchar,Electrical Engineering,General,Home State,12000,22000,2023,Government
+NIT Silchar,Electrical Engineering,General,Other State,9000,17000,2023,Government
+NIT Silchar,Mechanical Engineering,General,Home State,15000,25000,2023,Government
+NIT Silchar,Mechanical Engineering,General,Other State,12000,20000,2023,Government
+NIT Silchar,Civil Engineering,General,Home State,20000,30000,2023,Government
+NIT Silchar,Civil Engineering,General,Other State,17000,27000,2023,Government
+NIT Silchar,Computer Science and Engineering,General,Home State,4800,11500,2022,Government
+NIT Silchar,Computer Science and Engineering,General,Other State,2800,7500,2022,Government
+IIIT Guwahati,Computer Science and Engineering,General,All India,2000,6000,2023,Government
+IIIT Guwahati,Computer Science and Engineering,OBC,All India,3000,8000,2023,Government
+IIIT Guwahati,Electronics and Communication,General,All India,4000,10000,2023,Government

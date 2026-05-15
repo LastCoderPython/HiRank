@@ -1,0 +1,13 @@
+college_name,college_code,short_name,location,district,state,established,type,affiliation,nirf_rank,website,contact_phone,contact_email
+Assam Engineering College,AEC,AEC,Jalukbari,Guwahati,Kamrup,1955,Government,ASTU,,"https://www.aec.ac.in",+91-361-2570155,principal@aec.ac.in
+Jorhat Engineering College,JEC,JEC,Garmur,Jorhat,Jorhat,1959,Government,ASTU,,"https://www.jecjorhat.ac.in",+91-376-2310333,principal@jec.edu.in
+Jorhat Institute of Science and Technology,JIST,JIST,Sotai,Jorhat,Jorhat,1971,Government,ASTU,,"https://www.jist.ac.in",+91-376-2275001,director@jist.ac.in
+Bineswar Brahma Engineering College,BBEC,BBEC,Kamguri,Kokrajhar,Kokrajhar,2008,Government,ASTU,,"https://www.bbec.edu.in",+91-3661-274022,principal@bbec.ac.in
+Barak Valley Engineering College,BVEC,BVEC,Parakandi,Karimganj,Karimganj,2014,Government,ASTU,,"https://www.bvec.ac.in",+91-8473-252461,principal@bvec.ac.in
+Dhemaji Engineering College,DEC,DEC,Jagolong Daring,Dhemaji,Dhemaji,2016,Government,ASTU,,"https://www.dec.ac.in",+91-3753-245067,principal@dec.ac.in
+Golaghat Engineering College,GEC,GEC,Bogorijeng,Golaghat,Golaghat,2018,Government,ASTU,,"https://www.gec.ac.in",+91-3774-258067,principal@gec.ac.in
+Dibrugarh University Institute of Engineering and Technology,DUIET,DUIET,Dibrugarh,Dibrugarh,Dibrugarh,1965,University,Dibrugarh University,,"https://www.duiet.edu.in",+91-373-2370130,duiet@dibru.ac.in
+Tezpur University,TU,TU,Napaam,Tezpur,Sonitpur,1994,Central University,UGC,NIRF Rank 46,"https://www.tezu.ernet.in",+91-3712-267007,registrar@tezu.ernet.in
+National Institute of Technology Silchar,NITS,NITS,Silchar,Cachar,Cachar,1967,Institute of National Importance,MHRD,NIRF Rank 50,"https://www.nits.ac.in",+91-3842-224797,director@nits.ac.in
+Gauhati University Institute of Science and Technology,GUST,GUST,Guwahati,Kamrup,1948,University,Gauhati University,,"https://www.gauhati.ac.in",+91-361-2570487,registrar@gauhati.ac.in
+Assam Science and Technology University,ASTU,ASTU,Guwahati,Kamrup,2010,State University,State Govt,,"https://www.astu.ac.in",+91-361-2722512,vc@astu.ac.in

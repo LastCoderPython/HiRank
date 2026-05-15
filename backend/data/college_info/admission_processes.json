@@ -1,0 +1,269 @@
+{
+  "admission_processes": {
+    "cee": {
+      "name": "CEE Assam",
+      "full_name": "Combined Entrance Examination Assam",
+      "conducting_body": "DTE Assam",
+      "eligibility": {
+        "age": "Minimum 17 years as on August 1 of admission year",
+        "domicile": "Must be permanent resident of Assam",
+        "education": "10+2 with Physics, Chemistry, and Mathematics",
+        "minimum_marks": "45% aggregate in PCM (40% for SC/ST)",
+        "subjects": "English must be one of the subjects"
+      },
+      "exam_details": {
+        "mode": "Pen and Paper (OMR based)",
+        "duration": "3 hours",
+        "total_marks": 300,
+        "subjects": ["Physics", "Chemistry", "Mathematics"],
+        "marks_per_subject": 100,
+        "question_type": "Multiple Choice Questions",
+        "negative_marking": "0.25 marks for each wrong answer"
+      },
+      "counseling_process": [
+        {
+          "step": 1,
+          "title": "Registration",
+          "description": "Register online at dte.assam.gov.in with CEE rank and personal details",
+          "deadline": "Within 7 days of result declaration"
+        },
+        {
+          "step": 2,
+          "title": "Document Upload",
+          "description": "Upload required documents including domicile certificate, mark sheets, caste certificate (if applicable)",
+          "documents": [
+            "Class 10 admit card and mark sheet",
+            "Class 12 mark sheet",
+            "CEE admit card and rank card",
+            "Domicile certificate",
+            "Caste certificate (if applicable)",
+            "Income certificate",
+            "Passport size photographs",
+            "Aadhaar card"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Choice Filling",
+          "description": "Select preferred colleges and branches in order of preference",
+          "tips": "Fill maximum choices to increase chances of getting preferred seat"
+        },
+        {
+          "step": 4,
+          "title": "Seat Allotment",
+          "description": "Seats allotted based on CEE rank, category, and choices filled",
+          "rounds": ["Round 1", "Round 2", "Spot Round"]
+        },
+        {
+          "step": 5,
+          "title": "Seat Acceptance",
+          "description": "Accept allotted seat by paying admission fee at designated center",
+          "fee": "Approximately Rs. 5000-10000"
+        },
+        {
+          "step": 6,
+          "title": "Reporting to College",
+          "description": "Report to allotted college with original documents for verification",
+          "documents_required": "All original documents + 3-5 photocopies of each"
+        }
+      ],
+      "reservation": {
+        "OBC": "27%",
+        "OBC-MOBC": "15%",
+        "SC": "7%",
+        "ST": "10%",
+        "ST(Hills)": "5%",
+        "ST(Plains)": "10%",
+        "PwD": "3%",
+        "Sports Quota": "1%"
+      },
+      "participating_colleges": [
+        "Assam Engineering College (AEC), Guwahati",
+        "Jorhat Engineering College (JEC), Jorhat",
+        "Jorhat Institute of Science and Technology (JIST), Jorhat",
+        "Bineswar Brahma Engineering College (BBEC), Kokrajhar",
+        "Barak Valley Engineering College (BVEC), Karimganj",
+        "Dhemaji Engineering College (DEC), Dhemaji",
+        "Golaghat Engineering College (GEC), Golaghat"
+      ],
+      "official_website": "https://dte.assam.gov.in",
+      "important_dates": {
+        "application_start": "March 1",
+        "application_end": "April 15",
+        "admit_card_release": "May 1",
+        "exam_date": "Last Sunday of May",
+        "result_date": "June 15-20",
+        "counseling_start": "July 1"
+      }
+    },
+    "jee": {
+      "name": "JEE Mains",
+      "full_name": "Joint Entrance Examination Main",
+      "conducting_body": "National Testing Agency (NTA)",
+      "eligibility": {
+        "age": "No age limit (born on or after October 1, 1999 for general, 1994 for SC/ST/PwD)",
+        "domicile": "All India (state quota and all India quota available)",
+        "education": "10+2 with Physics and Mathematics plus Chemistry/Biology/Biotechnology",
+        "minimum_marks": "75% in 12th (65% for SC/ST) or top 20 percentile in qualifying exam",
+        "subjects": "Physics and Mathematics compulsory + Chemistry/Biology/Biotechnology"
+      },
+      "exam_details": {
+        "mode": "Computer Based Test",
+        "duration": "3 hours",
+        "total_marks": 300,
+        "subjects": ["Physics", "Chemistry", "Mathematics"],
+        "marks_per_subject": 100,
+        "question_type": "MCQ and Numerical Value",
+        "negative_marking": "1 mark for each wrong MCQ answer"
+      },
+      "counseling_process_joasaa": [
+        {
+          "step": 1,
+          "title": "JoSAA Registration",
+          "description": "Register at josaa.nic.in using JEE Main application number and password",
+          "deadline": "Within specified dates after JEE Advanced result"
+        },
+        {
+          "step": 2,
+          "title": "Choice Filling",
+          "description": "Select preferred institutes and branches (IITs, NITs, IIITs, GFTIS)",
+          "tips": "Fill choices in order of preference; maximum choices is 300"
+        },
+        {
+          "step": 3,
+          "title": "Seat Allotment",
+          "description": "6 rounds of seat allotment based on JEE Main rank and preferences",
+          "rounds": ["Round 1", "Round 2", "Round 3", "Round 4", "Round 5", "Round 6"]
+        },
+        {
+          "step": 4,
+          "title": "Seat Acceptance Fee Payment",
+          "description": "Pay Seat Acceptance Fee (SAF) to accept the allotted seat",
+          "fee_general": "Rs. 35000",
+          "fee_sc_st": "Rs. 15000"
+        },
+        {
+          "step": 5,
+          "title": "Document Verification",
+          "description": "Online document verification for allotted seat",
+          "mode": "Remote verification for most candidates"
+        },
+        {
+          "step": 6,
+          "title": "Reporting to Institute",
+          "description": "Report to allotted institute for admission and document submission",
+          "documents_required": "JEE Main admit card, rank card, class 10 and 12 certificates, category certificate, etc."
+        }
+      ],
+      "willingness_options": {
+        "Float": "Accept the allotted seat and participate in further rounds for higher preference",
+        "Freeze": "Accept the allotted seat and do not participate in further rounds",
+        "Slide": "Accept the allotted seat but try for higher branch in same institute"
+      },
+      "reservation": {
+        "OBC-NCL": "27%",
+        "SC": "15%",
+        "ST": "7.5%",
+        "GEN-EWS": "10%",
+        "PwD": "5%"
+      },
+      "assam_colleges_through_jee": {
+        "NIT Silchar": "NIT with 50% seats for home state quota",
+        "Tezpur University": "Central University with state quota",
+        "IIIT Guwahati": "Indian Institute of Information Technology",
+        "Dibrugarh University": "Participating in JoSAA for some seats"
+      },
+      "official_website": "https://josaa.nic.in",
+      "important_dates": {
+        "application_start": "November/December (Session 1)",
+        "exam_session1": "January/February",
+        "exam_session2": "April",
+        "result": "April/May",
+        "josaa_counseling": "June/July"
+      }
+    },
+    "csab": {
+      "name": "CSAB",
+      "full_name": "Central Seat Allocation Board",
+      "description": "CSAB conducts special counseling for NIT+ system if seats remain vacant after JoSAA",
+      "rounds": ["CSAB Round 1", "CSAB Round 2", "Special Round"],
+      "official_website": "https://csab.nic.in",
+      "for": "NITs, IIITs, GFTIs (after JoSAA completion)"
+    }
+  },
+  "documents_required": {
+    "general": [
+      "JEE Main/CEE Admit Card",
+      "JEE Main/CEE Rank Card",
+      "Class 10 Mark Sheet",
+      "Class 10 Certificate (for age proof)",
+      "Class 12 Mark Sheet",
+      "Class 12 Certificate",
+      "Character Certificate",
+      "Migration Certificate",
+      "Transfer Certificate",
+      "Passport Size Photographs (6-8)",
+      "Aadhaar Card"
+    ],
+    "category_specific": {
+      "OBC-NCL": "OBC-NCL Certificate issued after April 1 of admission year",
+      "SC": "SC Certificate",
+      "ST": "ST Certificate",
+      "EWS": "EWS Certificate valid for current financial year",
+      "PwD": "PwD Certificate from authorized medical board"
+    },
+    "domicile": {
+      "Assam": "Permanent Resident Certificate (PRC) from Assam",
+      "Other States": "State domicile certificate if claiming home state quota"
+    }
+  },
+  "scholarships": {
+    "central_government": [
+      {
+        "name": "National Scholarship Portal (NSP)",
+        "eligibility": "Students with family income less than Rs. 1-2.5 lakh per annum",
+        "benefit": "Up to Rs. 50000 per year",
+        "website": "https://scholarships.gov.in"
+      },
+      {
+        "name": "Merit-cum-Means Scholarship",
+        "eligibility": "Minimum 50% marks, family income less than Rs. 2.5 lakh",
+        "benefit": "Full tuition fee + maintenance allowance",
+        "website": "https://momascholarship.gov.in"
+      }
+    ],
+    "state_government": [
+      {
+        "name": "Assam Government Scholarship",
+        "eligibility": "Students domiciled in Assam with good academic record",
+        "benefit": "Varies based on category and income",
+        "website": "https://dte.assam.gov.in"
+      }
+    ],
+    "institute_specific": [
+      {
+        "name": "NIT Silchar Scholarships",
+        "types": ["Merit Scholarship", "SC/ST Scholarship", "Merit-cum-Means"],
+        "website": "https://nits.ac.in"
+      },
+      {
+        "name": "Tezpur University Scholarships",
+        "types": ["University Merit Scholarship", "Fellowship for research scholars"],
+        "website": "https://www.tezu.ernet.in"
+      }
+    ]
+  },
+  "lateral_entry": {
+    "jee": {
+      "eligibility": "Diploma in Engineering with minimum 60% marks",
+      "entrance_exam": "JLEE Assam or JELET (for other states)",
+      "admission_year": "2nd Year (3rd Semester)",
+      "branch": "Same or related branch as diploma"
+    },
+    "details": {
+      "JLEE": "Joint Lateral Entrance Examination for Assam engineering colleges",
+      "eligibility_percentage": "Minimum 60% in Diploma",
+      "subjects": "Branch specific diploma subjects"
+    }
+  }
+}

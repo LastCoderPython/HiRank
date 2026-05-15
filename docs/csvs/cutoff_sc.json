@@ -1,0 +1,580 @@
+{
+    "data":  [
+                 {
+                     "id":  595,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  409,
+                     "cut_off_marks":  140
+                 },
+                 {
+                     "id":  993,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  864,
+                     "cut_off_marks":  107
+                 },
+                 {
+                     "id":  583,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  961,
+                     "cut_off_marks":  102
+                 },
+                 {
+                     "id":  368,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1119,
+                     "cut_off_marks":  96
+                 },
+                 {
+                     "id":  624,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1314,
+                     "cut_off_marks":  90
+                 },
+                 {
+                     "id":  986,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Electrical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  1365,
+                     "cut_off_marks":  89
+                 },
+                 {
+                     "id":  614,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Electrical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1393,
+                     "cut_off_marks":  88
+                 },
+                 {
+                     "id":  1001,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  1398,
+                     "cut_off_marks":  88
+                 },
+                 {
+                     "id":  589,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1443,
+                     "cut_off_marks":  86
+                 },
+                 {
+                     "id":  619,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1503,
+                     "cut_off_marks":  85
+                 },
+                 {
+                     "id":  989,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  1522,
+                     "cut_off_marks":  85
+                 },
+                 {
+                     "id":  354,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1548,
+                     "cut_off_marks":  84
+                 },
+                 {
+                     "id":  376,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Electrical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1599,
+                     "cut_off_marks":  82
+                 },
+                 {
+                     "id":  978,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  1608,
+                     "cut_off_marks":  82
+                 },
+                 {
+                     "id":  606,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Instrumentation Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1794,
+                     "cut_off_marks":  79
+                 },
+                 {
+                     "id":  382,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1876,
+                     "cut_off_marks":  77
+                 },
+                 {
+                     "id":  922,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  1881,
+                     "cut_off_marks":  77
+                 },
+                 {
+                     "id":  997,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  1884,
+                     "cut_off_marks":  77
+                 },
+                 {
+                     "id":  1004,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Electrical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2029,
+                     "cut_off_marks":  74
+                 },
+                 {
+                     "id":  1070,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2106,
+                     "cut_off_marks":  73
+                 },
+                 {
+                     "id":  600,
+                     "institute_name":  "Assam Engineering College",
+                     "branch_name":  "Industrial \u0026 Production Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2164,
+                     "cut_off_marks":  71
+                 },
+                 {
+                     "id":  1006,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2235,
+                     "cut_off_marks":  70
+                 },
+                 {
+                     "id":  398,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Instrumentation Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2400,
+                     "cut_off_marks":  68
+                 },
+                 {
+                     "id":  556,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2445,
+                     "cut_off_marks":  68
+                 },
+                 {
+                     "id":  563,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2536,
+                     "cut_off_marks":  66
+                 },
+                 {
+                     "id":  1008,
+                     "institute_name":  "Jorhat Engineering College",
+                     "branch_name":  "Instrumentation Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2589,
+                     "cut_off_marks":  65
+                 },
+                 {
+                     "id":  578,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2618,
+                     "cut_off_marks":  65
+                 },
+                 {
+                     "id":  1018,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2618,
+                     "cut_off_marks":  65
+                 },
+                 {
+                     "id":  875,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2696,
+                     "cut_off_marks":  64
+                 },
+                 {
+                     "id":  1012,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2785,
+                     "cut_off_marks":  63
+                 },
+                 {
+                     "id":  846,
+                     "institute_name":  "Golaghat Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2824,
+                     "cut_off_marks":  62
+                 },
+                 {
+                     "id":  572,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Power Electronics \u0026 Instrumentation Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2826,
+                     "cut_off_marks":  62
+                 },
+                 {
+                     "id":  869,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  2919,
+                     "cut_off_marks":  60
+                 },
+                 {
+                     "id":  1111,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2993,
+                     "cut_off_marks":  60
+                 },
+                 {
+                     "id":  1030,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  2994,
+                     "cut_off_marks":  60
+                 },
+                 {
+                     "id":  899,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Electrical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3025,
+                     "cut_off_marks":  60
+                 },
+                 {
+                     "id":  1024,
+                     "institute_name":  "Jorhat Institute Of Science \u0026 Technology",
+                     "branch_name":  "Power Electronics \u0026 Instrumentation Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3168,
+                     "cut_off_marks":  58
+                 },
+                 {
+                     "id":  852,
+                     "institute_name":  "Golaghat Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3218,
+                     "cut_off_marks":  57
+                 },
+                 {
+                     "id":  1040,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Electrical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3248,
+                     "cut_off_marks":  57
+                 },
+                 {
+                     "id":  1093,
+                     "institute_name":  "Golaghat Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3325,
+                     "cut_off_marks":  56
+                 },
+                 {
+                     "id":  890,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3341,
+                     "cut_off_marks":  56
+                 },
+                 {
+                     "id":  907,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3365,
+                     "cut_off_marks":  55
+                 },
+                 {
+                     "id":  912,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3383,
+                     "cut_off_marks":  55
+                 },
+                 {
+                     "id":  883,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3386,
+                     "cut_off_marks":  55
+                 },
+                 {
+                     "id":  1058,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3425,
+                     "cut_off_marks":  55
+                 },
+                 {
+                     "id":  1087,
+                     "institute_name":  "Golaghat Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3573,
+                     "cut_off_marks":  54
+                 },
+                 {
+                     "id":  1081,
+                     "institute_name":  "Golaghat Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3674,
+                     "cut_off_marks":  52
+                 },
+                 {
+                     "id":  862,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3730,
+                     "cut_off_marks":  52
+                 },
+                 {
+                     "id":  840,
+                     "institute_name":  "Golaghat Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3765,
+                     "cut_off_marks":  51
+                 },
+                 {
+                     "id":  927,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3800,
+                     "cut_off_marks":  51
+                 },
+                 {
+                     "id":  857,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  2,
+                     "year":  2023,
+                     "cut_off_rank":  3845,
+                     "cut_off_marks":  51
+                 },
+                 {
+                     "id":  1052,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  3855,
+                     "cut_off_marks":  50
+                 },
+                 {
+                     "id":  972,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Computer Science Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  4060,
+                     "cut_off_marks":  49
+                 },
+                 {
+                     "id":  943,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Electronics \u0026 Telecommunication Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  4084,
+                     "cut_off_marks":  49
+                 },
+                 {
+                     "id":  1034,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  4151,
+                     "cut_off_marks":  48
+                 },
+                 {
+                     "id":  1063,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  4185,
+                     "cut_off_marks":  48
+                 },
+                 {
+                     "id":  1099,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  4330,
+                     "cut_off_marks":  46
+                 },
+                 {
+                     "id":  1074,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  4479,
+                     "cut_off_marks":  45
+                 },
+                 {
+                     "id":  1104,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  3,
+                     "year":  2023,
+                     "cut_off_rank":  4523,
+                     "cut_off_marks":  45
+                 },
+                 {
+                     "id":  936,
+                     "institute_name":  "Bineswar Brahma Engineering College",
+                     "branch_name":  "Chemical Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  5098,
+                     "cut_off_marks":  39
+                 },
+                 {
+                     "id":  948,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  5102,
+                     "cut_off_marks":  39
+                 },
+                 {
+                     "id":  964,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Civil Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  5290,
+                     "cut_off_marks":  37
+                 },
+                 {
+                     "id":  952,
+                     "institute_name":  "Barak Valley Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  5492,
+                     "cut_off_marks":  35
+                 },
+                 {
+                     "id":  967,
+                     "institute_name":  "Dhemaji Engineering College",
+                     "branch_name":  "Mechanical Engineering",
+                     "round_no":  5,
+                     "year":  2023,
+                     "cut_off_rank":  5520,
+                     "cut_off_marks":  35
+                 }
+             ]
+}

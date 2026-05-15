@@ -1,0 +1,38 @@
+college_name,college_code,branch,avg_package_lpa,median_package_lpa,highest_package_lpa,placement_percentage,top_recruiters,remarks
+NIT Silchar,NITS,Computer Science,14.5,12,45,92,"Google,Microsoft,Amazon,Flipkart,Oracle,TCS,Wipro,Infosys,JPMorgan,Indian Oil ONGC",Excellent placement; product companies visit
+NIT Silchar,NITS,Electronics,10.5,9,35,88,"Intel,Samsung,Texas Instruments,Cisco,Nvidia,TCS,Wipro,Infosys,DRDO,ISRO",Good research and industry placements
+NIT Silchar,NITS,Electrical,9,7.5,28,85,"Schneider,Apr,GE,DRDO,ISRO,NTPC,Power Grid,Tata Power",Core and IT companies
+NIT Silchar,NITS,Mechanical,8.5,7,22,82,"Tata Motors,Mahindra,L&T,Godrej,Maruti,JSW,Tata Steel,NTPC,BHEL",Mix of core and IT
+NIT Silchar,NITS,Civil,7.5,6,18,75,"L&T,DLF,Gammon India,Nagarjuna Construction,Shapoorji Pallonji Tata Projects",Infrastructure sector placements
+NIT Silchar,NITS,Electronics and Instrumentation,9,8,25,85,"Texas Instruments,Bosch,Siemens,Honeywell,Autodesk,GE"
+Tezpur University,TU,Computer Science,8.5,7,28,78,"TCS,Wipro,Infosys,Cognizant,HCL,Accenture,Indian Oil ONGC",Good placements for CS
+Tezpur University,TU,Electronics,6.5,5.5,18,70,"TCS,Wipro,Infosys,Intel,Samsung DRDO,ISRO"
+Tezpur University,TU,Electrical,6,5,15,68,"Power Grid,NTPC,Tata Power TCS,Wipro"
+Tezpur University,TU,Mechanical,5.5,4.5,12,65,"Maruti,L&T,Tata Motors,Godrej"
+Tezpur University,TU,Civil,5,4.5,10,60,"L&T,DLF,Gammon India"
+Dibrugarh University Institute of Engineering and Technology,DUIET,Computer Science,5.5,4.5,15,65,"TCS,Wipro,Infosys,Cognizant,HCL"
+Dibrugarh University Institute of Engineering and Technology,DUIET,Electronics,4.5,4,12,58,"TCS,Wipro,Infosys"
+Dibrugarh University Institute of Engineering and Technology,DUIET,Mechanical,4,3.5,10,55,"Tata Motors,L&T local industries"
+Dibrugarh University Institute of Engineering and Technology,DUIET,Petroleum,6,5,18,70,"ONGC,Oil India,IOCL,BPCL,HPCL",Good petroleum placements
+Dibrugarh University Institute of Engineering and Technology,DUIET,Electrical,4,3.5,10,55,"ALNG APDCL"
+Assam Engineering College,AEC,Computer Science,6,5,18,70,"TCS,Wipro,Infosys,Cognizant,HCL,Tech Mahindra",Best placements among state colleges
+Assam Engineering College,AEC,Electronics,5,4,12,60,"TCS,Wipro,Infosys"
+Assam Engineering College,AEC,Electrical,4.5,4,10,55,"APDCL,TCS,Wipro"
+Assam Engineering College,AEC,Mechanical,4,3.5,10,50,"AMTRON,Tata Motors L&T"
+Assam Engineering College,AEC,Civil,3.5,3,8,45,"PWD,CPWD,L&T local contractors"
+Assam Engineering College,AEC,Chemical,4,3.5,9,50,"BCPL,ONGC,IOCL"
+Jorhat Engineering College,JEC,Computer Science,4.5,4,12,55,"TCS,Wipro,Infosys,HCL"
+Jorhat Engineering College,JEC,Electronics,4,3.5,9,48,"TCS,Wipro Infosys"
+Jorhat Engineering College,JEC,Electrical,3.5,3,8,45,"APDCL TCS Wipro"
+Jorhat Engineering College,JEC,Mechanical,3.5,3,8,42,"AMTRON,L&T Tata Motors"
+Jorhat Engineering College,JEC,Civil,3,2.5,7,38,"PWD local contractors"
+Jorhat Institute of Science and Technology,JIST,Computer Science,4,3.5,10,50,"TCS,Wipro Infosys"
+Jorhat Institute of Science and Technology,JIST,Mechanical,3,2.5,7,40,"AMTRON L&T"
+Jorhat Institute of Science and Technology,JIST,Power Engineering,4,3.5,12,55,"NEEPCO,NTPC APDCL"
+Bineswar Brahma Engineering College,BBEC,Computer Science,3.5,3,8,45,"TCS,Wipro Infosys"
+Bineswar Brahma Engineering College,BBEC,Electronics,3,2.5,7,40,"TCS,Wipro"
+Bineswar Brahma Engineering College,BBEC,Mechanical,3,2.5,6,35,"Local industries"
+Barak Valley Engineering College,BVEC,Computer Science,3,2.5,7,40,"Local IT companies,TCS,Wipro"
+Barak Valley Engineering College,BVEC,Mechanical,3,2.5,6,35,"Local industries"
+Dhemaji Engineering College,DEC,Computer Science,3,2.5,6,35,"Local companies,TCS"
+Golaghat Engineering College,GEC,Computer Science,3,2.5,6,35,"Local companies"

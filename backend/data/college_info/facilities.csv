@@ -1,0 +1,12 @@
+college_name,college_code,campus_area_acres,hostel_boys,hostel_girls,hostel_capacity,total_seats,library_books,computer_labs,sports_facilities,cafeteria,medical_facility,bank_atm,gym,wifi_campus,research_labs,auditorium,seminar_hall,transport,bus_fleet,remarks
+NIT Silchar,NITS,625,10,4,4500,3500,100000,15,"Football,Cricket,Basketball,Volleyball,Tennis,Badminton Swimming",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,20,Large campus with excellent facilities
+Tezpur University,TU,350,6,3,2000,1800,80000,10,"Cricket,Football,Basketball,Badminton Tennis",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,15,Central University with modern facilities
+Dibrugarh University Institute of Engineering and Technology,DUIET,200,4,2,800,500,50000,6,"Cricket,Football,Basketball Badminton",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,10,University campus facilities shared
+Assam Engineering College,AEC,200,4,2,600,500,45000,5,"Cricket,Football,Basketball,Volleyball Badminton",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,8,Oldest engineering college in NE India
+Jorhat Engineering College,JEC,100,3,2,400,400,35000,4,"Cricket,Football,Basketball Badminton",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,8,Well-established campus
+Jorhat Institute of Science and Technology,JIST,50,2,1,200,250,25000,3,"Cricket,Football Badminton",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,5,Smaller campus
+Bineswar Brahma Engineering College,BBEC,60,2,1,250,250,20000,3,"Football,Cricket Badminton",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,5,BTC region college
+Barak Valley Engineering College,BVEC,50,2,1,200,200,18000,2,"Cricket,Football Badminton",Yes,Yes,No,Yes,Yes,No,Yes,Yes,5,Newer college
+Dhemaji Engineering College,DEC,40,1,1,150,150,15000,2,"Cricket,Badminton",Yes,Yes,No,Yes,Yes,Yes,No,Yes,4,Remote location
+Golaghat Engineering College,GEC,35,1,1,120,150,15000,2,"Cricket,Badminton",Yes,Yes,No,Yes,Yes,Yes,No,Yes,4,Newer college
+Gauhati University Institute of Science and Technology,GUST,250,3,2,500,300,40000,4,"Cricket,Football,Basketball Badminton",Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,10,University campus facilities

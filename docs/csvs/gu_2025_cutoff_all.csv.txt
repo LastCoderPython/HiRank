@@ -1,0 +1,21 @@
+Branch,Category,2025 Expected Cutoff (Marks),2024 Round 1 Closing Rank,2024 Last Round Closing Rank
+Computer Science Engineering (CSE),General,110-120+,45771,150500
+Computer Science Engineering (CSE),OBC-NCL,95-105,15131,49633
+Computer Science Engineering (CSE),EWS,100-110,9977,16415
+Computer Science Engineering (CSE),SC,80-90,8680,15334
+Computer Science Engineering (CSE),ST,70-80,3737,6458
+Electronics & Communication (ECE),General,95-105,53183,205678
+Electronics & Communication (ECE),OBC-NCL,80-90,19200,68000
+Electronics & Communication (ECE),EWS,85-95,12400,24500
+Electronics & Communication (ECE),SC,70-80,11300,21000
+Electronics & Communication (ECE),ST,60-70,5200,9800
+Civil Engineering (CE),General,85-95,61195,230284
+Civil Engineering (CE),OBC-NCL,75-85,22400,74000
+Civil Engineering (CE),EWS,80-90,14100,29000
+Civil Engineering (CE),SC,65-75,13400,26000
+Civil Engineering (CE),ST,55-65,6100,12300
+Information Technology (IT),General,100-110,48000,165000
+Information Technology (IT),OBC-NCL,90-100,16800,53000
+Information Technology (IT),EWS,95-105,10800,19500
+Information Technology (IT),SC,75-85,9400,17800
+Information Technology (IT),ST,65-75,4300,7900

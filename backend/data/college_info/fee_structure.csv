@@ -1,0 +1,12 @@
+college_name,college_code,program,tuition_fee_per_sem,hostel_fee_per_sem,other_fees_per_sem,total_per_sem,admission_fee_one_time,caution_deposit,exam_fee_per_sem,library_fee_per_sem,sports_fee_per_sem,total_first_year,remarks,source
+NIT Silchar,NITS,B.Tech,62500,18000,4500,85000,10000,5000,4500,2500,1500,233000,JoSAA counseling; SC/ST tuition waiver; Updated 2024-25,https://www.nits.ac.in/academic/fee-structure-ug-and-pg
+Tezpur University,TU,B.Tech,35800,12000,3800,51600,5000,5000,2500,1200,800,122200,Central University; SC/ST tuition waiver for eligible,TU Official Website
+Dibrugarh University Institute of Engineering and Technology,DUIET,B.Tech,25000,8000,3500,36500,2000,3000,1500,800,500,90000,State University; Dibrugarh University affiliated,DUIET Official
+Assam Engineering College,AEC,B.Tech,22000,5000,3000,30000,2000,2000,1000,500,300,76000,ASTU affiliated; Oldest engineering college in Assam,www.aec.ac.in
+Jorhat Engineering College,JEC,B.Tech,22000,5000,3000,30000,2000,2000,1000,500,300,76000,ASTU affiliated,www.jecjorhat.ac.in
+Jorhat Institute of Science and Technology,JIST,B.Tech,20000,4500,2800,27300,2000,2000,800,500,250,71000,ASTU affiliated,www.jist.ac.in
+Bineswar Brahma Engineering College,BBEC,B.Tech,20000,4500,2800,27300,2000,2000,800,500,250,71000,ASTU affiliated,www.bbec.edu.in
+Barak Valley Engineering College,BVEC,B.Tech,20000,4500,2800,27300,2000,2000,800,500,250,71000,ASTU affiliated,www.bvec.ac.in
+Dhemaji Engineering College,DEC,B.Tech,20000,4500,2800,27300,2000,2000,800,500,250,71000,ASTU affiliated,www.dec.ac.in
+Golaghat Engineering College,GEC,B.Tech,20000,4500,2800,27300,2000,2000,800,500,250,71000,ASTU affiliated,www.gec.ac.in
+Gauhati University Institute of Science and Technology,GUST,B.Tech,28000,6000,3200,37200,2000,2500,1200,600,400,88000,Gauhati University,www.gauhati.ac.in
