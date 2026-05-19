@@ -13,6 +13,7 @@ class CollegeInfo(BaseModel):
     year: int
     match_percentage: float
     seat_type: str
+    band: Optional[str] = None
     location: Optional[str] = None
     placement_rate: Optional[str] = None
     avg_fees: Optional[str] = None

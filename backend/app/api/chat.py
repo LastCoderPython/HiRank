@@ -3,6 +3,8 @@ from fastapi.responses import StreamingResponse
 from app.models.requests import ChatRequest, CollegeFilterRequest
 from app.models.responses import CollegeListResponse, CollegeInfo
 from app.core.rag_pipeline import rag_pipeline
+from app.orchestration.orchestrator import supreme_orchestrator
+from app.retrieval.cutoff_engine import cutoff_engine
 import json
 import uuid
 import logging
@@ -38,25 +40,43 @@ async def _generate_stream(message: str, history, session_id):
     try:
         yield f"data: {json.dumps({'type': 'session', 'session_id': session_id})}\n\n"
         
-        processed = await rag_pipeline.process_query(message, history)
+        # Route through the Supreme Orchestrator
+        result = await supreme_orchestrator.handle_request(
+            query=message,
+            history=history,
+            session_id=session_id,
+        )
         
-        if processed.get("is_off_topic"):
-            yield f"data: {json.dumps({'type': 'token', 'data': processed['context']})}\n\n"
+        response_type = result.get("response_type", "stream")
+        
+        # Direct responses (greetings, off-topic, clarifications)
+        if response_type in ("direct", "clarification"):
+            yield f"data: {json.dumps({'type': 'token', 'data': result['content']})}\n\n"
             yield f"data: {json.dumps({'type': 'done'})}\n\n"
             return
         
-        if processed["colleges"]:
-            yield f"data: {json.dumps({'type': 'colleges', 'data': processed['colleges']})}\n\n"
+        # Send structured college data if available
+        colleges = result.get("colleges", [])
+        if colleges:
+            yield f"data: {json.dumps({'type': 'colleges', 'data': colleges})}\n\n"
         
-        stream = rag_pipeline.llm.generate_stream(
-            context=processed["context"],
-            query=message,
-            history=history
-        )
+        # For prediction routes with cutoff evidence, stream via LLM
+        prediction = result.get("prediction")
+        content = result.get("content", "")
+        processed = result.get("processed")
         
-        async for token in stream:
-            if token:
-                yield f"data: {json.dumps({'type': 'token', 'data': token})}\n\n"
+        if content:
+            # Use the LLM to generate a natural language response
+            # from the structured prediction context
+            stream = rag_pipeline.llm.generate_stream(
+                context=content,
+                query=message,
+                history=history
+            )
+            
+            async for token in stream:
+                if token:
+                    yield f"data: {json.dumps({'type': 'token', 'data': token})}\n\n"
         
         yield f"data: {json.dumps({'type': 'done'})}\n\n"
         
@@ -73,17 +93,37 @@ async def get_colleges(
     exam: str = "CEE",
     limit: int = 10
 ):
+    """Deterministic college prediction using structured cutoff data.
+    
+    V2: Now uses the CutoffEngine (pandas-backed CSV data) instead of
+    Chroma vector search. Results are auditable and reproducible.
+    """
     try:
-        colleges = rag_pipeline.get_colleges_by_rank(
+        colleges_raw = cutoff_engine.get_colleges_list(
             rank=rank,
             category=category,
             exam=exam,
             branch=branch,
-            limit=limit
+            limit=limit,
         )
         
+        colleges = []
+        for c in colleges_raw:
+            colleges.append(CollegeInfo(
+                college_name=c["college_name"],
+                college_code=c.get("college_code", ""),
+                branch=c["branch"],
+                category=c["category"],
+                opening_rank=c.get("opening_rank", 0),
+                closing_rank=c["closing_rank"],
+                year=c["year"],
+                match_percentage=c["match_percentage"],
+                seat_type=c.get("seat_type", "Government"),
+                band=c.get("band"),
+            ))
+        
         return CollegeListResponse(
-            colleges=[CollegeInfo(**c) for c in colleges],
+            colleges=colleges,
             total=len(colleges),
             query_params={
                 "rank": rank,
@@ -106,10 +146,15 @@ async def health_check():
     try:
         cee_count = chroma_client.count_documents("cee")
         jee_count = chroma_client.count_documents("jee")
+        engine_stats = cutoff_engine.get_stats()
+        
+        from app.services.cache_service import cache_service
+        from app.services.versioning_service import versioning_service
         
         return {
             "status": "healthy",
-            "version": "1.0.0",
+            "version": "2.0.0-alpha",
+            "architecture": "policy-driven-multi-agent",
             "models": {
                 "provider": settings.llm_provider,
                 "primary": settings.primary_model,
@@ -121,6 +166,9 @@ async def health_check():
                 "cee_documents": cee_count,
                 "jee_documents": jee_count
             },
+            "cutoff_engine": engine_stats,
+            "cache": cache_service.get_stats(),
+            "policy_versions": versioning_service.get_all_current(),
             "embedding": {
                 "provider": settings.embedding_provider,
                 "model": settings.embedding_model
