@@ -6,6 +6,7 @@ from app.api.chat import router as chat_router
 from app.api.auth import router as auth_router
 from app.api.chats import router as chats_router
 from app.api.agents import router as agents_router
+from app.api.scrape import router as scrape_router
 from app.security import RateLimitMiddleware
 from app.observability import RequestContextMiddleware
 from contextlib import asynccontextmanager
@@ -14,7 +15,8 @@ import logging
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.info("Starting RankRoute Backend...")
+    logging.info("Starting RankRoute Backend v2.0...")
+    logging.info(f"Architecture: Policy-Driven Multi-Agent")
     logging.info(f"LLM Provider: {settings.llm_provider}")
     logging.info(f"Vector DB: {settings.vector_db}")
     
@@ -28,8 +30,8 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="RankRoute API",
-    description="CEE/JEE Rank Predictor with RAG",
-    version="1.0.0",
+    description="Policy-driven multi-agent admission counselor with deterministic rank prediction",
+    version="2.0.0-alpha",
     lifespan=lifespan
 )
 
@@ -59,6 +61,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(chat_router)
 app.include_router(auth_router)
 app.include_router(chats_router)
+app.include_router(scrape_router)
 if settings.enable_agent_routes:
     app.include_router(agents_router)
 

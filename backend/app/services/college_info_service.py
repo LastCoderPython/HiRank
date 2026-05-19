@@ -247,10 +247,13 @@ class CollegeInfoService:
         if facilities:
             summary_parts.append(f"\n**Campus:** {facilities.get('campus_area', 'N/A')} acres")
             summary_parts.append(f"Hostel: {facilities.get('hostel_boys', '0')} boys, {facilities.get('hostel_girls', '0')} girls")
+            amenities = []
             if facilities.get('wifi') == 'Yes':
-                summary_parts.append("Wi-Fi Campus, ", end="")
+                amenities.append("Wi-Fi Campus")
             if facilities.get('gym') == 'Yes':
-                summary_parts.append("Gym available")
+                amenities.append("Gym available")
+            if amenities:
+                summary_parts.append(", ".join(amenities))
         
         if fees:
             fee_info = fees[0]
