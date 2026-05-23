@@ -1,8 +1,9 @@
 """
 RankRoute V2 — Page Cleaner
 
-Removes boilerplate, navigation, footers, and irrelevant content from
-scraped HTML pages. Classifies page type based on content analysis.
+Extracts main content from scraped HTML pages using Trafilatura.
+Classifies page type based on content analysis.
+Falls back to regex stripping if Trafilatura returns nothing.
 """
 
 from __future__ import annotations
@@ -11,6 +12,8 @@ import re
 import logging
 from dataclasses import dataclass
 from typing import Optional
+
+import trafilatura
 
 logger = logging.getLogger("rankroute.ingestion.cleaner")
 
@@ -37,7 +40,7 @@ PAGE_TYPE_PATTERNS = {
     "seat_matrix": r"seat\s*matrix|total\s*intake|sanctioned\s*seat",
 }
 
-# ── Boilerplate removal patterns ─────────────────────────────────────
+# ── Boilerplate removal patterns (fallback only) ─────────────────────
 BOILERPLATE_PATTERNS = [
     r"<script[^>]*>.*?</script>",
     r"<style[^>]*>.*?</style>",
@@ -56,10 +59,31 @@ BOILERPLATE_PATTERNS = [
 
 
 def clean_html(raw_html: str) -> str:
-    """Remove HTML tags and boilerplate from raw HTML content."""
+    """Extract main content from raw HTML using Trafilatura.
+
+    Falls back to regex stripping if Trafilatura returns nothing
+    (e.g., for very minimal pages).
+    """
+    # Trafilatura: purpose-built for main content extraction
+    extracted = trafilatura.extract(
+        raw_html,
+        include_comments=False,
+        include_tables=True,       # college sites often have tabular data
+        no_fallback=False,          # use fallback extractors if primary fails
+        favor_recall=True,          # prefer more content over precision
+    )
+
+    if extracted and len(extracted.strip()) > 50:
+        return extracted.strip()
+
+    # Fallback: basic regex cleaning for very simple pages
+    return _regex_fallback_clean(raw_html)
+
+
+def _regex_fallback_clean(raw_html: str) -> str:
+    """Legacy regex-based cleaning as fallback for minimal pages."""
     text = raw_html
 
-    # Remove boilerplate
     for pattern in BOILERPLATE_PATTERNS:
         text = re.sub(pattern, " ", text, flags=re.DOTALL | re.IGNORECASE)
 
@@ -88,9 +112,15 @@ def clean_html(raw_html: str) -> str:
 
 def extract_title(raw_html: str) -> str:
     """Extract the page title from HTML."""
+    # Try Trafilatura metadata first
+    metadata = trafilatura.extract_metadata(raw_html)
+    if metadata and metadata.title:
+        return metadata.title.strip()
+
+    # Fallback to regex
     match = re.search(r"<title[^>]*>(.*?)</title>", raw_html, re.IGNORECASE | re.DOTALL)
     if match:
-        return clean_html(match.group(1)).strip()
+        return _regex_fallback_clean(match.group(1)).strip()
     return ""
 
 

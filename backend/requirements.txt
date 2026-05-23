@@ -10,6 +10,7 @@ langchain-community
 langchain-groq
 langchain-huggingface
 sentence-transformers
+langsmith
 
 # Vector Database
 chromadb
@@ -31,3 +32,18 @@ PyJWT
 # Agent platform
 sqlalchemy
 aiosqlite
+
+# Production server
+gunicorn
+
+# Production ingestion pipeline
+trafilatura
+tenacity
+
+# Task queue
+celery[redis]
+redis
+flower
+
+# Live web search fallback
+tavily-python

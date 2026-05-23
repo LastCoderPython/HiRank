@@ -69,9 +69,10 @@ class WebKnowledgeAgent:
         """Execute descriptive retrieval for a given RequestFrame."""
         self._ensure_collection()
 
+        # 1) If the database is completely empty, fail fast (Tier 2)
         if self._collection is None or self._collection.count() == 0:
-            logger.info("WebKnowledgeAgent: no documents in collection, falling back to college_info_service")
-            return await self._fallback_to_local_data(frame)
+            logger.info(f"WebKnowledgeAgent: no documents in collection, falling back to live search")
+            return await self._fallback_to_live_search(frame)
 
         # Build metadata filters
         page_types = intent_to_page_types(frame.intent)
@@ -98,6 +99,11 @@ class WebKnowledgeAgent:
             results = self._collection.query(**query_kwargs)
 
             chunks = self._format_results(results)
+            
+            if not chunks:
+                logger.info("WebKnowledgeAgent: Chroma returned no results. Triggering Live Web Search Tier 2.")
+                return await self._fallback_to_live_search(frame)
+
             summary_points = self._extract_summary_points(chunks)
 
             freshness_note = None
@@ -162,6 +168,48 @@ class WebKnowledgeAgent:
         if fresh_chunks:
             return f"Found {len(fresh_chunks)} recent document(s)."
         return "Retrieved documents may not reflect the latest updates. Please verify with official sources."
+
+    async def _fallback_to_live_search(self, frame: RequestFrame) -> WebKnowledgeOutput:
+        """Tier 2: Fallback to Live Web Search (Tavily) when Chroma is empty."""
+        try:
+            from app.services.web_search import web_search_fallback
+            
+            # Get the primary college target if it exists
+            target_code = None
+            if frame.college_targets and len(frame.college_targets) > 0:
+                target_code = frame.college_targets[0]
+                
+            logger.info(f"Triggering WebSearchFallback for query: '{frame.raw_query}', target: {target_code}")
+            
+            # Execute search
+            fallback_result = await web_search_fallback.search(
+                query=frame.raw_query,
+                college_code=target_code
+            )
+            
+            if fallback_result and fallback_result.context:
+                # Wrap the live search result into the standard WebKnowledgeOutput format
+                live_chunk = WebKnowledgeChunk(
+                    text=fallback_result.context,
+                    college_name=target_code or "Unknown",
+                    page_type="live_search",
+                    is_official=not fallback_result.has_unofficial,
+                    relevance_score=0.9
+                )
+                
+                return WebKnowledgeOutput(
+                    chunks=[live_chunk],
+                    summary_points=[f"[{target_code or 'Live Search'}] Sourced directly from the web."],
+                    sources_used=len(fallback_result.sources),
+                    freshness_note="Data retrieved via Live Web Search."
+                )
+            else:
+                logger.info("Live Web Search returned no results. Triggering Local Data Tier 3.")
+                return await self._fallback_to_local_data(frame)
+                
+        except Exception as e:
+            logger.error(f"Live Web Search fallback failed: {e}")
+            return await self._fallback_to_local_data(frame)
 
     async def _fallback_to_local_data(self, frame: RequestFrame) -> WebKnowledgeOutput:
         """Fall back to the CollegeInfoService when Chroma has no web docs."""

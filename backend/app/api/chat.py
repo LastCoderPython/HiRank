@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from app.models.requests import ChatRequest, CollegeFilterRequest
 from app.models.responses import CollegeListResponse, CollegeInfo
-from app.core.rag_pipeline import rag_pipeline
+from app.core.llm_client import llm_client
 from app.orchestration.orchestrator import supreme_orchestrator
 from app.retrieval.cutoff_engine import cutoff_engine
 import json
@@ -68,7 +68,7 @@ async def _generate_stream(message: str, history, session_id):
         if content:
             # Use the LLM to generate a natural language response
             # from the structured prediction context
-            stream = rag_pipeline.llm.generate_stream(
+            stream = llm_client.generate_stream(
                 context=content,
                 query=message,
                 history=history

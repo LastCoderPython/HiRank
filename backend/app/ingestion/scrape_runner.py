@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -18,40 +18,7 @@ import httpx
 logger = logging.getLogger("rankroute.ingestion.scraper")
 
 
-# ── Approved Domains ──────────────────────────────────────────────────
-APPROVED_DOMAINS = {
-    # Official college websites
-    "aec.ac.in",
-    "jecassam.ac.in",
-    "www.jecassam.ac.in",
-    "www.aec.ac.in",
-    "nits.ac.in",
-    "www.nits.ac.in",
-    "tezu.ernet.in",
-    "www.tezu.ernet.in",
-    "www.gauhati.ac.in",
-    "www.dibru.ac.in",
-    "jist.ac.in",
-    "www.jist.ac.in",
-    "bbec.ac.in",
-    "www.bbec.ac.in",
-    "bvec.ac.in",
-    "www.bvec.ac.in",
-    "dec.ac.in",
-    "www.dec.ac.in",
-    "gecassam.ac.in",
-    "www.gecassam.ac.in",
-    # Affiliating university
-    "astu.ac.in",
-    "www.astu.ac.in",
-    # Official counseling / exam portals
-    "dte.assam.gov.in",
-    "www.dte.assam.gov.in",
-    "ceeassamonline.in",
-    "josaa.nic.in",
-    "www.josaa.nic.in",
-}
-
+from app.services.domain_registry import ALL_OFFICIAL_DOMAINS as APPROVED_DOMAINS
 
 @dataclass
 class ScrapeResult:
@@ -110,7 +77,7 @@ async def fetch_page(url: str, timeout: float = 15.0) -> ScrapeResult:
                 content=content,
                 content_hash=content_hash,
                 domain=domain,
-                fetched_at=datetime.utcnow().isoformat(),
+                fetched_at=datetime.now(timezone.utc).isoformat(),
             )
 
     except httpx.TimeoutException:
