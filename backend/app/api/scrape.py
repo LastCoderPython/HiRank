@@ -2,7 +2,7 @@
 RankRoute V2 — Scrape API Routes
 
 Provides endpoints to trigger and monitor background web ingestion jobs.
-Uses FastAPI BackgroundTasks for deferred execution.
+Uses Celery for durable task execution (jobs survive restarts).
 
 Endpoints:
   - POST /api/scrape/run   — trigger scrape for approved URLs
@@ -12,19 +12,13 @@ Endpoints:
 from __future__ import annotations
 
 import logging
-import uuid
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("rankroute.api.scrape")
 router = APIRouter(prefix="/api/scrape", tags=["scrape"])
-
-
-# ── In-memory job store (upgrade to Redis/DB if scale requires) ───────
-_jobs: Dict[str, Dict[str, Any]] = {}
 
 
 # ── Request / Response Models ─────────────────────────────────────────
@@ -57,92 +51,30 @@ class ScrapeStatusResponse(BaseModel):
     completed_at: Optional[str] = None
 
 
-# ── Background ingestion task ─────────────────────────────────────────
+# ── Celery state → response mapping ──────────────────────────────────
 
-async def _run_ingestion_job(job_id: str, urls: List[str], college_name: str, is_official: bool):
-    """Background task: fetch → clean → chunk → embed → upsert."""
-    from app.ingestion.scrape_runner import fetch_page, is_approved_url
-    from app.ingestion.page_cleaner import clean_page
-    from app.ingestion.chunker import chunk_text
-    from app.ingestion.upsert_service import upsert_chunks
-
-    job = _jobs[job_id]
-    job["status"] = "running"
-    job["started_at"] = datetime.utcnow().isoformat()
-
-    total_chunks_upserted = 0
-
-    for url in urls:
-        if not is_approved_url(url):
-            job["errors"].append(f"Rejected unapproved URL: {url}")
-            job["urls_failed"] += 1
-            continue
-
-        try:
-            # Step 1: Fetch
-            result = await fetch_page(url)
-            if not result.success:
-                job["errors"].append(f"Fetch failed for {url}: {result.error}")
-                job["urls_failed"] += 1
-                continue
-
-            # Step 2: Clean
-            cleaned = clean_page(result.content)
-            if not cleaned.text or cleaned.word_count < 20:
-                job["errors"].append(f"Skipped {url}: insufficient content ({cleaned.word_count} words)")
-                job["urls_failed"] += 1
-                continue
-
-            # Step 3: Chunk
-            chunks = chunk_text(cleaned.text)
-            if not chunks:
-                job["errors"].append(f"Skipped {url}: no valid chunks after processing")
-                job["urls_failed"] += 1
-                continue
-
-            # Step 4 & 5: Embed + Upsert
-            upsert_result = upsert_chunks(
-                chunks=chunks,
-                college_name=college_name,
-                source_url=url,
-                domain=result.domain,
-                document_title=cleaned.title,
-                is_official=is_official,
-                page_type_override=cleaned.page_type,
-                scraped_at=result.fetched_at,
-            )
-
-            total_chunks_upserted += upsert_result.get("upserted", 0)
-            if upsert_result.get("errors"):
-                job["errors"].extend(upsert_result["errors"])
-
-            job["urls_completed"] += 1
-            logger.info(
-                "Ingested %s: %d chunks for %s",
-                url, upsert_result.get("upserted", 0), college_name,
-            )
-
-        except Exception as e:
-            job["errors"].append(f"Error processing {url}: {str(e)}")
-            job["urls_failed"] += 1
-            logger.error("Ingestion error for %s: %s", url, e)
-
-    job["chunks_upserted"] = total_chunks_upserted
-    job["status"] = "completed"
-    job["completed_at"] = datetime.utcnow().isoformat()
-    logger.info("Job %s completed: %d URLs, %d chunks", job_id, job["urls_completed"], total_chunks_upserted)
+_CELERY_STATE_MAP = {
+    "PENDING": "queued",
+    "STARTED": "running",
+    "SUCCESS": "completed",
+    "FAILURE": "failed",
+    "RETRY": "retrying",
+    "REVOKED": "cancelled",
+}
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────
 
 @router.post("/run", response_model=ScrapeJobResponse)
-async def trigger_scrape(request: ScrapeRequest, background_tasks: BackgroundTasks):
+async def trigger_scrape(request: ScrapeRequest):
     """Trigger a background scrape+ingestion job for approved URLs.
 
     Only official college domains and government counseling portals are allowed.
     Returns immediately with a job_id for status polling.
+    Job state is persisted in Redis (survives restarts).
     """
     from app.ingestion.scrape_runner import is_approved_url
+    from app.tasks.ingestion import run_ingestion_job
 
     # Pre-validate all URLs
     rejected = [url for url in request.urls if not is_approved_url(url)]
@@ -152,28 +84,15 @@ async def trigger_scrape(request: ScrapeRequest, background_tasks: BackgroundTas
             detail=f"Unapproved URLs: {rejected}. Only official college and counseling domains are allowed.",
         )
 
-    job_id = str(uuid.uuid4())
-    _jobs[job_id] = {
-        "status": "queued",
-        "urls_total": len(request.urls),
-        "urls_completed": 0,
-        "urls_failed": 0,
-        "chunks_upserted": 0,
-        "errors": [],
-        "started_at": None,
-        "completed_at": None,
-    }
-
-    background_tasks.add_task(
-        _run_ingestion_job,
-        job_id=job_id,
+    # Dispatch to Celery worker (runs in separate process)
+    task = run_ingestion_job.delay(
         urls=request.urls,
         college_name=request.college_name,
         is_official=request.is_official,
     )
 
     return ScrapeJobResponse(
-        job_id=job_id,
+        job_id=task.id,
         status="queued",
         urls_queued=len(request.urls),
         message=f"Scrape job queued for {len(request.urls)} URL(s) under '{request.college_name}'.",
@@ -182,19 +101,43 @@ async def trigger_scrape(request: ScrapeRequest, background_tasks: BackgroundTas
 
 @router.get("/status/{job_id}", response_model=ScrapeStatusResponse)
 async def get_scrape_status(job_id: str):
-    """Check the status of a scrape+ingestion job."""
-    job = _jobs.get(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail=f"Job '{job_id}' not found.")
+    """Check the status of a scrape+ingestion job (state persisted in Redis)."""
+    from celery.result import AsyncResult
+    from app.worker import celery_app
+
+    result = AsyncResult(job_id, app=celery_app)
+
+    if result.state == "PENDING":
+        # Could be genuinely pending OR an unknown task ID
+        return ScrapeStatusResponse(
+            job_id=job_id,
+            status="queued",
+        )
+
+    status = _CELERY_STATE_MAP.get(result.state, result.state.lower())
+
+    # Extract result data if task completed successfully
+    if result.state == "SUCCESS" and isinstance(result.result, dict):
+        data = result.result
+        return ScrapeStatusResponse(
+            job_id=job_id,
+            status=status,
+            urls_total=data.get("urls_total", 0),
+            urls_completed=data.get("urls_completed", 0),
+            urls_failed=data.get("urls_failed", 0),
+            chunks_upserted=data.get("chunks_upserted", 0),
+            errors=data.get("errors", []),
+        )
+
+    # Failed task
+    if result.state == "FAILURE":
+        return ScrapeStatusResponse(
+            job_id=job_id,
+            status="failed",
+            errors=[str(result.result)] if result.result else ["Unknown error"],
+        )
 
     return ScrapeStatusResponse(
         job_id=job_id,
-        status=job["status"],
-        urls_total=job["urls_total"],
-        urls_completed=job["urls_completed"],
-        urls_failed=job["urls_failed"],
-        chunks_upserted=job["chunks_upserted"],
-        errors=job["errors"],
-        started_at=job.get("started_at"),
-        completed_at=job.get("completed_at"),
+        status=status,
     )

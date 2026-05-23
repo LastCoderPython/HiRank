@@ -59,7 +59,7 @@ class CollegeInfoService:
                         self.fee_structure[code] = []
                     self.fee_structure[code].append({
                         'program': row.get('program', 'B.Tech'),
-                        'tuition_per_sem': row.get(' tuition_fee_per_sem', '0'),
+                        'tuition_per_sem': row.get('tuition_fee_per_sem', '0'),
                         'hostel_per_sem': row.get('hostel_fee_per_sem', '0'),
                         'total_per_sem': row.get('total_per_sem', '0'),
                         'total_first_year': row.get('total_first_year', '0'),

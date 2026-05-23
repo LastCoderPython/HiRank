@@ -1,7 +1,7 @@
 import os
 from supabase import create_client, Client
 from typing import Optional, Dict, Any, List
-from datetime import datetime
+from datetime import datetime, timezone
 import uuid
 
 _supabase_client: Optional[Client] = None
@@ -39,13 +39,13 @@ async def create_or_update_profile(user_id: str, email: str, name: Optional[str]
         "email": email,
         "name": name or email.split("@")[0],
         "avatar_url": avatar_url,
-        "updated_at": datetime.utcnow().isoformat()
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
     if existing:
         response = client.table("profiles").update(profile_data).eq("id", user_id).execute()
     else:
-        profile_data["created_at"] = datetime.utcnow().isoformat()
+        profile_data["created_at"] = datetime.now(timezone.utc).isoformat()
         response = client.table("profiles").insert(profile_data).execute()
     
     return response.data[0] if response.data else profile_data
@@ -55,8 +55,8 @@ async def create_chat(user_id: str, title: str = "New Chat") -> Dict[str, Any]:
     chat_data = {
         "user_id": user_id,
         "title": title,
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
     response = client.table("chats").insert(chat_data).execute()
     return response.data[0] if response.data else chat_data
@@ -85,7 +85,7 @@ async def get_chat_by_id(chat_id: str, user_id: str) -> Optional[Dict[str, Any]]
 async def update_chat_title(chat_id: str, title: str) -> Optional[Dict[str, Any]]:
     client = get_supabase_client()
     response = client.table("chats")\
-        .update({"title": title, "updated_at": datetime.utcnow().isoformat()})\
+        .update({"title": title, "updated_at": datetime.now(timezone.utc).isoformat()})\
         .eq("id", chat_id)\
         .execute()
     return response.data[0] if response.data else None
@@ -103,12 +103,12 @@ async def add_message(chat_id: str, role: str, content: str, metadata: Optional[
         "role": role,
         "content": content,
         "metadata": metadata or {},
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     response = client.table("messages").insert(message_data).execute()
     
     client.table("chats")\
-        .update({"updated_at": datetime.utcnow().isoformat()})\
+        .update({"updated_at": datetime.now(timezone.utc).isoformat()})\
         .eq("id", chat_id)\
         .execute()
     
@@ -129,8 +129,8 @@ async def create_temp_chat(session_id: str, title: str = "Temporary Chat") -> Di
     chat_data = {
         "session_id": session_id,
         "title": title,
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
     }
     response = client.table("temp_chats").insert(chat_data).execute()
     return response.data[0] if response.data else chat_data
@@ -152,12 +152,12 @@ async def add_temp_message(session_id: str, role: str, content: str, metadata: O
         "role": role,
         "content": content,
         "metadata": metadata or {},
-        "created_at": datetime.utcnow().isoformat()
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     response = client.table("temp_messages").insert(message_data).execute()
     
     client.table("temp_chats")\
-        .update({"updated_at": datetime.utcnow().isoformat()})\
+        .update({"updated_at": datetime.now(timezone.utc).isoformat()})\
         .eq("session_id", session_id)\
         .execute()
     

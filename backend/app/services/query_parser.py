@@ -1,6 +1,10 @@
 import re
-from typing import Optional, Dict, Any
+import logging
+from typing import Optional, Dict, Any, List
 from app.models.requests import ParsedQuery
+from langsmith import traceable
+
+logger = logging.getLogger("rankroute.query_parser")
 
 
 class QueryParser:
@@ -47,6 +51,7 @@ class QueryParser:
             r"fee|fees|cost": "fee_inquiry",
         }
     
+    @traceable(run_type="parser", name="Parse Intent & Constraints")
     def parse(self, query: str) -> ParsedQuery:
         query_lower = query.lower()
         

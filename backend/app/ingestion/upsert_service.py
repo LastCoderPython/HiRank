@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.ingestion.chunker import TextChunk
@@ -43,7 +43,7 @@ def _compute_freshness_bucket(scraped_at: Optional[str] = None) -> str:
         return "unknown"
     try:
         scraped_dt = datetime.fromisoformat(scraped_at)
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         days_old = (now - scraped_dt).days
         if days_old <= 7:
             return "current"
@@ -81,7 +81,7 @@ def upsert_chunks(
     if not chunks:
         return {"upserted": 0, "skipped": 0, "errors": []}
 
-    scraped_at = scraped_at or datetime.utcnow().isoformat()
+    scraped_at = scraped_at or datetime.now(timezone.utc).isoformat()
     freshness = _compute_freshness_bucket(scraped_at)
 
     # Prepare data for upsert

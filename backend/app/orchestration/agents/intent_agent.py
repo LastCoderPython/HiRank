@@ -33,8 +33,8 @@ COLLEGE_CODES = {
     "gec": "GEC", "golaghat": "GEC", "golaghat engineering": "GEC",
     "nits": "NITS", "nit silchar": "NITS", "nit-silchar": "NITS",
     "tezu": "TU", "tezpur university": "TU", "tezpur": "TU",
-    "duiet": "DUIET", "dibrugarh university": "DU", "dibrugarh": "DU",
-    "gust": "GUST", "gauhati university": "GU", "gauhati": "GU",
+    "duiet": "DUIET", "dibrugarh university": "DUIET", "dibrugarh": "DUIET",
+    "guist": "GUIST", "gauhati university": "GU", "gauhati": "GU",
 }
 
 # ── Keywords that indicate descriptive / web-context queries ─────────

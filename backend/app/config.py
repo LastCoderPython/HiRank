@@ -62,6 +62,18 @@ class Settings(BaseSettings):
 
     # Observability
     observability_log_level: str = "INFO"
+
+    # Redis (Celery broker + result backend + cache)
+    redis_url: str = "redis://localhost:6379/0"
+
+    # Gunicorn
+    gunicorn_workers: int = 4
+
+    # Tavily (Live Web Search Fallback)
+    tavily_api_key: Optional[str] = None
+    tavily_max_results: int = 5
+    fallback_enabled: bool = True
+    official_domain_suffixes: str = ".ac.in,.edu.in,.gov.in,.nic.in"
     
     # Model fallback order
     @property
@@ -71,6 +83,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 @lru_cache()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -16,7 +16,7 @@ class Student(Base):
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     full_name: Mapped[str] = mapped_column(String(120))
     email: Mapped[str] = mapped_column(String(160), unique=True, index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     preferences = relationship("StudentPreference", back_populates="student", cascade="all, delete-orphan")
 
@@ -103,7 +103,7 @@ class SourceDocument(Base):
     source_url: Mapped[str] = mapped_column(String(500), default="")
     checksum: Mapped[str] = mapped_column(String(128), index=True)
     published_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    ingested_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    ingested_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class EmbeddingChunk(Base):

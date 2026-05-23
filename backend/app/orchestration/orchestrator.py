@@ -318,15 +318,13 @@ class SupremeOrchestrator:
                 "prediction": prediction.model_dump() if prediction else None,
             }
 
-        # ── Fallback to legacy RAG pipeline ────────────────────────
-        from app.core.rag_pipeline import rag_pipeline
-        processed = await rag_pipeline.process_query(frame.raw_query, history)
+        # ── Graceful Fallback (No Data Found) ───────────────────────
         return {
             "response_type": "stream",
-            "content": processed.get("context", ""),
-            "colleges": processed.get("colleges", []),
-            "is_off_topic": processed.get("is_off_topic", False),
-            "processed": processed,
+            "content": "=== RESPONSE INSTRUCTIONS ===\nNo specific data was found for this query in the cutoffs database or the college information knowledge base. Politely and conversationally inform the user that you don't have the specific information they are looking for right now.",
+            "colleges": [],
+            "is_off_topic": False,
+            "prediction": None,
         }
 
     def _evidence_to_display(self, evidence, band: str) -> Dict[str, Any]:
@@ -356,7 +354,13 @@ class SupremeOrchestrator:
 
     def _build_greeting_response(self, trace: RequestTrace) -> Dict[str, Any]:
         import random
-        from app.core.rag_pipeline import GREETING_RESPONSES
+        
+        GREETING_RESPONSES = [
+            "Hello! I am RankRoute's AI assistant. I can help you predict your college admissions based on your CEE/JEE rank, or answer questions about fees, hostels, and campus facilities in Assam. How can I help you today?",
+            "Hi there! Are you looking for college predictions, cutoff information, or details about a specific college's facilities?",
+            "Greetings! I can analyze admission data or fetch college details for you. What do you need help with?"
+        ]
+        
         return {
             "response_type": "direct",
             "content": random.choice(GREETING_RESPONSES),
@@ -366,7 +370,13 @@ class SupremeOrchestrator:
 
     def _build_off_topic_response(self, trace: RequestTrace) -> Dict[str, Any]:
         import random
-        from app.core.rag_pipeline import OFF_TOPIC_RESPONSES
+        
+        OFF_TOPIC_RESPONSES = [
+            "I'm sorry, I'm specifically trained to answer questions about engineering college admissions, cutoffs, and facilities in Assam. I can't help with that.",
+            "That sounds interesting, but my expertise is limited to CEE/JEE cutoffs and college data in Assam. Can I help you with anything related to that?",
+            "I don't have information on that topic. Try asking me to predict your colleges based on your rank or to tell you about a college's fee structure."
+        ]
+        
         return {
             "response_type": "direct",
             "content": random.choice(OFF_TOPIC_RESPONSES),
