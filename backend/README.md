@@ -34,7 +34,7 @@ User Query
  Agent     Policy    Policy              Agent
     │                           │
     ▼                           ├── PredictionAgent → CutoffEngine (CSV)
- RequestFrame                   ├── WebKnowledgeAgent → Chroma / CSV fallback
+ RequestFrame                   ├── WebKnowledgeAgent → Chroma → Tavily Fallback → CSV fallback
                                 └── CacheService (TTL)
                                         │
                                         ▼
@@ -193,6 +193,13 @@ Collection: `college_web_docs`
 }
 ```
 
+### Tavily Live Web Search (Self-Healing Fallback)
+
+If ChromaDB misses, the `web_search.py` engine performs a domain-restricted live search. 
+- Results are tagged with trust badges (`[✅ OFFICIAL]`, `[⚠️ COMMUNITY]`)
+- Unofficial URLs undergo strict consensus and date-decay grounding.
+- Discovered official URLs are automatically pushed to the Celery `self_heal_ingest` task.
+
 ### Local CSV Fallback
 
 `data/college_info/` directory provides offline data for:
@@ -236,27 +243,28 @@ backend/
 │   │   ├── cutoff_engine.py             # 895-record CSV-backed engine
 │   │   └── metadata_filters.py          # Chroma $and/$in filter builder
 │   │
-│   ├── ingestion/                       # ── Background Ingestion ──
+│   ├── tasks/                           # ── Distributed Celery Workers ──
+│   │   ├── __init__.py
+│   │   └── ingestion.py                 # asynchronous scraping/healing pipeline
+│   │
+│   ├── ingestion/                       # ── ETL Logic ──
 │   │   ├── scrape_runner.py             # whitelisted-domain-only fetcher
-│   │   ├── page_cleaner.py              # HTML cleaning + page classification
+│   │   ├── page_cleaner.py              # Trafilatura HTML extraction
 │   │   ├── chunker.py                   # section-aware semantic chunking
 │   │   ├── embedder.py                  # batch HuggingFace embedding
-│   │   └── upsert_service.py           # Chroma upsert with stable IDs
+│   │   └── upsert_service.py            # Chroma upsert with stable IDs
 │   │
 │   ├── api/
 │   │   ├── chat.py                      # /api/chat, /api/colleges, /api/health
 │   │   ├── scrape.py                    # /api/scrape/run, /api/scrape/status
-│   │   ├── auth.py                      # authentication routes
-│   │   ├── chats.py                     # chat history routes
-│   │   └── agents.py                    # agent debug routes
+│   │   └── auth.py                      # authentication routes
 │   │
 │   ├── services/
+│   │   ├── web_search.py                # Tavily live web fallback
+│   │   ├── domain_registry.py           # Zero-trust allowlist
 │   │   ├── cache_service.py             # TTL cache (prediction, web, answer)
 │   │   ├── versioning_service.py        # prompt/policy version tracking
-│   │   ├── college_info_service.py      # local CSV college data
-│   │   ├── context_builder.py           # legacy context assembly
-│   │   ├── query_parser.py              # legacy query parsing
-│   │   └── retriever.py                 # legacy vector retrieval
+│   │   └── college_info_service.py      # local CSV college data
 │   │
 │   ├── core/
 │   │   ├── rag_pipeline.py              # legacy RAG (fallback path)
@@ -277,15 +285,12 @@ backend/
 │   ├── college_info/                    # local CSV fallback data
 │   └── chroma/                          # vector DB persistence
 │
-├── scripts/
-│   ├── test_sprint3.py                  # engine + intent tests
-│   ├── test_sprint5.py                  # module import + functional tests
-│   ├── test_e2e.py                      # 6 live endpoint tests
-│   ├── prepare_data.py                  # data ingestion script
-│   └── ingest_data.py                   # legacy ingestion
+├── nginx/
+│   └── nginx.conf                       # Rate limiting & reverse proxy
 │
+├── test_e2e.py                          # Live orchestration testing
 ├── requirements.txt
-├── V2_MIGRATION_CHANGELOG.md            # detailed migration changelog
+├── CHANGELOG_PRODUCTION.md              # detailed production changelog
 └── README.md                            # this file
 ```
 
@@ -293,7 +298,7 @@ backend/
 
 ## Approved Scraping Domains
 
-Only whitelisted official domains are allowed for web ingestion:
+Managed strictly via `app/services/domain_registry.py`. Only whitelisted official domains are allowed for web ingestion and Tavily searches:
 
 | Category | Domains |
 |----------|---------|
@@ -301,65 +306,64 @@ Only whitelisted official domains are allowed for web ingestion:
 | **University** | astu.ac.in |
 | **Government** | dte.assam.gov.in, ceeassamonline.in, josaa.nic.in |
 
-All domains include `www.` variants. Unapproved URLs return HTTP 400.
+*Note: The system automatically handles both root domains and `www.` variants for complete Zero-Trust authorization.*
 
 ---
 
 ## Environment Variables
 
 ```env
-# LLM Configuration
+# Core API
 LLM_PROVIDER=groq
 GROQ_API_KEY=your_groq_api_key
-PRIMARY_MODEL=llama-3.3-70b-versatile
-FALLBACK_MODEL_1=llama-3.1-8b-instant
-FALLBACK_MODEL_2=gemma2-9b-it
-
-# Embedding Model
 EMBEDDING_PROVIDER=huggingface
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-
-# Vector Database
 VECTOR_DB=chroma
-CHROMA_PERSIST_DIR=./data/chroma
 
-# API Configuration
-API_HOST=0.0.0.0
-API_PORT=8000
-CORS_ORIGINS=http://localhost:3000
+# Fallbacks & Search
+TAVILY_API_KEY=your_tavily_key
+FALLBACK_ENABLED=true
 
-# Data Paths
-CEE_DATA_PATH=./data/cee_cutoffs.csv
-JEE_DATA_PATH=./data/jee_cutoffs.csv
+# Distributed Workers
+REDIS_URL=redis://redis:6379/0
+GUNICORN_WORKERS=4
 
-# Feature Flags
-ENABLE_AGENT_ROUTES=false
-AGENT_RATE_LIMIT_PER_MINUTE=30
+# Observability
+LANGSMITH_TRACING=true
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+LANGSMITH_API_KEY=your_langsmith_key
+LANGSMITH_PROJECT=rankroute-v2
 ```
 
 ---
 
-## Running Locally
+## Running in Production (Docker)
+
+The absolute easiest way to run the full production stack (FastAPI, Redis, Celery Workers, Nginx, Flower):
+
+```bash
+# 1. Create environment file
+cp .env.example .env
+# Edit .env with your API keys (Groq, Tavily, LangSmith)
+
+# 2. Start the entire cluster
+docker-compose up -d --build
+```
+
+## Running Locally (Development)
 
 ```bash
 # 1. Create virtual environment
 python -m venv venv
 venv\Scripts\activate          # Windows
-source venv/bin/activate       # Linux/Mac
 
 # 2. Install dependencies
 pip install -r requirements.txt
 
-# 3. Set up environment
-copy .env.example .env
-# Edit .env with your API keys
-
-# 4. Start the server
+# 3. Run FastAPI Server
 uvicorn app.main:app --reload --port 8000
 
-# 5. Run tests
-python scripts/test_sprint5.py    # module + functional tests
-python scripts/test_e2e.py        # live endpoint tests (server must be running)
+# 4. Run Celery Worker (requires local Redis running on 6379)
+celery -A app.worker.celery_app worker --loglevel=info
 ```
 
 ---
