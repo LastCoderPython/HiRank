@@ -1,0 +1,34 @@
+{
+    order rate_limit before basicauth
+}
+
+:80 {
+    # Block Swagger/Redoc docs in production
+    respond /docs* 403
+    respond /redoc* 403
+
+    handle /api/health* {
+        # Health check bypass (no rate limit)
+        reverse_proxy api:9000
+    }
+
+    handle /api/* {
+        # API routes with rate limiting
+        rate_limit {
+            zone api_limit {
+                key {remote_host}
+                events 20
+                window 2s
+            }
+        }
+        reverse_proxy api:9000 {
+            # flush_interval -1 disables buffering, critical for SSE streaming responses
+            flush_interval -1
+        }
+    }
+
+    # Catch-all fallback
+    handle {
+        respond 404
+    }
+}
