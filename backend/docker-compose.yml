@@ -63,13 +63,15 @@ services:
       - redis
     restart: unless-stopped
 
-  # ── Nginx (Reverse Proxy + Rate Limiting) ───────────────
-  nginx:
-    image: nginx:alpine
+  # ── Caddy (Reverse Proxy + Rate Limiting) ───────────────
+  caddy:
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
     depends_on:
       - api
     restart: unless-stopped

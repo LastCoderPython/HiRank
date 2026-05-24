@@ -245,3 +245,30 @@ Added `self_heal_ingest` Celery task:
 #### [NEW] `test_e2e.py`
 - Added an End-to-End Orchestrator testing script to locally validate all Multi-Agent intents (Greeting, Prediction, Local Web Knowledge, Live Web Search).
 - Ensured graceful degradation mechanisms (`[WinError 10061]` when Redis/Celery is offline) function correctly without crashing the RAG API.
+
+---
+
+## Phase 9: Nginx to Caddy Migration ✅
+
+### Problem Solved
+Migrated the primary ingress and API gateway from Nginx to Caddy to modernize the stack, while maintaining strict rate limiting and SSE streaming support.
+
+### Changes Made
+
+#### [DELETE] `nginx/nginx.conf`
+- Completely removed the Nginx configuration and the `nginx` directory.
+
+#### [NEW] `Caddyfile`
+Created a new Caddy configuration featuring:
+- **Mutually Exclusive Routing**: Implemented `handle` blocks to ensure `/api/health` bypasses rate limiting, while `/api/*` is strictly throttled.
+- **SSE Support**: Set `flush_interval -1` to disable response buffering, ensuring the AI chat streams text tokens instantaneously without latency.
+- **Security**: Blocked `/docs` and `/redoc` in production with immediate `403 Forbidden` responses.
+- **Burst Rate Limiting**: Emulated the Nginx token bucket burst via `events 20` and `window 2s`, allowing frontend connection storms to process seamlessly while enforcing a 10 req/s average.
+
+#### [NEW] `Dockerfile.caddy`
+- Built a custom Caddy image using the `xcaddy` builder.
+- Included the `github.com/mholt/caddy-ratelimit` plugin, since Caddy v2 does not ship with native rate limiting in its core binary.
+
+#### [MODIFY] `docker-compose.yml`
+- Replaced the `nginx` service with the new `caddy` service.
+- Configured to build from `Dockerfile.caddy` and mount the `Caddyfile`.
