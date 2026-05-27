@@ -1,0 +1,6 @@
+{
+  "name": "RankRoute AI",
+  "description": "An intelligent admission counseling system for engineering aspirants targeting Assam CEE and JEE Mains.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
