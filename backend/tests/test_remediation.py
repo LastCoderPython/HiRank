@@ -1,3 +1,4 @@
+import pytest
 import asyncio
 import time
 import os
@@ -13,6 +14,7 @@ from app.services.college_info_service import college_info_service
 from app.retrieval.cutoff_engine import cutoff_engine
 from app.middleware.rate_limit import RateLimitMiddleware
 
+@pytest.mark.asyncio
 async def test_all():
     print("Starting tests for LLM Council Remediation...")
     results = {}

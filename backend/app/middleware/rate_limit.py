@@ -21,10 +21,10 @@ logger = logging.getLogger("rankroute.middleware.rate_limit")
 
 # Per-endpoint rate limit overrides: (max_requests, interval_seconds)
 _ENDPOINT_LIMITS: Dict[str, Tuple[int, int]] = {
-    "/api/chat": (10, 60),
-    "/api/auth/email/send-otp": (5, 60),
-    "/api/auth/email/verify": (10, 60),
-    "/api/health": (30, 60),
+    "/api/v1/chat": (10, 60),
+    "/api/v1/auth/email/send-otp": (5, 60),
+    "/api/v1/auth/email/verify": (10, 60),
+    "/api/v1/health": (30, 60),
 }
 
 

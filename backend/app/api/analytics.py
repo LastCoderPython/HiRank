@@ -17,7 +17,7 @@ from app.api.admin import require_admin
 from app.db.supabase import get_supabase_client
 
 logger = logging.getLogger("rankroute.api.analytics")
-router = APIRouter(prefix="/api/admin/analytics", tags=["analytics"])
+router = APIRouter(prefix="/api/v1/admin/analytics", tags=["analytics"])
 
 
 @router.get("/overview")

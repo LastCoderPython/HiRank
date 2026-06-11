@@ -20,7 +20,7 @@ from app.middleware.api_key_auth import require_agent_api_key
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("rankroute.api.scrape")
-router = APIRouter(prefix="/api/scrape", tags=["scrape"])
+router = APIRouter(prefix="/api/v1/scrape", tags=["scrape"])
 
 
 # ── Request / Response Models ─────────────────────────────────────────

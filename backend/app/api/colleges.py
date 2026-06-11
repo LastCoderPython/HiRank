@@ -6,7 +6,7 @@ from app.retrieval.cutoff_engine import cutoff_engine, PredictionResult, Predict
 import logging
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api", tags=["colleges"])
+router = APIRouter(prefix="/api/v1", tags=["colleges"])
 
 
 @router.get("/colleges", response_model=CollegeListResponse)
