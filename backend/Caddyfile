@@ -2,18 +2,24 @@
     order rate_limit before basicauth
 }
 
+# HTTP → HTTPS redirect (production) / direct proxy (local dev)
 :80 {
-    # Block Swagger/Redoc docs in production
+    # If a domain is set, redirect to HTTPS
+    @prod {
+        header Host *.your-domain.com
+    }
+    redir @prod https://{host}{uri} permanent
+
+    # Dev / fallback: block docs, proxy API
     respond /docs* 403
     respond /redoc* 403
+    respond /openapi.json 403
 
     handle /api/health* {
-        # Health check bypass (no rate limit)
         reverse_proxy api:9000
     }
 
     handle /api/* {
-        # API routes with rate limiting
         rate_limit {
             zone api_limit {
                 key {remote_host}
@@ -22,12 +28,42 @@
             }
         }
         reverse_proxy api:9000 {
-            # flush_interval -1 disables buffering, critical for SSE streaming responses
             flush_interval -1
         }
     }
 
-    # Catch-all fallback
+    handle {
+        respond 404
+    }
+}
+
+# Production TLS
+:443 {
+    tls {
+        protocols tls1.2 tls1.3
+    }
+
+    respond /docs* 403
+    respond /redoc* 403
+    respond /openapi.json 403
+
+    handle /api/health* {
+        reverse_proxy api:9000
+    }
+
+    handle /api/* {
+        rate_limit {
+            zone api_limit {
+                key {remote_host}
+                events 20
+                window 2s
+            }
+        }
+        reverse_proxy api:9000 {
+            flush_interval -1
+        }
+    }
+
     handle {
         respond 404
     }

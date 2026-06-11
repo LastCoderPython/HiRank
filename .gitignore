@@ -1,0 +1,52 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Environment
+.env
+.env.local
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.pytest_cache/
+
+# Logs
+*.log
+
+# Next.js
+.next/
+
+# Build artifacts
+dist/
+build/
+
+# TypeScript incremental build
+frontend/tsconfig.tsbuildinfo
+
+# ChromaDB vector store — runtime data, re-created by ingestion pipeline
+backend/data/chroma/
+data/chroma/
+
+# Admin upload backups — auto-generated at runtime
+backend/data/backups/
+
+# Legacy CSV archive
+docs/csvs/
+
+# Generated reports
+backend/latency_report.json
+backend/server_output.log
+backend/server_error.log

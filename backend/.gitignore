@@ -19,6 +19,12 @@ venv.bak/
 data/chroma/
 *.sqlite3
 
+# Logs
+logs/
+
+# Latency benchmark reports
+latency_report*.json
+
 # IDE / OS
 .vscode/
 .idea/

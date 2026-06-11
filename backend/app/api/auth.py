@@ -1,13 +1,16 @@
-from fastapi import APIRouter, Request, Response, HTTPException, Cookie, Depends
+from fastapi import APIRouter, Request, Response, HTTPException, Cookie
 from fastapi.responses import RedirectResponse, JSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 import httpx
-import json
 import jwt
-import os
-from datetime import datetime, timedelta
+import logging
+import secrets
+from datetime import datetime
+from urllib.parse import quote
 from app.config import settings
+
+logger = logging.getLogger("rankroute.api.auth")
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -70,7 +73,8 @@ def verify_jwt(token: str) -> Optional[dict]:
             token,
             SUPABASE_JWT_SECRET,
             algorithms=["HS256"],
-            options={"verify_aud": False}
+            audience="authenticated",
+            options={"verify_aud": True}
         )
         return payload
     except jwt.ExpiredSignatureError:
@@ -129,7 +133,7 @@ def get_current_user(
         }
     return None
 
-@router.get("/session")
+@router.get("/session", response_model=SessionResponse)
 async def get_session(
     request: Request,
     sb_access_token: Optional[str] = Cookie(None)
@@ -163,38 +167,55 @@ async def login(request: Request):
     project_url = _get_supabase_project_url()
     if not project_url:
         raise HTTPException(status_code=500, detail="Supabase not configured")
-    
-    host = request.headers.get("host", "localhost:9000")
-    scheme = request.url.scheme
-    redirect_uri = f"{scheme}://{host}/api/auth/callback"
-    
+
+    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/auth/callback"
+
+    # C-02: Generate CSRF state token
+    state = secrets.token_urlsafe(32)
+
     auth_url = (
         f"{project_url}/auth/v1/authorize"
         f"?provider=google"
         f"&redirect_to={redirect_uri}"
+        f"&state={state}"
     )
-    
-    return RedirectResponse(url=auth_url)
+
+    response = RedirectResponse(url=auth_url)
+    response.set_cookie(
+        key="oauth_state",
+        value=state,
+        httponly=True,
+        secure=not settings.debug,
+        samesite="lax",
+        max_age=300,
+        path="/",
+    )
+    return response
 
 @router.get("/callback")
 async def auth_callback(
     request: Request,
     code: Optional[str] = None,
-    error: Optional[str] = None
+    state: Optional[str] = None,
+    error: Optional[str] = None,
+    oauth_state: Optional[str] = Cookie(None),
 ):
     if error:
-        return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error={error}")
-    
+        return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error={quote(error)}")
+
     if not code:
         return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error=no_code")
-    
+
+    # C-02: Validate CSRF state
+    if not state or not oauth_state or not secrets.compare_digest(state, oauth_state):
+        logger.warning("OAuth state mismatch — possible CSRF attack")
+        return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error=state_mismatch")
+
     project_url = _get_supabase_project_url()
     if not project_url:
         return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error=config_error")
 
-    host = request.headers.get("host", "localhost:9000")
-    scheme = request.url.scheme
-    redirect_uri = f"{scheme}://{host}/api/auth/callback"
+    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/auth/callback"
 
     data = await _exchange_code_for_session(project_url, code, redirect_uri)
     if not data:
@@ -207,13 +228,13 @@ async def auth_callback(
     if not access_token or not refresh_token:
         return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error=token_missing")
     
-    response = RedirectResponse(url=f"{FRONTEND_URL}/chat")
+    response = RedirectResponse(url=FRONTEND_URL)
     
     response.set_cookie(
         key="sb_access_token",
         value=access_token,
         httponly=True,
-        secure=False,
+        secure=not settings.debug,
         samesite="lax",
         max_age=expires_in,
         path="/"
@@ -223,7 +244,7 @@ async def auth_callback(
         key="sb_refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=False,
+        secure=not settings.debug,
         samesite="lax",
         max_age=60 * 60 * 24 * 30,
         path="/"
@@ -266,7 +287,7 @@ async def refresh_token(
         key="sb_access_token",
         value=access_token,
         httponly=True,
-        secure=False,
+        secure=not settings.debug,
         samesite="lax",
         max_age=expires_in,
         path="/"
@@ -277,7 +298,7 @@ async def refresh_token(
             key="sb_refresh_token",
             value=refresh_token,
             httponly=True,
-            secure=False,
+            secure=not settings.debug,
             samesite="lax",
             max_age=60 * 60 * 24 * 30,
             path="/"
@@ -296,15 +317,221 @@ async def google_login(request: Request):
     project_url = _get_supabase_project_url()
     if not project_url:
         raise HTTPException(status_code=500, detail="Supabase not configured")
-    
-    host = request.headers.get("host", "localhost:9000")
-    scheme = request.url.scheme
-    redirect_uri = f"{scheme}://{host}/api/auth/callback"
-    
+
+    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/auth/callback"
+
+    # C-02: Generate CSRF state token
+    state = secrets.token_urlsafe(32)
+
     auth_url = (
         f"{project_url}/auth/v1/authorize"
         f"?provider=google"
         f"&redirect_to={redirect_uri}"
+        f"&state={state}"
     )
-    
-    return RedirectResponse(url=auth_url)
+
+    response = RedirectResponse(url=auth_url)
+    response.set_cookie(
+        key="oauth_state",
+        value=state,
+        httponly=True,
+        secure=not settings.debug,
+        samesite="lax",
+        max_age=300,
+        path="/",
+    )
+    return response
+
+
+# ── Email OTP Authentication ──────────────────────────────────────────
+# Delivery chain: FastAPI → Supabase Auth API → Resend SMTP relay → User inbox
+# No Redis needed. Email IS the identity — no pre-storage required.
+
+from app.services.email_validator import validate_and_normalize_email
+
+
+class EmailSendOtpRequest(BaseModel):
+    model_config = {"extra": "forbid"}
+    email: str = Field(..., description="User's email address")
+
+
+class EmailVerifyRequest(BaseModel):
+    model_config = {"extra": "forbid"}
+    email: str
+    token: str = Field(..., description="6-digit OTP code")
+    session_id: Optional[str] = Field(None, description="FingerprintJS Visitor ID for chat transfer")
+    # Onboarding data — sent together with verify to save a round trip
+    exam: Optional[str] = None
+    rank: Optional[int] = None
+    percentile: Optional[float] = None
+    category: Optional[str] = None
+    onboarding_complete: Optional[bool] = None
+
+
+@router.post("/email/send-otp")
+async def send_email_otp(body: EmailSendOtpRequest):
+    """Send a 6-digit OTP to the user's email via Supabase + Resend SMTP.
+
+    Flow:
+    1. Normalize email (strip Gmail aliases/dots, lowercase)
+    2. Check against disposable domain blocklist
+    3. Call Supabase Auth OTP endpoint — Supabase generates the code
+       and sends it via the configured Resend SMTP relay
+    """
+    project_url = _get_supabase_project_url()
+    if not project_url:
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+
+    normalized_email, error = validate_and_normalize_email(body.email)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.post(
+                f"{project_url}/auth/v1/otp",
+                json={"email": normalized_email},
+                headers={
+                    "apikey": SUPABASE_ANON_KEY,
+                    "Content-Type": "application/json",
+                },
+            )
+
+        if response.status_code not in (200, 201):
+            error_detail = response.json().get("msg", response.text)
+            logger.error("Supabase email OTP send failed: %s", error_detail)
+            raise HTTPException(
+                status_code=400,
+                detail=f"Failed to send OTP: {error_detail}",
+            )
+
+        logger.info("Email OTP sent to %s", normalized_email)
+        return {"success": True, "email": normalized_email}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Email OTP send error: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to send OTP")
+
+
+@router.post("/email/verify")
+async def verify_email_otp(body: EmailVerifyRequest, response: Response):
+    """Verify email OTP and create/update user profile.
+
+    On successful verification:
+    1. Creates Supabase auth user (if new)
+    2. Creates/updates the profiles row with onboarding data (if provided)
+    3. Transfers anonymous chat history to the new account (by FingerprintJS ID)
+    4. Sets httpOnly auth cookies (same pattern as Google OAuth callback)
+
+    Onboarding data is sent in the same request to avoid an extra round trip.
+    """
+    project_url = _get_supabase_project_url()
+    if not project_url:
+        raise HTTPException(status_code=500, detail="Supabase not configured")
+
+    normalized_email, error = validate_and_normalize_email(body.email)
+    if error:
+        raise HTTPException(status_code=400, detail=error)
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            verify_response = await client.post(
+                f"{project_url}/auth/v1/token?grant_type=email_otp",
+                json={
+                    "email": normalized_email,
+                    "token": body.token,
+                    "type": "email",
+                },
+                headers={
+                    "apikey": SUPABASE_ANON_KEY,
+                    "Content-Type": "application/json",
+                },
+            )
+
+        if verify_response.status_code != 200:
+            error_detail = verify_response.json().get("msg", "Invalid or expired OTP")
+            raise HTTPException(status_code=401, detail=error_detail)
+
+        data = verify_response.json()
+        access_token = data.get("access_token")
+        refresh_token = data.get("refresh_token")
+        expires_in = data.get("expires_in", 3600)
+        user_data = data.get("user", {})
+        user_id = user_data.get("id")
+
+        if not access_token or not refresh_token or not user_id:
+            raise HTTPException(
+                status_code=500,
+                detail="Invalid token response from Supabase",
+            )
+
+        # Auto-derive name from email prefix (no name field in our form)
+        auto_name = normalized_email.split("@")[0].replace(".", " ").title()
+
+        # Create/update profile with onboarding data if submitted
+        try:
+            from app.db.supabase import create_or_update_profile
+            await create_or_update_profile(
+                user_id=user_id,
+                email=normalized_email,
+                name=auto_name,
+                exam=body.exam,
+                rank=body.rank,
+                percentile=body.percentile,
+                category=body.category,
+                onboarding_complete=body.onboarding_complete,
+                fingerprint_id=body.session_id,
+            )
+        except Exception as e:
+            logger.error("Profile upsert failed (non-fatal): %s", e)
+
+        # Transfer anonymous chat history (keyed by FingerprintJS Visitor ID)
+        if body.session_id:
+            try:
+                from app.db.supabase import transfer_temp_to_user_chat
+                await transfer_temp_to_user_chat(body.session_id, user_id)
+                logger.info(
+                    "Transferred temp chat: %s → %s",
+                    body.session_id[:12], user_id,
+                )
+            except Exception as e:
+                logger.error("Chat transfer failed (non-fatal): %s", e)
+
+        # Set httpOnly auth cookies (identical to Google OAuth callback)
+        response.set_cookie(
+            key="sb_access_token",
+            value=access_token,
+            httponly=True,
+            secure=not settings.debug,
+            samesite="lax",
+            max_age=expires_in,
+            path="/",
+        )
+        response.set_cookie(
+            key="sb_refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=not settings.debug,
+            samesite="lax",
+            max_age=60 * 60 * 24 * 30,
+            path="/",
+        )
+
+        return {
+            "success": True,
+            "user": {
+                "id": user_id,
+                "email": normalized_email,
+                "name": auto_name,
+                "onboarding_complete": body.onboarding_complete or False,
+            },
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error("Email OTP verify error: %s", e)
+        raise HTTPException(status_code=500, detail="Verification failed")
+

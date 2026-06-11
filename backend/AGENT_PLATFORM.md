@@ -55,7 +55,7 @@ OBSERVABILITY_LOG_LEVEL=INFO
 ### Local
 
 ```bash
-python run.py
+uvicorn app.main:app --port 9000
 ```
 
 ### Docker

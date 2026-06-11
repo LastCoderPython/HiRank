@@ -1,9 +1,9 @@
+import threading
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from app.config import settings
 from typing import List, Dict, Any, Optional
 from app.core.embeddings import embedding_service
-import json
 
 
 class ChromaClient:
@@ -13,23 +13,31 @@ class ChromaClient:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
+            cls._instance._lock = threading.Lock()
         return cls._instance
     
     def __init__(self):
+        pass
+
+    def _ensure_initialized(self):
+        """Eagerly initialize ChromaDB client and collections. Double-checked locking."""
         if self._initialized:
             return
-        
-        self.client = chromadb.PersistentClient(
-            path=settings.chroma_persist_dir,
-            settings=ChromaSettings(
-                anonymized_telemetry=False,
-                allow_reset=True
+        with self._lock:
+            if self._initialized:
+                return
+            self.client = chromadb.PersistentClient(
+                path=settings.chroma_persist_dir,
+                settings=ChromaSettings(
+                    anonymized_telemetry=False,
+                    allow_reset=True
+                )
             )
-        )
-        
-        self.cee_collection = self._get_or_create_collection("cee")
-        self.jee_collection = self._get_or_create_collection("jee")
-        self._initialized = True
+
+            self.cee_collection = self._get_or_create_collection("cee")
+            self.jee_collection = self._get_or_create_collection("jee")
+            self.college_web_docs_collection = self._get_or_create_collection("college_web_docs")
+            self._initialized = True
     
     def _get_or_create_collection(self, name: str):
         return self.client.get_or_create_collection(
@@ -44,6 +52,8 @@ class ChromaClient:
         ids: List[str],
         collection_name: str = "cee"
     ):
+        self._ensure_initialized()
+
         collection = self.cee_collection if collection_name == "cee" else self.jee_collection
         
         embeddings = embedding_service.embed_documents(documents)
@@ -55,79 +65,6 @@ class ChromaClient:
             ids=ids
         )
     
-    def query_by_rank(
-        self,
-        rank: int,
-        category: str = "General",
-        buffer_low: int = 200,
-        buffer_high: int = 500,
-        collection_name: str = "cee",
-        n_results: int = 10
-    ) -> List[Dict[str, Any]]:
-        collection = self.cee_collection if collection_name == "cee" else self.jee_collection
-        
-        results = collection.get(limit=5000)
-        
-        formatted_results = []
-        for i, doc in enumerate(results["documents"]):
-            metadata = results["metadatas"][i]
-            
-            doc_category = metadata.get("category", "General")
-            closing_rank = metadata.get("closing_rank", 0)
-            
-            try:
-                closing_rank = int(closing_rank) if closing_rank else 0
-            except:
-                closing_rank = 0
-            
-            if closing_rank <= 0:
-                continue
-            
-            if rank <= closing_rank:
-                match_percentage = 100.0
-            else:
-                excess = rank - closing_rank
-                buffer = min(500, closing_rank * 0.1)
-                if excess <= buffer:
-                    match_percentage = max(50, 100 - (excess / buffer) * 50)
-                else:
-                    match_percentage = max(0, 50 - (excess - buffer) / closing_rank * 50)
-            
-            formatted_results.append({
-                "id": results["ids"][i],
-                "document": doc,
-                "metadata": metadata,
-                "match_percentage": match_percentage
-            })
-        
-        user_category_results = sorted(
-            [r for r in formatted_results if r["metadata"].get("category") == category and r["match_percentage"] >= 50],
-            key=lambda x: (x["match_percentage"], -x["metadata"].get("closing_rank", 0)),
-            reverse=True
-        )
-        
-        other_category_results = []
-        for other_cat in ["OBC", "EWS", "General", "SC", "ST"]:
-            if other_cat == category:
-                continue
-            cat_results = sorted(
-                [r for r in formatted_results if r["metadata"].get("category") == other_cat and r["match_percentage"] >= 80],
-                key=lambda x: (x["match_percentage"], -x["metadata"].get("closing_rank", 0)),
-                reverse=True
-            )
-            for r in cat_results[:3]:
-                if r not in other_category_results:
-                    other_category_results.append(r)
-        
-        final_results = user_category_results[:n_results]
-        
-        for other in other_category_results:
-            if len(final_results) >= n_results * 2:
-                break
-            final_results.append(other)
-        
-        return final_results[:n_results * 2]
-    
     def search_similar(
         self,
         query: str,
@@ -135,6 +72,8 @@ class ChromaClient:
         n_results: int = 5,
         where_filter: Optional[Dict] = None
     ) -> List[Dict[str, Any]]:
+        self._ensure_initialized()
+
         collection = self.cee_collection if collection_name == "cee" else self.jee_collection
         
         query_embedding = embedding_service.embed_query(query)
@@ -176,7 +115,58 @@ class ChromaClient:
                 return max(0, 100 - (excess - buffer) / 10)
             return max(50, 100 - (excess / buffer) * 50)
     
+    def get_collection(self, name: str = "college_web_docs"):
+        self._ensure_initialized()
+        if name == "cee":
+            return self.cee_collection
+        elif name == "jee":
+            return self.jee_collection
+        elif name == "college_web_docs":
+            return self.college_web_docs_collection
+        return self.client.get_or_create_collection(name)
+
+    def inspect_metadata(self, collection_name: str = "college_web_docs") -> Dict[str, Any]:
+        self._ensure_initialized()
+        collection = self.get_collection(collection_name)
+        records = collection.get(include=["metadatas"])
+        metas = records["metadatas"] or []
+
+        college_names = set()
+        page_types = set()
+        validation_statuses = set()
+        domains = set()
+        null_college = 0
+        null_page_type = 0
+
+        for m in metas:
+            cn = (m.get("college_name") or "").strip().upper()
+            if cn:
+                college_names.add(cn)
+            else:
+                null_college += 1
+            pt = (m.get("page_type") or "").strip()
+            if pt:
+                page_types.add(pt)
+            else:
+                null_page_type += 1
+            vs = m.get("validation_status", "unknown")
+            validation_statuses.add(vs)
+            dom = m.get("domain", "")
+            if dom:
+                domains.add(dom)
+
+        return {
+            "total_docs": len(metas),
+            "unique_colleges": sorted(college_names),
+            "unique_page_types": sorted(page_types),
+            "validation_statuses": sorted(validation_statuses),
+            "domains": sorted(domains),
+            "null_college_name": null_college,
+            "null_page_type": null_page_type,
+        }
+
     def get_all_colleges(self, collection_name: str = "cee") -> List[str]:
+        self._ensure_initialized()
         collection = self.cee_collection if collection_name == "cee" else self.jee_collection
         results = collection.get()
         
@@ -187,10 +177,12 @@ class ChromaClient:
         return list(colleges)
     
     def count_documents(self, collection_name: str = "cee") -> int:
+        self._ensure_initialized()
         collection = self.cee_collection if collection_name == "cee" else self.jee_collection
         return collection.count()
     
     def reset_collection(self, collection_name: str = "cee"):
+        self._ensure_initialized()
         collection = self.cee_collection if collection_name == "cee" else self.jee_collection
         self.client.delete_collection(collection_name)
         if collection_name == "cee":

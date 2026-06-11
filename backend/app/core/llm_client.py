@@ -4,6 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from app.config import settings
 from typing import Optional, List, AsyncIterator
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
@@ -15,14 +16,21 @@ class LLMClient:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialized = False
+            cls._instance._lock = threading.Lock()
         return cls._instance
     
     def __init__(self):
+        pass
+    
+    def ensure_initialized(self):
+        """Eagerly initialize all LLM models. Double-checked locking."""
         if self._initialized:
             return
-        
-        self._initialize_llm()
-        self._initialized = True
+        with self._lock:
+            if self._initialized:
+                return
+            self._initialize_llm()
+            self._initialized = True
     
     def _initialize_llm(self):
         self.llms = {}
@@ -103,6 +111,7 @@ Based on the cutoff data above, provide a helpful response. Calculate match perc
         history: List[dict] = None,
         model_name: str = None
     ) -> AsyncIterator[str]:
+        self.ensure_initialized()
         if not self.llms:
             raise RuntimeError("LLM not initialized. Please set GROQ_API_KEY in .env file")
         
@@ -138,6 +147,7 @@ Based on the cutoff data above, provide a helpful response. Calculate match perc
             raise RuntimeError("All models failed")
     
     def generate_sync(self, context: str, query: str, history: List[dict] = None) -> str:
+        self.ensure_initialized()
         if not self.llms:
             raise RuntimeError("LLM not initialized. Please set GROQ_API_KEY in .env file")
         
