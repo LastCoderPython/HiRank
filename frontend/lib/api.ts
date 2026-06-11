@@ -46,13 +46,13 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
 export const api = {
   // Auth
-  fetchSession: () => fetchApi<{ authenticated: boolean; user: AuthUser | null }>('/api/auth/session'),
-  signOut: () => fetchApi<{ success: boolean }>('/api/auth/logout', { method: 'POST' }),
+  fetchSession: () => fetchApi<{ authenticated: boolean; user: AuthUser | null }>('/api/v1/auth/session'),
+  signOut: () => fetchApi<{ success: boolean }>('/api/v1/auth/logout', { method: 'POST' }),
 
 
   // Profile
-  getProfile: () => fetchApi<AuthUser>('/api/profile'),
-  updateProfile: (data: Partial<AuthUser>) => fetchApi<AuthUser>('/api/profile', {
+  getProfile: () => fetchApi<AuthUser>('/api/v1/profile'),
+  updateProfile: (data: Partial<AuthUser>) => fetchApi<AuthUser>('/api/v1/profile', {
     method: 'PATCH',
     body: JSON.stringify(data),
   }),
@@ -60,7 +60,7 @@ export const api = {
   // Chats (Authenticated)
   getChats: (limit = 50, offset = 0) => fetchApi<ChatListResponse>(`/api/chats?limit=${limit}&offset=${offset}`),
   createChat: (title: string, tempSessionId?: string) => 
-    fetchApi<ChatCreateResponse>('/api/chats', {
+    fetchApi<ChatCreateResponse>('/api/v1/chats', {
       method: 'POST',
       body: JSON.stringify({ title, temp_session_id: tempSessionId }),
     }),
@@ -70,11 +70,11 @@ export const api = {
     body: JSON.stringify({ title }),
   }),
   deleteChat: (id: string) => fetchApi<{ success: boolean }>(`/api/chats/${id}`, { method: 'DELETE' }),
-  clearAllChats: () => fetchApi<{ success: boolean; deleted: number }>('/api/chats/clear', { method: 'POST' }),
+  clearAllChats: () => fetchApi<{ success: boolean; deleted: number }>('/api/v1/chats/clear', { method: 'POST' }),
 
   // Messages (Auth & Temp)
   saveMessage: (params: { chatId?: string; tempSessionId?: string; role: string; content: string; metadata?: any }) => 
-    fetchApi<MessageSaveResponse>('/api/messages', {
+    fetchApi<MessageSaveResponse>('/api/v1/messages', {
       method: 'POST',
       body: JSON.stringify({
         chat_id: params.chatId,
@@ -109,11 +109,11 @@ export const api = {
   },
 
   // Admin
-  uploadCutoffs:     (formData: FormData) => fetchApi<UploadResult>('/api/admin/upload/cutoffs', { method: 'POST', body: formData }),
-  uploadCollegeInfo: (formData: FormData) => fetchApi<UploadResult>('/api/admin/upload/college-info', { method: 'POST', body: formData }),
-  validateCutoffs:   (formData: FormData) => fetchApi<UploadPreview>('/api/admin/validate/cutoffs', { method: 'POST', body: formData }),
-  validateCollegeInfo: (formData: FormData) => fetchApi<UploadPreview>('/api/admin/validate/college-info', { method: 'POST', body: formData }),
-  listBackups:       () => fetchApi<{ backups: BackupEntry[] }>('/api/admin/backups'),
+  uploadCutoffs:     (formData: FormData) => fetchApi<UploadResult>('/api/v1/admin/upload/cutoffs', { method: 'POST', body: formData }),
+  uploadCollegeInfo: (formData: FormData) => fetchApi<UploadResult>('/api/v1/admin/upload/college-info', { method: 'POST', body: formData }),
+  validateCutoffs:   (formData: FormData) => fetchApi<UploadPreview>('/api/v1/admin/validate/cutoffs', { method: 'POST', body: formData }),
+  validateCollegeInfo: (formData: FormData) => fetchApi<UploadPreview>('/api/v1/admin/validate/college-info', { method: 'POST', body: formData }),
+  listBackups:       () => fetchApi<{ backups: BackupEntry[] }>('/api/v1/admin/backups'),
   restoreBackup:     (id: string) => fetchApi<{ success: boolean; restored_file: string; rows: number }>(`/api/admin/restore/${id}`, { method: 'POST' }),
   // Admin Logs
   getLogs:           (params?: { event_type?: string; severity?: string; source?: string; date_from?: string; date_to?: string; limit?: number; offset?: number }) => {
@@ -128,13 +128,13 @@ export const api = {
     const qs = q.toString();
     return fetchApi<LogQueryResult>(`/api/admin/logs${qs ? '?' + qs : ''}`);
   },
-  getLogStats:       () => fetchApi<LogStats>('/api/admin/logs/stats'),
+  getLogStats:       () => fetchApi<LogStats>('/api/v1/admin/logs/stats'),
 
   // Cutoff Status
-  getCutoffStatus:   () => fetchApi<CutoffStatusResponse>('/api/admin/cutoffs/status'),
+  getCutoffStatus:   () => fetchApi<CutoffStatusResponse>('/api/v1/admin/cutoffs/status'),
 
   // Analytics
-  getAnalyticsOverview:      () => fetchApi<AnalyticsOverview>('/api/admin/analytics/overview'),
+  getAnalyticsOverview:      () => fetchApi<AnalyticsOverview>('/api/v1/admin/analytics/overview'),
   getDailyAnalytics:         (days = 30) => fetchApi<DailyAnalytics>(`/api/admin/analytics/daily?days=${days}`),
-  getPredictionAnalytics:    () => fetchApi<PredictionAnalytics>('/api/admin/analytics/predictions'),
+  getPredictionAnalytics:    () => fetchApi<PredictionAnalytics>('/api/v1/admin/analytics/predictions'),
 };

@@ -43,13 +43,13 @@ class TestCutoffEngineReload:
 
         with pytest.raises(RuntimeError, match="Reload failed"):
             import pandas as pd
-            original_load = cutoff_engine._load_data
-            def broken_load():
+            original_load = cutoff_engine.predict
+            def broken_load(*args, **kwargs):
                 raise ValueError("Simulated corrupt CSV")
-            cutoff_engine._load_data = broken_load
+            cutoff_engine.predict = broken_load
             cutoff_engine.reload()
 
-        cutoff_engine._load_data = original_load
+        cutoff_engine.predict = original_load
         post_crash = cutoff_engine.get_stats()
         assert post_crash["cee_records"] == old_cee
         assert post_crash["jee_records"] == old_jee

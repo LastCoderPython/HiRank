@@ -39,7 +39,7 @@ class TestProfileFieldAllowlist:
             return updates
         monkeypatch.setattr("app.db.supabase.patch_profile", _mock)
         response = client.patch(
-            "/api/profile",
+            "/api/v1/profile",
             json={"name": "test", "role": "admin"},
             headers={"Cookie": "sb_access_token=fake"},
         )
@@ -52,7 +52,7 @@ class TestProfileFieldAllowlist:
             return updates
         monkeypatch.setattr("app.db.supabase.patch_profile", _mock)
         response = client.patch(
-            "/api/profile",
+            "/api/v1/profile",
             json={"name": "Alice", "rank": 50},
             headers={"Cookie": "sb_access_token=fake"},
         )
@@ -61,52 +61,52 @@ class TestProfileFieldAllowlist:
 
 class TestSecurityHeaders:
     def test_csp_header_present(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         assert "Content-Security-Policy" in response.headers
 
     def test_csp_defaults(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         csp = response.headers["Content-Security-Policy"]
         assert "default-src 'self'" in csp
         assert "script-src 'self'" in csp
         assert "frame-ancestors 'none'" in csp
 
     def test_x_content_type_options(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         assert response.headers.get("X-Content-Type-Options") == "nosniff"
 
     def test_x_frame_options(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         assert response.headers.get("X-Frame-Options") == "DENY"
 
     def test_referrer_policy(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         assert response.headers.get("Referrer-Policy") == "strict-origin-when-cross-origin"
 
     def test_permissions_policy(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         pp = response.headers.get("Permissions-Policy", "")
         assert "geolocation=()" in pp
         assert "microphone=()" in pp
         assert "camera=()" in pp
 
     def test_no_server_header(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         assert "server" not in response.headers or "uvicorn" not in response.headers.get("server", "")
 
 
 class TestHealthEndpoint:
     def test_health_returns_200(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         assert response.status_code == 200
 
     def test_health_has_status(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         data = response.json()
         assert "status" in data
 
     def test_health_no_credentials_leaked(self):
-        response = client.get("/api/health")
+        response = client.get("/api/v1/health")
         body = response.text.lower()
         assert "supabase" not in body or "service_key" not in body
         assert "redis://" not in body or "password" not in body
@@ -116,13 +116,13 @@ class TestHealthRateLimit:
     @pytest.mark.asyncio
     async def test_acceptable_rate(self):
         for _ in range(5):
-            response = client.get("/api/health")
+            response = client.get("/api/v1/health")
             assert response.status_code == 200
 
     def test_rate_limit_config(self):
         from app.middleware.rate_limit import _ENDPOINT_LIMITS
-        assert "/api/health" in _ENDPOINT_LIMITS
-        limit, window = _ENDPOINT_LIMITS["/api/health"]
+        assert "/api/v1/health" in _ENDPOINT_LIMITS
+        limit, window = _ENDPOINT_LIMITS["/api/v1/health"]
         assert limit == 30
         assert window == 60
 

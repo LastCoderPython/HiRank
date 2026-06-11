@@ -10,7 +10,7 @@ import logging
 from typing import Optional
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api", tags=["chat"])
+router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 
 def _get_user_from_cookie(sb_access_token: Optional[str]) -> Optional[dict]:

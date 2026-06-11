@@ -14,7 +14,7 @@ from app.models.responses import ComparisonResponse, ComparisonMetric
 from app.services.college_info_service import college_info_service
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/colleges", tags=["compare"])
+router = APIRouter(prefix="/api/v1/colleges", tags=["compare"])
 
 
 @router.get("/compare", response_model=ComparisonResponse)

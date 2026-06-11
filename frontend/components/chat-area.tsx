@@ -125,7 +125,7 @@ export function ChatArea({
       
       const requestHistory = [...messages.slice(-9), { role: 'user', content: query }].map(m => ({ role: m.role, content: m.content }));
 
-      await fetchEventSource(`${apiUrl}/api/chat`, {
+      await fetchEventSource(`${apiUrl}/api/v1/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

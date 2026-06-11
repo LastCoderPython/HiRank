@@ -1,6 +1,6 @@
 import asyncio
 import threading
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from app.config import settings
 from typing import List
 import numpy as np
@@ -34,10 +34,10 @@ class EmbeddingService:
     
     def _initialize_embeddings(self):
         try:
-            self.embeddings = HuggingFaceEmbeddings(
-                model_name=settings.embedding_model,
-                model_kwargs={'device': 'cpu'},
-                encode_kwargs={'normalize_embeddings': True}
+            self.embeddings = HuggingFaceEndpointEmbeddings(
+                model=settings.embedding_model,
+                
+                huggingfacehub_api_token=settings.huggingface_api_token
             )
             logger.info(f"Initialized embeddings: {settings.embedding_model}")
         except Exception as e:

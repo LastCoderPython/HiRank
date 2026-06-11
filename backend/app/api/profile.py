@@ -17,7 +17,7 @@ from app.api.auth import verify_jwt
 import logging
 
 logger = logging.getLogger("rankroute.api.profile")
-router = APIRouter(prefix="/api/profile", tags=["profile"])
+router = APIRouter(prefix="/api/v1/profile", tags=["profile"])
 
 
 class ProfileUpdateRequest(BaseModel):
