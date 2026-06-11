@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+
+env:
+  PYTHON_VERSION: "3.13"
+  WORKING_DIR: backend
+
+jobs:
+  frontend-ci:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: none
+
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIR }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90d2b # v5.5.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-lock.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-lock.txt
+          pip install pytest pytest-asyncio ruff
+
+      - name: Lint with ruff
+        run: ruff check app/
+        
+      # Compile check — verify all .py files parse
+      - name: Compile check
+        run: |
+          python -c "
+          import ast, os, sys
+          errors = []
+          for root, dirs, files in os.walk('app'):
+              for f in files:
+                  if f.endswith('.py'):
+                      path = os.path.join(root, f)
+                      try:
+                          ast.parse(open(path, encoding='utf-8').read())
+                      except SyntaxError as e:
+                          errors.append(f'{path}: {e}')
+          if errors:
+              for e in errors:
+                  print(f'FAIL: {e}')
+              sys.exit(1)
+          print(f'All Python files compiled OK')
+          "
+
+      # Run unit tests (no server needed)
+      - name: Run unit tests
+        run: |
+          python -m pytest tests/ -v --tb=short --disable-warnings
+
+      # Check for common issues
+      - name: Check env template
+        run: |
+          if [ -f .env.example ]; then
+            echo ".env.example exists — good"
+          else
+            echo "WARNING: no .env.example found"
+          fi

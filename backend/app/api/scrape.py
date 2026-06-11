@@ -5,7 +5,8 @@ Provides endpoints to trigger and monitor background web ingestion jobs.
 Uses Celery for durable task execution (jobs survive restarts).
 
 Endpoints:
-  - POST /api/scrape/run   — trigger scrape for approved URLs
+  - POST /api/scrape/run       — trigger scrape for approved URLs
+  - POST /api/scrape/discover  — discover + ingest subpages from homepages
   - GET  /api/scrape/status/{job_id} — check job progress
 """
 
@@ -14,7 +15,8 @@ from __future__ import annotations
 import logging
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from app.middleware.api_key_auth import require_agent_api_key
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger("rankroute.api.scrape")
@@ -24,7 +26,7 @@ router = APIRouter(prefix="/api/scrape", tags=["scrape"])
 # ── Request / Response Models ─────────────────────────────────────────
 
 class ScrapeRequest(BaseModel):
-    """Request body for POST /api/scrape/run."""
+    model_config = {"extra": "forbid"}
     urls: List[str] = Field(..., min_length=1, max_length=20)
     college_name: str = Field(..., min_length=1)
     is_official: bool = True
@@ -35,6 +37,24 @@ class ScrapeJobResponse(BaseModel):
     job_id: str
     status: str
     urls_queued: int
+    message: str
+
+
+class SubpageDiscoveryRequest(BaseModel):
+    model_config = {"extra": "forbid"}
+    homepage_urls: List[str] = Field(
+        ..., min_length=1, max_length=50,
+        description="Homepage URLs to discover subpages from",
+    )
+    college_name: str = Field(..., min_length=1)
+    max_subpages_per_homepage: int = Field(default=20, ge=1, le=100)
+
+
+class SubpageDiscoveryResponse(BaseModel):
+    """Response for POST /api/scrape/discover."""
+    job_id: str
+    status: str
+    homepages: int
     message: str
 
 
@@ -66,7 +86,10 @@ _CELERY_STATE_MAP = {
 # ── Endpoints ─────────────────────────────────────────────────────────
 
 @router.post("/run", response_model=ScrapeJobResponse)
-async def trigger_scrape(request: ScrapeRequest):
+async def trigger_scrape(
+    request: ScrapeRequest,
+    _auth=Depends(require_agent_api_key),
+):
     """Trigger a background scrape+ingestion job for approved URLs.
 
     Only official college domains and government counseling portals are allowed.
@@ -99,8 +122,59 @@ async def trigger_scrape(request: ScrapeRequest):
     )
 
 
+@router.post("/discover", response_model=SubpageDiscoveryResponse)
+async def trigger_subpage_discovery(
+    request: SubpageDiscoveryRequest,
+    _auth=Depends(require_agent_api_key),
+):
+    """Discover subpages from approved college homepages and ingest them.
+
+    For each homepage URL:
+      1. Fetch the homepage HTML
+      2. Parse all <a> links
+      3. Filter for same-domain, relevant subpage links (fee, placement,
+         hostel, admission, etc.)
+      4. Ingest all discovered subpages + original homepages into ChromaDB
+
+    Returns immediately with a job_id for status polling.
+    """
+    from app.ingestion.scrape_runner import is_approved_url
+    from app.tasks.ingestion import discover_and_ingest_job
+
+    rejected = [
+        url for url in request.homepage_urls if not is_approved_url(url)
+    ]
+    if rejected:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Unapproved homepage URLs: {rejected}. "
+                "Only official college and counseling domains are allowed."
+            ),
+        )
+
+    task = discover_and_ingest_job.delay(
+        homepage_urls=request.homepage_urls,
+        college_name=request.college_name,
+        max_subpages_per_homepage=request.max_subpages_per_homepage,
+    )
+
+    return SubpageDiscoveryResponse(
+        job_id=task.id,
+        status="queued",
+        homepages=len(request.homepage_urls),
+        message=(
+            f"Subpage discovery queued for {len(request.homepage_urls)} "
+            f"homepage(s) under '{request.college_name}'."
+        ),
+    )
+
+
 @router.get("/status/{job_id}", response_model=ScrapeStatusResponse)
-async def get_scrape_status(job_id: str):
+async def get_scrape_status(
+    job_id: str,
+    _auth=Depends(require_agent_api_key),
+):
     """Check the status of a scrape+ingestion job (state persisted in Redis)."""
     from celery.result import AsyncResult
     from app.worker import celery_app

@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # ── API Server ──────────────────────────────────────────
   api:
@@ -11,12 +9,17 @@ services:
       - "9000:9000"
     env_file:
       - .env
-    environment:
-      - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./data:/app/data
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:9000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
 
   # ── Celery Worker (Ingestion) ───────────────────────────
@@ -31,34 +34,39 @@ services:
       --concurrency=2
     env_file:
       - .env
-    environment:
-      - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./data:/app/data
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   # ── Redis (Broker + Result Backend + Cache) ─────────────
   redis:
     image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   # ── Flower (Celery Monitoring — optional) ───────────────
+  # WARNING: Flower has no built-in TLS. Do not expose on public networks.
+  # Set FLOWER_PASSWORD to a strong value, or remove this service in production.
   flower:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A app.worker:celery_app flower --port=5555
+    command: >
+      sh -c "if [ -z \"$${FLOWER_PASSWORD}\" ]; then echo 'FATAL: FLOWER_PASSWORD must be set' >&2; exit 1; fi;
+             celery -A app.worker:celery_app flower --port=5555 --basic_auth=admin:$${FLOWER_PASSWORD}"
     environment:
-      - REDIS_URL=redis://redis:6379/0
-    ports:
-      - "5555:5555"
+      - FLOWER_PASSWORD=${FLOWER_PASSWORD:?must be set}
+    # Port 5555 is NOT mapped to host — access via docker network only
     depends_on:
       - redis
     restart: unless-stopped
@@ -84,10 +92,9 @@ services:
     command: celery -A app.worker:celery_app beat --loglevel=info
     env_file:
       - .env
-    environment:
-      - REDIS_URL=redis://redis:6379/0
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

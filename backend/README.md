@@ -188,7 +188,7 @@ Collection: `college_web_docs`
     "document_title": "AEC Placements 2024",
     "scraped_at": "2026-05-19T10:00:00",
     "content_hash": "a1b2c3d4e5f6",
-    "freshness_bucket": "current",  # current, recent, historical
+    # (freshness computed dynamically at query time — not stored)
     "chunk_index": 0
 }
 ```
@@ -207,7 +207,7 @@ If ChromaDB misses, the `web_search.py` engine performs a domain-restricted live
 - `fee_structure.csv` — tuition, hostel, exam fees by category
 - `placement_stats.csv` — branch-wise packages, placement rates
 - `facilities.csv` — campus area, hostel capacity, amenities
-- `seat_matrix.json` — branch-wise seat distribution
+- `seat_matrix.csv` — branch-wise seat distribution
 - `branch_details.json` — syllabus highlights, career scope
 - `admission_process.json` — CEE/JEE counseling steps
 
@@ -220,8 +220,12 @@ backend/
 ├── app/
 │   ├── main.py                          # FastAPI app (v2.0.0-alpha)
 │   ├── config.py                        # Settings & environment
-│   ├── security.py                      # Rate limiting middleware
-│   ├── observability.py                 # Request context middleware
+│   ├── worker.py                        # Celery worker + beat schedule
+│   │
+│   ├── middleware/                       # ── Middleware Layer ──
+│   │   ├── rate_limit.py                # Per-endpoint rate limiting
+│   │   ├── observability.py             # Request context / logging
+│   │   └── api_key_auth.py              # Agent API key auth
 │   │
 │   ├── orchestration/                   # ── Control Plane ──
 │   │   ├── orchestrator.py              # Supreme Orchestrator (lifecycle)
@@ -240,56 +244,92 @@ backend/
 │   │       └── verifier_agent.py        # evidence bundle validation
 │   │
 │   ├── retrieval/                       # ── Deterministic Layer ──
-│   │   ├── cutoff_engine.py             # 895-record CSV-backed engine
+│   │   ├── cutoff_engine.py             # CSV-backed prediction engine
 │   │   └── metadata_filters.py          # Chroma $and/$in filter builder
 │   │
 │   ├── tasks/                           # ── Distributed Celery Workers ──
 │   │   ├── __init__.py
-│   │   └── ingestion.py                 # asynchronous scraping/healing pipeline
+│   │   ├── ingestion.py                 # async scraping/healing pipeline
+│   │   └── enrichment.py                # passive profile enrichment
 │   │
 │   ├── ingestion/                       # ── ETL Logic ──
 │   │   ├── scrape_runner.py             # whitelisted-domain-only fetcher
 │   │   ├── page_cleaner.py              # Trafilatura HTML extraction
 │   │   ├── chunker.py                   # section-aware semantic chunking
+│   │   ├── content_validator.py         # page quality validation
+│   │   ├── subpage_discovery.py         # homepage link discovery
 │   │   ├── embedder.py                  # batch HuggingFace embedding
 │   │   └── upsert_service.py            # Chroma upsert with stable IDs
 │   │
 │   ├── api/
-│   │   ├── chat.py                      # /api/chat, /api/colleges, /api/health
-│   │   ├── scrape.py                    # /api/scrape/run, /api/scrape/status
-│   │   └── auth.py                      # authentication routes
+│   │   ├── chat.py                      # POST /api/chat (SSE streaming)
+│   │   ├── chats.py                     # CRUD /api/chats, /api/messages
+│   │   ├── auth.py                      # authentication routes
+│   │   ├── colleges.py                  # GET /api/colleges
+│   │   ├── health.py                    # GET /api/health
+│   │   ├── profile.py                   # GET/PATCH /api/profile
+│   │   ├── scrape.py                    # POST /api/scrape/*
+│   │   └── admin.py                     # Admin upload/validate/restore
 │   │
 │   ├── services/
 │   │   ├── web_search.py                # Tavily live web fallback
 │   │   ├── domain_registry.py           # Zero-trust allowlist
+│   │   ├── data_ingestor.py             # CSV → ChromaDB ingestion
 │   │   ├── cache_service.py             # TTL cache (prediction, web, answer)
+│   │   ├── usage_service.py             # Freemium usage tracking (Redis)
 │   │   ├── versioning_service.py        # prompt/policy version tracking
-│   │   └── college_info_service.py      # local CSV college data
+│   │   ├── alert_service.py             # Admin email alerts via SMTP
+│   │   ├── college_info_service.py      # local CSV college data
+│   │   ├── profile_enricher.py          # passive regex enrichment
+│   │   └── email_validator.py           # disposable-domain blocklist
 │   │
 │   ├── core/
-│   │   ├── rag_pipeline.py              # legacy RAG (fallback path)
 │   │   ├── chroma_client.py             # ChromaDB interface
-│   │   ├── embeddings.py                # embedding service
+│   │   ├── embeddings.py                # HuggingFace embedding service
 │   │   └── llm_client.py               # LLM interface (Groq)
 │   │
-│   ├── models/
-│   │   ├── requests.py                  # Pydantic request models
-│   │   └── responses.py                 # CollegeInfo, ChatStreamingResponse
+│   ├── db/
+│   │   ├── supabase.py                  # Supabase client + queries
+│   │   └── migrations/                  # SQL migration files
+│   │       ├── V1__base_schema.sql
+│   │       ├── V2__schema_fixes.sql
+│   │       ├── V3__onboarding_fields.sql
+│   │       └── V4__admin_role.sql
 │   │
-│   └── utils/
-│       └── helpers.py
+│   └── models/
+│       ├── requests.py                  # Pydantic request models
+│       └── responses.py                 # CollegeInfo, CollegeListResponse
 │
 ├── data/
-│   ├── cee_cutoffs.csv                  # CEE cutoff truth (575 records)
-│   ├── jee_cutoffs.csv                  # JEE cutoff truth (320 records)
+│   ├── cee_cutoffs.csv                  # CEE cutoff truth
+│   ├── jee_cutoffs.csv                  # JEE cutoff truth
 │   ├── college_info/                    # local CSV fallback data
-│   └── chroma/                          # vector DB persistence
+│   ├── chroma/                          # vector DB persistence
+│   ├── backups/                         # admin upload backups
+│   └── archive/                         # legacy data archives
 │
-├── nginx/
-│   └── nginx.conf                       # Rate limiting & reverse proxy
+├── middleware/                           # migrated to app/middleware/
 │
-├── test_e2e.py                          # Live orchestration testing
-├── requirements.txt
+├── logs/                                # runtime log files
+│   ├── server.log
+│   └── error.log
+│
+├── scripts/
+│   ├── ingest_data.py                  # CLI data ingestion
+│   └── ingest_web_content.py           # one-shot web scrape
+│
+├── tests/                               # pytest test suite
+│   ├── test_admin.py
+│   ├── test_cutoff_engine.py
+│   ├── test_domain_registry.py
+│   └── test_validator.py
+│
+├── Caddyfile                            # Reverse proxy + rate limiting
+├── Dockerfile                           # Production container
+├── Dockerfile.caddy                     # Caddy container
+├── docker-compose.yml                   # Multi-service orchestration
+├── requirements.txt                     # Python dependencies
+├── .env.example                         # Environment template
 ├── CHANGELOG_PRODUCTION.md              # detailed production changelog
 └── README.md                            # this file
 ```
