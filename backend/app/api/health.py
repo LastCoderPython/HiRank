@@ -3,7 +3,7 @@ from app.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api", tags=["health"])
+router = APIRouter(prefix="/api/v1", tags=["health"])
 
 
 @router.get("/health")

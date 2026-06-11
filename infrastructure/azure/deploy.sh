@@ -37,6 +37,31 @@ az redis create \
 REDIS_HOST=$(az redis show --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "hostName" -o tsv)
 REDIS_KEY=$(az redis list-keys --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "primaryKey" -o tsv)
 
+
+# ── Identity & Key Vault ────────────────────────────
+IDENTITY_NAME="rankroute-identity"
+echo "Creating User-Assigned Identity..."
+az identity create --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --location "$LOCATION"
+IDENTITY_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
+IDENTITY_PRINCIPAL_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "principalId" -o tsv)
+
+KV_NAME="rr-kv-${RANDOM}"
+echo "Creating Key Vault ($KV_NAME)..."
+az keyvault create --name "$KV_NAME" --resource-group "$RESOURCE_GROUP" --location "$LOCATION" --enable-rbac-authorization false
+az keyvault set-policy --name "$KV_NAME" --object-id "$IDENTITY_PRINCIPAL_ID" --secret-permissions get list
+KV_URI="https://$KV_NAME.vault.azure.net"
+
+echo "Storing secrets in Key Vault..."
+az keyvault secret set --vault-name "$KV_NAME" --name "redis-url" --value "redis://:$REDIS_KEY@$REDIS_HOST:6380/0?ssl=True" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "supabase-url" --value "$SUPABASE_URL" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "supabase-service-key" --value "$SUPABASE_SERVICE_KEY" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "supabase-jwt-secret" --value "$SUPABASE_JWT_SECRET" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "supabase-anon-key" --value "$SUPABASE_ANON_KEY" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "groq-api-key" --value "$GROQ_API_KEY" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "tavily-api-key" --value "$TAVILY_API_KEY" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "agent-api-keys" --value "$AGENT_API_KEYS" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "huggingface-api-token" --value "${HUGGINGFACE_API_TOKEN:-}" > /dev/null
+
 # ── Container Apps Environment ──────────────────────
 echo "Creating Container Apps Environment..."
 az containerapp env create \
@@ -51,6 +76,11 @@ az acr build --registry "$ACR_NAME" --image rankroute-api:latest ../../backend/.
 az acr build --registry "$ACR_NAME" --image rankroute-worker:latest --file ../../backend/Dockerfile --build-arg CMD="celery" ../../backend/.
 
 # ── Deploy Backend API ──────────────────────────────
+
+echo "Granting identity access to ACR..."
+ACR_ID=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
+az role assignment create --assignee "$IDENTITY_PRINCIPAL_ID" --scope "$ACR_ID" --role AcrPull
+
 echo "Deploying API container..."
 az containerapp create \
   --name "$BACKEND_ACA" \
@@ -58,22 +88,24 @@ az containerapp create \
   --environment "$ACA_ENV" \
   --image "$ACR_NAME.azurecr.io/rankroute-api:latest" \
   --registry-server "$ACR_NAME.azurecr.io" \
-  --registry-password "$ACR_PASSWORD" \
   --target-port 9000 \
   --ingress external \
   --min-replicas 1 \
   --max-replicas 3 \
   --cpu 1.0 \
   --memory 2.0Gi \
+  --user-assigned "$IDENTITY_ID" \
+  --registry-identity "$IDENTITY_ID" \
   --secrets \
-    redis-url="redis://:$REDIS_KEY@$REDIS_HOST:6380/0?ssl=True" \
-    supabase-url="$SUPABASE_URL" \
-    supabase-service-key="$SUPABASE_SERVICE_KEY" \
-    supabase-jwt-secret="$SUPABASE_JWT_SECRET" \
-    supabase-anon-key="$SUPABASE_ANON_KEY" \
-    groq-api-key="$GROQ_API_KEY" \
-    tavily-api-key="$TAVILY_API_KEY" \
-    agent-api-keys="$AGENT_API_KEYS" \
+    redis-url="keyvaultref:$KV_URI/secrets/redis-url,identityref:$IDENTITY_ID" \
+    supabase-url="keyvaultref:$KV_URI/secrets/supabase-url,identityref:$IDENTITY_ID" \
+    supabase-service-key="keyvaultref:$KV_URI/secrets/supabase-service-key,identityref:$IDENTITY_ID" \
+    supabase-jwt-secret="keyvaultref:$KV_URI/secrets/supabase-jwt-secret,identityref:$IDENTITY_ID" \
+    supabase-anon-key="keyvaultref:$KV_URI/secrets/supabase-anon-key,identityref:$IDENTITY_ID" \
+    groq-api-key="keyvaultref:$KV_URI/secrets/groq-api-key,identityref:$IDENTITY_ID" \
+    tavily-api-key="keyvaultref:$KV_URI/secrets/tavily-api-key,identityref:$IDENTITY_ID" \
+    agent-api-keys="keyvaultref:$KV_URI/secrets/agent-api-keys,identityref:$IDENTITY_ID" \
+    huggingface-api-token="keyvaultref:$KV_URI/secrets/huggingface-api-token,identityref:$IDENTITY_ID" \
   --env-vars \
     REDIS_URL=secretref:redis-url \
     SUPABASE_URL=secretref:supabase-url \
@@ -82,7 +114,9 @@ az containerapp create \
     SUPABASE_ANON_KEY=secretref:supabase-anon-key \
     GROQ_API_KEY=secretref:groq-api-key \
     TAVILY_API_KEY=secretref:tavily-api-key \
+    HUGGINGFACE_API_TOKEN=secretref:huggingface-api-token \
     AGENT_API_KEYS=secretref:agent-api-keys \
+    HUGGINGFACE_API_TOKEN=secretref:huggingface-api-token \
     FRONTEND_URL="$FRONTEND_URL" \
     DEBUG=false \
     LLM_PROVIDER=groq \
@@ -101,24 +135,27 @@ az containerapp create \
   --environment "$ACA_ENV" \
   --image "$ACR_NAME.azurecr.io/rankroute-api:latest" \
   --registry-server "$ACR_NAME.azurecr.io" \
-  --registry-password "$ACR_PASSWORD" \
   --command "celery" "-A" "app.worker:celery_app" "worker" "--loglevel=info" "--queues=ingestion" "--concurrency=2" \
   --min-replicas 1 \
   --max-replicas 1 \
   --cpu 0.5 \
   --memory 1.0Gi \
+  --user-assigned "$IDENTITY_ID" \
+  --registry-identity "$IDENTITY_ID" \
   --secrets \
-    redis-url="redis://:$REDIS_KEY@$REDIS_HOST:6380/0?ssl=True" \
-    supabase-url="$SUPABASE_URL" \
-    supabase-service-key="$SUPABASE_SERVICE_KEY" \
-    groq-api-key="$GROQ_API_KEY" \
-    tavily-api-key="$TAVILY_API_KEY" \
+    redis-url="keyvaultref:$KV_URI/secrets/redis-url,identityref:$IDENTITY_ID" \
+    supabase-url="keyvaultref:$KV_URI/secrets/supabase-url,identityref:$IDENTITY_ID" \
+    supabase-service-key="keyvaultref:$KV_URI/secrets/supabase-service-key,identityref:$IDENTITY_ID" \
+    groq-api-key="keyvaultref:$KV_URI/secrets/groq-api-key,identityref:$IDENTITY_ID" \
+    tavily-api-key="keyvaultref:$KV_URI/secrets/tavily-api-key,identityref:$IDENTITY_ID" \
+    huggingface-api-token="keyvaultref:$KV_URI/secrets/huggingface-api-token,identityref:$IDENTITY_ID" \
   --env-vars \
     REDIS_URL=secretref:redis-url \
     SUPABASE_URL=secretref:supabase-url \
     SUPABASE_SERVICE_KEY=secretref:supabase-service-key \
     GROQ_API_KEY=secretref:groq-api-key \
     TAVILY_API_KEY=secretref:tavily-api-key \
+    HUGGINGFACE_API_TOKEN=secretref:huggingface-api-token \
     DEBUG=false
 
 # ── Deploy Celery Beat ──────────────────────────────
@@ -129,16 +166,17 @@ az containerapp create \
   --environment "$ACA_ENV" \
   --image "$ACR_NAME.azurecr.io/rankroute-api:latest" \
   --registry-server "$ACR_NAME.azurecr.io" \
-  --registry-password "$ACR_PASSWORD" \
   --command "celery" "-A" "app.worker:celery_app" "beat" "--loglevel=info" \
   --min-replicas 1 \
   --max-replicas 1 \
   --cpu 0.25 \
   --memory 0.5Gi \
+  --user-assigned "$IDENTITY_ID" \
+  --registry-identity "$IDENTITY_ID" \
   --secrets \
-    redis-url="redis://:$REDIS_KEY@$REDIS_HOST:6380/0?ssl=True" \
-    supabase-url="$SUPABASE_URL" \
-    supabase-service-key="$SUPABASE_SERVICE_KEY" \
+    redis-url="keyvaultref:$KV_URI/secrets/redis-url,identityref:$IDENTITY_ID" \
+    supabase-url="keyvaultref:$KV_URI/secrets/supabase-url,identityref:$IDENTITY_ID" \
+    supabase-service-key="keyvaultref:$KV_URI/secrets/supabase-service-key,identityref:$IDENTITY_ID" \
   --env-vars \
     REDIS_URL=secretref:redis-url \
     SUPABASE_URL=secretref:supabase-url \

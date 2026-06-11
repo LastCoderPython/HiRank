@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     # Embedding
     embedding_provider: str = "huggingface"
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    huggingface_api_token: Optional[str] = None
 
     # Vector Database
     vector_db: str = "chroma"

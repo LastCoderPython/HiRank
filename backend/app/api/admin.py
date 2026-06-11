@@ -15,7 +15,7 @@ from app.services.college_info_service import college_info_service
 
 logger = logging.getLogger("rankroute.admin")
 
-router = APIRouter(prefix="/api/admin", tags=["admin"])
+router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
 
 async def require_admin(sb_access_token: Optional[str] = Cookie(None)):

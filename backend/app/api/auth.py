@@ -12,7 +12,7 @@ from app.config import settings
 
 logger = logging.getLogger("rankroute.api.auth")
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 SUPABASE_URL = settings.supabase_url
 SUPABASE_ANON_KEY = settings.supabase_anon_key

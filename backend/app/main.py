@@ -124,6 +124,6 @@ async def root():
     return {
         "message": "RankRoute API",
         "docs": "/docs",
-        "health": "/api/health"
+        "health": "/api/v1/health"
     }
 
