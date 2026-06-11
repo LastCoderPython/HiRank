@@ -18,7 +18,9 @@ Design (from V2 plan):
 
 from __future__ import annotations
 
+import json
 import logging
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.orchestration.types import (
@@ -41,6 +43,14 @@ class WebKnowledgeAgent:
     """
 
     COLLECTION_NAME = "college_web_docs"
+
+    FRESHNESS_MULTIPLIER = {
+        "current": 1.0,
+        "recent": 0.9,
+        "stale": 0.7,
+        "archive": 0.5,
+        "unknown": 0.6,
+    }
 
     def __init__(self):
         self._collection = None
@@ -65,13 +75,40 @@ class WebKnowledgeAgent:
                 logger.error("Failed to init college_web_docs collection: %s", e)
                 self._collection = None
 
+    @staticmethod
+    def _compute_freshness_bucket(scraped_at: Optional[str] = None) -> str:
+        """Compute a freshness bucket based on scrape time (dynamic at query time)."""
+        if not scraped_at:
+            return "unknown"
+        try:
+            scraped_dt = datetime.fromisoformat(scraped_at)
+            now = datetime.now(timezone.utc)
+            days_old = (now - scraped_dt).days
+            if days_old <= 7:
+                return "current"
+            elif days_old <= 30:
+                return "recent"
+            elif days_old <= 180:
+                return "stale"
+            else:
+                return "archive"
+        except Exception:
+            return "unknown"
+
     async def run(self, frame: RequestFrame) -> WebKnowledgeOutput:
         """Execute descriptive retrieval for a given RequestFrame."""
         self._ensure_collection()
 
         # 1) If the database is completely empty, fail fast (Tier 2)
         if self._collection is None or self._collection.count() == 0:
-            logger.info(f"WebKnowledgeAgent: no documents in collection, falling back to live search")
+            page_types = intent_to_page_types(frame.intent)
+            logger.info(json.dumps({
+                "event": "chroma_empty",
+                "intent": frame.intent,
+                "college_targets": frame.college_targets,
+                "page_types": page_types,
+                "query_preview": frame.raw_query[:100],
+            }))
             return await self._fallback_to_live_search(frame)
 
         # Build metadata filters
@@ -101,9 +138,16 @@ class WebKnowledgeAgent:
             chunks = self._format_results(results)
             
             if not chunks:
-                logger.info("WebKnowledgeAgent: Chroma returned no results. Triggering Live Web Search Tier 2.")
+                logger.info(json.dumps({
+                    "event": "chroma_miss",
+                    "intent": frame.intent,
+                    "college_targets": frame.college_targets,
+                    "page_types": page_types,
+                    "query_preview": frame.raw_query[:100],
+                }))
                 return await self._fallback_to_live_search(frame)
 
+            chunks.sort(key=lambda c: c.relevance_score, reverse=True)
             summary_points = self._extract_summary_points(chunks)
 
             freshness_note = None
@@ -122,7 +166,7 @@ class WebKnowledgeAgent:
             return await self._fallback_to_local_data(frame)
 
     def _format_results(self, results: Dict) -> List[WebKnowledgeChunk]:
-        """Convert Chroma query results to WebKnowledgeChunk objects."""
+        """Convert Chroma query results to WebKnowledgeChunk objects with freshness-adjusted scores."""
         chunks = []
         if not results or not results.get("documents") or not results["documents"][0]:
             return chunks
@@ -132,15 +176,21 @@ class WebKnowledgeAgent:
         distances = results["distances"][0] if results.get("distances") else [0.5] * len(documents)
 
         for doc, meta, dist in zip(documents, metadatas, distances):
+            scraped_at = meta.get("scraped_at")
+            freshness = self._compute_freshness_bucket(scraped_at)
             relevance = max(0, min(1.0, 1.0 - dist))
+            multiplier = self.FRESHNESS_MULTIPLIER.get(freshness, 0.6)
+            adjusted_score = round(relevance * multiplier, 4)
+
             chunks.append(WebKnowledgeChunk(
                 text=doc,
                 college_name=meta.get("college_name", ""),
                 page_type=meta.get("page_type", ""),
                 source_url=meta.get("source_url"),
                 is_official=meta.get("is_official", True),
-                freshness_bucket=meta.get("freshness_bucket"),
-                relevance_score=round(relevance, 4),
+                freshness_bucket=freshness,
+                scraped_at=scraped_at,
+                relevance_score=adjusted_score,
             ))
 
         return chunks
@@ -181,19 +231,38 @@ class WebKnowledgeAgent:
                 
             logger.info(f"Triggering WebSearchFallback for query: '{frame.raw_query}', target: {target_code}")
             
-            # Execute search
+            # Pass user_id and session_id for credit enforcement
             fallback_result = await web_search_fallback.search(
                 query=frame.raw_query,
-                college_code=target_code
+                college_code=target_code,
+                user_id=getattr(frame, 'user_id', None),
+                session_id=getattr(frame, 'session_id', None),
             )
+
+            # If Tavily was skipped due to credit exhaustion, fall through
+            # to local data with an explicit hedging note for the LLM
+            if fallback_result and fallback_result.skipped_reason == "credit_exhausted":
+                logger.info("Tavily skipped (credit exhausted), falling to local data with hedging")
+                local_result = await self._fallback_to_local_data(frame)
+                local_result.freshness_note = (
+                    "Note: Live web search was unavailable due to monthly usage limits. "
+                    "If your answer relies on recent updates (notices, fee changes, "
+                    "counseling dates), explicitly tell the user that your answer is "
+                    "based on older local data and they should verify directly on "
+                    "the college's official website."
+                )
+                return local_result
             
             if fallback_result and fallback_result.context:
                 # Wrap the live search result into the standard WebKnowledgeOutput format
+                now_iso = datetime.now(timezone.utc).isoformat()
                 live_chunk = WebKnowledgeChunk(
                     text=fallback_result.context,
                     college_name=target_code or "Unknown",
                     page_type="live_search",
                     is_official=not fallback_result.has_unofficial,
+                    freshness_bucket="current",
+                    scraped_at=now_iso,
                     relevance_score=0.9
                 )
                 
@@ -231,6 +300,7 @@ class WebKnowledgeAgent:
                             college_name=info.get("name", college_code),
                             page_type="local_data",
                             is_official=True,
+                            freshness_bucket="current",
                             relevance_score=0.7,
                         ))
                         summary_points.append(f"[{info.get('name', college_code)}] Local data available.")
@@ -248,6 +318,7 @@ class WebKnowledgeAgent:
                             college_name=college_code,
                             page_type="fees",
                             is_official=True,
+                            freshness_bucket="current",
                             relevance_score=0.8,
                         ))
 
@@ -265,6 +336,7 @@ class WebKnowledgeAgent:
                             college_name=college_code,
                             page_type="placement",
                             is_official=True,
+                            freshness_bucket="current",
                             relevance_score=0.8,
                         ))
 
@@ -282,6 +354,7 @@ class WebKnowledgeAgent:
                             college_name=college_code,
                             page_type="hostel",
                             is_official=True,
+                            freshness_bucket="current",
                             relevance_score=0.75,
                         ))
 
@@ -304,6 +377,7 @@ class WebKnowledgeAgent:
                             college_name=college_code,
                             page_type="facilities",
                             is_official=True,
+                            freshness_bucket="current",
                             relevance_score=0.75,
                         ))
 

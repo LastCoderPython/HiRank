@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
-from datetime import datetime
+from typing import Optional, List, Dict
 
 
 class CollegeInfo(BaseModel):
@@ -25,21 +24,35 @@ class CollegeListResponse(BaseModel):
     query_params: dict
 
 
-class ChatStreamingResponse(BaseModel):
-    session_id: str
-    token: Optional[str] = None
-    colleges: Optional[List[CollegeInfo]] = None
-    done: bool = False
+class SimulatedOption(BaseModel):
+    college_name: str
+    college_code: str = ""
+    branch: str
+    closing_rank: int
+    match_percentage: float
+    band: str
+    is_unlocked: bool = False
 
 
-class ErrorResponse(BaseModel):
-    error: str
-    detail: Optional[str] = None
-    timestamp: datetime = Field(default_factory=datetime.now)
+class SimulationResponse(BaseModel):
+    current_rank: int
+    target_rank: int
+    category: str
+    exam: str
+    current_options: List[SimulatedOption]
+    target_options: List[SimulatedOption]
+    newly_unlocked: List[SimulatedOption]
+    summary: str
 
 
-class HealthResponse(BaseModel):
-    status: str
-    version: str
-    vector_db_status: str
-    llm_status: str
+class ComparisonMetric(BaseModel):
+    label: str
+    values: Dict[str, str]
+    source: Optional[str] = None
+
+
+class ComparisonResponse(BaseModel):
+    colleges: List[str]
+    branch: Optional[str] = None
+    metrics: List[ComparisonMetric]
+    has_data: bool

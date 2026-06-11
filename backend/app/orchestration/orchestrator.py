@@ -16,14 +16,15 @@ Responsibilities:
 
 from __future__ import annotations
 
+import asyncio
 import logging
-from typing import Any, AsyncIterator, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.orchestration.routing_policy import routing_policy, RouteCategory
 from app.orchestration.source_policy import source_policy
 from app.orchestration.budget_policy import budget_policy
 from app.orchestration.verification_policy import verification_policy, VerificationVerdict
-from app.orchestration.fallback_policy import fallback_policy, FallbackAction
+from app.orchestration.fallback_policy import fallback_policy
 from app.orchestration.traces import RequestTrace
 from app.orchestration.types import (
     RequestFrame,
@@ -69,6 +70,7 @@ class SupremeOrchestrator:
         query: str,
         history: Optional[List[Dict[str, str]]] = None,
         session_id: Optional[str] = None,
+        user_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Primary entry point. Returns a dict with:
@@ -82,6 +84,9 @@ class SupremeOrchestrator:
         # ── Step 1: Build RequestFrame ──────────────────────────────
         trace.start_stage("intent_parsing")
         frame = await self._parse_intent(query)
+        # Attach user/session context for downstream credit enforcement
+        frame.user_id = user_id
+        frame.session_id = session_id
         trace.detected_intent = frame.intent
         trace.end_stage()
 
@@ -136,8 +141,15 @@ class SupremeOrchestrator:
                     trace.retrieval_sources.append("cache:prediction")
                     logger.info("Cache HIT for prediction key=%s", cache_key[:12])
                 else:
-                    prediction_output = await self._run_prediction(frame)
-                    self._cache.set("prediction", cache_key, prediction_output)
+                    try:
+                        prediction_output = await asyncio.wait_for(
+                            self._run_prediction(frame), timeout=20.0
+                        )
+                    except asyncio.TimeoutError:
+                        logger.error("Prediction agent timed out after 20s")
+                        prediction_output = None
+                    if prediction_output is not None:
+                        self._cache.set("prediction", cache_key, prediction_output)
                     specialist_calls_made += 1
                 trace.end_stage()
 
@@ -145,7 +157,13 @@ class SupremeOrchestrator:
             if specialist_calls_made < budget.max_specialist_calls:
                 trace.start_stage("web_knowledge")
                 trace.record_agent("web_knowledge_agent")
-                web_output = await self._run_web_knowledge(frame)
+                try:
+                    web_output = await asyncio.wait_for(
+                        self._run_web_knowledge(frame), timeout=20.0
+                    )
+                except asyncio.TimeoutError:
+                    logger.error("Web knowledge agent timed out after 20s")
+                    web_output = None
                 specialist_calls_made += 1
                 trace.end_stage()
             else:
@@ -155,11 +173,22 @@ class SupremeOrchestrator:
         # ── Step 5: Verify via VerifierAgent ──────────────────────
         trace.start_stage("verification")
         trace.record_agent("verifier_agent")
-        verifier_output = await self._verifier_agent.run(
-            frame=frame,
-            prediction=prediction_output,
-            web_knowledge=web_output,
-        )
+        try:
+            verifier_output = await asyncio.wait_for(
+                self._verifier_agent.run(
+                    frame=frame,
+                    prediction=prediction_output,
+                    web_knowledge=web_output,
+                ), timeout=20.0
+            )
+        except asyncio.TimeoutError:
+            logger.error("Verifier agent timed out after 20s")
+            # Synthesize a permissive verifier output so the flow continues
+            verifier_output = VerifierOutput(
+                approved=True,
+                issues=["verifier_timeout"],
+                missing_fields=[],
+            )
         trace.verifier_flags = verifier_output.issues
         trace.end_stage()
 
@@ -284,7 +313,16 @@ class SupremeOrchestrator:
             for chunk in web_knowledge.chunks:
                 source_label = f"[{chunk.college_name}]" if chunk.college_name else ""
                 type_label = f"({chunk.page_type})" if chunk.page_type else ""
-                context_parts.append(f"{source_label} {type_label}")
+                # Surface the scrape date so the LLM can qualify its claims
+                date_label = ""
+                if chunk.scraped_at:
+                    try:
+                        from datetime import datetime
+                        dt = datetime.fromisoformat(chunk.scraped_at)
+                        date_label = f" — Data from: {dt.strftime('%d %b %Y')}"
+                    except Exception:
+                        date_label = ""
+                context_parts.append(f"{source_label} {type_label}{date_label}")
                 context_parts.append(chunk.text)
                 context_parts.append("")
 
@@ -298,6 +336,16 @@ class SupremeOrchestrator:
                 context_parts.append(f"Freshness: {web_knowledge.freshness_note}")
                 context_parts.append("")
 
+            # Freshness mix summary for LLM context
+            fresh_count = sum(1 for c in web_knowledge.chunks if c.freshness_bucket in ("current", "recent"))
+            stale_count = sum(1 for c in web_knowledge.chunks if c.freshness_bucket in ("stale", "archive"))
+            if stale_count > 0 and fresh_count > 0:
+                context_parts.append(
+                    f"Freshness mix: {fresh_count} recent source(s), {stale_count} older source(s). "
+                    "Prefer recent data for time-sensitive facts (fees, placements, notices)."
+                )
+                context_parts.append("")
+
         # ── Add response instructions ──────────────────────────────
         if context_parts:
             context_parts.append("=== RESPONSE INSTRUCTIONS ===")
@@ -309,6 +357,8 @@ class SupremeOrchestrator:
             if web_knowledge and web_knowledge.sources_used > 0:
                 context_parts.append("Use the college information above to answer descriptive questions.")
                 context_parts.append("Cite specific facts from the data. Do not invent details.")
+                context_parts.append("When a 'Data from' date is shown, qualify your answer with 'as of [date]'.")
+                context_parts.append("If sources have mixed freshness dates, prefer the most recent data for time-sensitive facts.")
 
             return {
                 "response_type": "stream",

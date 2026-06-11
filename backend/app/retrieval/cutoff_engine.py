@@ -20,7 +20,7 @@ Design principles (from V2 plan):
 from __future__ import annotations
 
 import logging
-import os
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -94,7 +94,16 @@ class CutoffEngine:
         self._cee_df: Optional[pd.DataFrame] = None
         self._jee_df: Optional[pd.DataFrame] = None
         self._data_loaded: bool = False
-        self._load_data()
+        self._lock = threading.Lock()
+
+    def _ensure_loaded(self):
+        """Eagerly load CSV data. Double-checked locking."""
+        if self._data_loaded:
+            return
+        with self._lock:
+            if self._data_loaded:
+                return
+            self._load_data()
 
     # ── Data Loading ──────────────────────────────────────────────────
 
@@ -191,6 +200,8 @@ class CutoffEngine:
         Returns a PredictionBundle with safe/target/ambitious options
         and the evidence rows used.
         """
+        self._ensure_loaded()
+
         if not self._data_loaded:
             return PredictionBundle(
                 assumptions=["Data not loaded"],
@@ -348,6 +359,7 @@ class CutoffEngine:
 
     def get_available_colleges(self, exam: str = "CEE") -> List[str]:
         """Return a list of all unique college names for the given exam."""
+        self._ensure_loaded()
         df = self._get_exam_df(exam)
         if df.empty:
             return []
@@ -355,6 +367,7 @@ class CutoffEngine:
 
     def get_available_branches(self, exam: str = "CEE", college_name: Optional[str] = None) -> List[str]:
         """Return all available branches, optionally filtered by college."""
+        self._ensure_loaded()
         df = self._get_exam_df(exam)
         if df.empty:
             return []
@@ -364,6 +377,7 @@ class CutoffEngine:
 
     def get_available_categories(self, exam: str = "CEE") -> List[str]:
         """Return all available categories for the given exam."""
+        self._ensure_loaded()
         df = self._get_exam_df(exam)
         if df.empty:
             return []
@@ -371,6 +385,7 @@ class CutoffEngine:
 
     def get_stats(self) -> Dict[str, Any]:
         """Return data statistics for health checks."""
+        self._ensure_loaded()
         return {
             "cee_records": len(self._cee_df) if self._cee_df is not None else 0,
             "jee_records": len(self._jee_df) if self._jee_df is not None else 0,
@@ -379,6 +394,52 @@ class CutoffEngine:
             "cee_years": sorted(self._cee_df["year"].unique().tolist()) if self._cee_df is not None and not self._cee_df.empty else [],
             "jee_years": sorted(self._jee_df["year"].unique().tolist()) if self._jee_df is not None and not self._jee_df.empty else [],
             "data_loaded": self._data_loaded,
+        }
+
+    def reload(self) -> Dict[str, int]:
+        """Hot-reload cutoff data from CSV files.
+
+        Called by the admin upload endpoint after a new CSV is written.
+        Uses copy-on-write: loads new DataFrames into temporaries,
+        sanity-checks them, then atomically swaps references under
+        the existing lock so concurrent readers never see partial state.
+        """
+        cee_path = Path(settings.cee_data_path)
+        jee_path = Path(settings.jee_data_path)
+
+        # Build new DataFrames into temporaries (no mutation of self)
+        new_cee = (
+            self._normalize_df(pd.read_csv(cee_path), exam="CEE")
+            if cee_path.exists() else pd.DataFrame()
+        )
+        new_jee = (
+            self._normalize_df(pd.read_csv(jee_path), exam="JEE")
+            if jee_path.exists() else pd.DataFrame()
+        )
+
+        # Sanity check — try a prediction on the new data
+        old_cee, old_jee = self._cee_df, self._jee_df
+        try:
+            # Temporarily assign for the sanity-check predict call
+            self._cee_df = new_cee
+            self._jee_df = new_jee
+            self.predict(rank=5000, exam="CEE")
+        except Exception as e:
+            # Revert on failure
+            self._cee_df = old_cee
+            self._jee_df = old_jee
+            raise RuntimeError(f"Reload failed, reverted to old data: {e}")
+
+        # Atomic swap under lock (readers see old OR new, never empty)
+        with self._lock:
+            self._cee_df = new_cee
+            self._jee_df = new_jee
+            self._data_loaded = True
+
+        return {
+            "cee_rows": len(self._cee_df) if self._cee_df is not None else 0,
+            "jee_rows": len(self._jee_df) if self._jee_df is not None else 0,
+            "status": "ok",
         }
 
     # ── Private Helpers ───────────────────────────────────────────────

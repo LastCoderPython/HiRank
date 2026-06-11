@@ -30,10 +30,11 @@ celery_app.conf.update(
     # Task routing
     task_routes={
         "app.tasks.ingestion.*": {"queue": "ingestion"},
+        "app.tasks.enrichment.*": {"queue": "enrichment"},
     },
 
     # Autodiscover
-    imports=["app.tasks.ingestion"],
+    imports=["app.tasks.ingestion", "app.tasks.enrichment"],
 )
 
 # ── Scheduled tasks (Celery Beat) ─────────────────────────────────────
@@ -50,5 +51,11 @@ celery_app.conf.beat_schedule = {
             "ALL_COLLEGES",
             True,
         ],
+    },
+    # Daily 9 AM UTC digest email to admin with current Tavily usage
+    "daily-usage-digest": {
+        "task": "app.tasks.ingestion.send_admin_alert",
+        "schedule": crontab(hour=9, minute=0),
+        "args": ["digest", 0, settings.tavily_monthly_quota],
     },
 }

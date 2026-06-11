@@ -1,0 +1,103 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "infrastructure/azure/**"
+      - ".github/workflows/deploy-azure.yml"
+
+env:
+  AZURE_RESOURCE_GROUP: rankroute-prod
+  AZURE_CONTAINER_APP: rankroute-api
+  ACR_NAME: rankrouteacr
+  WORKING_DIR: backend
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90d2b # v5.5.0
+        with:
+          python-version: "3.13"
+
+      - name: Cache pip
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-lock.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-lock.txt
+          pip install pytest pytest-asyncio
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Run tests
+        run: python -m pytest tests/ -v --tb=short --disable-warnings
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Azure Login
+        uses: azure/login@a457da9ea143b9201e37587b977e1f9c9a3d7fa # v2.3.0
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push to ACR
+        run: |
+          az acr build \
+            --registry ${{ env.ACR_NAME }} \
+            --image rankroute-api:${{ github.sha }} \
+            --image rankroute-api:latest \
+            .
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Run database migrations
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          for f in app/db/migrations/V*__*.sql; do
+            echo "Applying $f..."
+            PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} psql \
+              "${{ secrets.SUPABASE_DB_URL }}" \
+              -f "$f"
+          done
+        working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Deploy API to Container Apps
+        run: |
+          az containerapp update \
+            --name ${{ env.AZURE_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
+
+      - name: Deploy Worker
+        run: |
+          az containerapp update \
+            --name rankroute-worker \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
+
+      - name: Deploy Beat
+        run: |
+          az containerapp update \
+            --name rankroute-beat \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
+
+      - name: Verify deployment health
+        run: |
+          sleep 30
+          FQDN=$(az containerapp show \
+            --name ${{ env.AZURE_CONTAINER_APP }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --query "properties.configuration.ingress.fqdn" -o tsv)
+          curl --fail --retry 10 --retry-delay 10 \
+            "https://$FQDN/api/health"

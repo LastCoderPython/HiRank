@@ -1,0 +1,18 @@
+[
+  {"label": "greeting",   "message": "hi",                              "category": "simple"},
+  {"label": "greeting",   "message": "hello",                           "category": "simple"},
+  {"label": "greeting",   "message": "hey there",                       "category": "simple"},
+  {"label": "off_topic",  "message": "what is the weather today",       "category": "simple"},
+  {"label": "off_topic",  "message": "tell me a joke",                  "category": "simple"},
+  {"label": "ambiguous",  "message": "tell me about colleges",          "category": "ambiguous"},
+  {"label": "ambiguous",  "message": "what colleges should I apply to", "category": "ambiguous"},
+  {"label": "prediction", "message": "I got 4500 rank in CEE which colleges can I get", "category": "prediction"},
+  {"label": "prediction", "message": "I got 12000 rank in JEE general category which colleges can I get", "category": "prediction"},
+  {"label": "prediction", "message": "rank 8500 cee can I get computer science", "category": "prediction"},
+  {"label": "prediction", "message": "My rank is 3200 in Assam CEE what are my safe options", "category": "prediction"},
+  {"label": "prediction", "message": "I scored 2500 in JEE Advanced which branch should I take", "category": "prediction"},
+  {"label": "prediction", "message": "rank 15000 jee mains what colleges can I get in Assam", "category": "prediction"},
+  {"label": "prediction", "message": "I got 750 rank in CEE can I get electronics", "category": "prediction"},
+  {"label": "prediction", "message": "What are my chances with rank 5000 in CEE for mechanical engineering", "category": "prediction"},
+  {"label": "mixed",      "message": "I have rank 5500 CEE compare the fee structure of the top 3 colleges", "category": "prediction"}
+]

@@ -1,3 +1,20 @@
+# ── Builder Stage ──────────────────────────────────────────
+FROM python:3.13-slim AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libxml2-dev libxslt1-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-lock.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    rm -rf /root/.cache/pip
+
+# ── Runtime Stage ─────────────────────────────────────────
 FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -5,26 +22,21 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# System deps for lxml (trafilatura dependency)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential libxml2-dev libxslt1-dev \
+    libxml2 libxslt1.1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies (cached layer)
-COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=builder /usr/local /usr/local
 
-# Copy application code
 COPY . .
 
-# Create non-root user for security
 RUN useradd -m -r appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 9000
 
-# Default: API server with Gunicorn managing Uvicorn workers
-# --preload loads embedding model once before forking (saves RAM)
+ENV RUNTIME_ENV=production
+
 CMD ["gunicorn", \
      "-k", "uvicorn.workers.UvicornWorker", \
      "-w", "4", \

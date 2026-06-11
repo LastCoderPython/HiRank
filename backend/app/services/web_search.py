@@ -38,6 +38,7 @@ class FallbackResult:
     sources: List[SearchSource] = field(default_factory=list)
     was_fallback: bool = True
     has_unofficial: bool = False
+    skipped_reason: Optional[str] = None      # 'credit_exhausted' if Tavily was skipped
 
 
 class WebSearchFallback:
@@ -61,16 +62,47 @@ class WebSearchFallback:
         self,
         query: str,
         college_code: Optional[str] = None,
+        user_id: Optional[str] = None,
+        session_id: Optional[str] = None,
     ) -> FallbackResult:
         """Execute a domain-restricted live web search.
 
         Args:
             query: The student's original question.
             college_code: If known, restrict search to this college's domains.
+            user_id: Authenticated user ID (for credit enforcement).
+            session_id: Anonymous session ID (for credit enforcement).
 
         Returns:
             FallbackResult with context, sources, and metadata.
         """
+        # ── Kill switch: skip entirely when fallback is disabled ───────
+        if not settings.fallback_enabled:
+            return FallbackResult(context="", was_fallback=True)
+
+        # ── Credit Gate: Check usage limits before calling Tavily ─────
+        try:
+            from app.services.usage_service import usage_service
+
+            if user_id:
+                credit_check = usage_service.check_and_increment_auth_tavily(user_id)
+            elif session_id:
+                credit_check = usage_service.check_and_increment_anon_tavily(session_id)
+            else:
+                credit_check = None
+
+            if credit_check and not credit_check.allowed:
+                logger.info(
+                    "Tavily skipped (credit exhausted): user=%s, session=%s",
+                    user_id or "N/A", (session_id or "N/A")[:12],
+                )
+                return FallbackResult(
+                    context="", was_fallback=True,
+                    skipped_reason="credit_exhausted",
+                )
+        except Exception as e:
+            logger.warning("Usage check failed (proceeding with search): %s", e)
+
         client = self._get_client()
         if client is None:
             return FallbackResult(context="", was_fallback=True)
@@ -260,12 +292,14 @@ class WebSearchFallback:
         return "\n".join(lines)
 
     def _is_already_ingested(self, url: str) -> bool:
-        """Check if URL was already scraped (prevents duplicate ingestion).
+        """Check if URL was already scraped recently (Redis-backed).
 
-        TODO: Implement Redis-backed URL set for production.
-        For now, always returns False (always re-ingest).
+        Uses the ingested URL set populated by upsert_service after
+        each successful upsert. TTL is 7 days — URLs are naturally
+        re-ingested by the weekly cron scrape.
         """
-        return False
+        from app.ingestion.upsert_service import is_url_recently_ingested
+        return is_url_recently_ingested(url)
 
     def _trigger_self_heal(self, urls: List[str]) -> None:
         """Queue newly discovered official URLs for background ingestion."""

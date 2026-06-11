@@ -1,34 +1,30 @@
-from fastapi import APIRouter, HTTPException, Depends, Cookie, Request
-from fastapi.responses import JSONResponse
+from collections import defaultdict
+import time
+
+from fastapi import APIRouter, HTTPException, Cookie, Request
 from pydantic import BaseModel
 from typing import Optional, List
-from datetime import datetime
-import uuid
-import jwt
-import json as json_module
 import logging
-import httpx
 
 from app.db.supabase import (
     create_chat, get_user_chats, get_chat_by_id, update_chat_title,
     delete_chat, add_message, get_chat_messages,
     create_temp_chat, get_temp_chat, add_temp_message, get_temp_messages,
-    transfer_temp_to_user_chat
+    transfer_temp_to_user_chat, clear_all_chats
 )
-from app.config import settings
+from app.api.auth import verify_jwt
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["chats"])
 
-SUPABASE_JWT_SECRET = settings.supabase_jwt_secret
-SUPABASE_URL = settings.supabase_url
-SUPABASE_ANON_KEY = settings.supabase_anon_key
 
 class CreateChatRequest(BaseModel):
+    model_config = {"extra": "forbid"}
     title: str = "New Chat"
     temp_session_id: Optional[str] = None
 
 class AddMessageRequest(BaseModel):
+    model_config = {"extra": "forbid"}
     chat_id: Optional[str] = None
     temp_session_id: Optional[str] = None
     role: str
@@ -36,63 +32,23 @@ class AddMessageRequest(BaseModel):
     metadata: Optional[dict] = None
 
 class UpdateChatRequest(BaseModel):
+    model_config = {"extra": "forbid"}
     title: str
-
-def _get_supabase_project_url() -> Optional[str]:
-    if not SUPABASE_URL:
-        return None
-
-    url = SUPABASE_URL.strip().rstrip("/")
-    if url.endswith("/rest/v1"):
-        url = url[: -len("/rest/v1")]
-    return url
 
 
 async def get_user_from_token(sb_access_token: Optional[str] = Cookie(None)) -> Optional[dict]:
+    """Extract user from JWT cookie using shared verify_jwt from auth.py."""
     if not sb_access_token:
         return None
 
-    if SUPABASE_JWT_SECRET:
-        try:
-            payload = jwt.decode(
-                sb_access_token,
-                SUPABASE_JWT_SECRET,
-                algorithms=["HS256"],
-                options={"verify_aud": False}
-            )
-            return {
-                "id": payload.get("sub"),
-                "email": payload.get("email")
-            }
-        except jwt.ExpiredSignatureError:
-            return None
-        except jwt.InvalidTokenError:
-            pass
-
-    project_url = _get_supabase_project_url()
-    if not project_url or not SUPABASE_ANON_KEY:
+    payload = verify_jwt(sb_access_token)
+    if not payload:
         return None
 
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(
-                f"{project_url}/auth/v1/user",
-                headers={
-                    "apikey": SUPABASE_ANON_KEY,
-                    "Authorization": f"Bearer {sb_access_token}",
-                },
-            )
-
-        if response.status_code != 200:
-            return None
-
-        data = response.json()
-        return {
-            "id": data.get("id"),
-            "email": data.get("email")
-        }
-    except Exception:
-        return None
+    return {
+        "id": payload.get("sub"),
+        "email": payload.get("email")
+    }
 
 @router.post("/chats")
 async def create_new_chat(
@@ -111,11 +67,11 @@ async def create_new_chat(
                 if transferred_chat_id:
                     return {"chat_id": transferred_chat_id, "transferred": True}
             except Exception as e:
-                logger.warning(f"Failed to transfer temp chat: {e}")
+                logger.warning("Failed to transfer temp chat: %s", e)
         
         return {"chat_id": chat["id"]}
     else:
-        return {"error": "Authentication required", "requires_auth": True}
+        raise HTTPException(status_code=401, detail="Authentication required")
 
 @router.get("/chats")
 async def list_chats(
@@ -186,6 +142,18 @@ async def remove_chat(
     
     return {"success": True}
 
+@router.post("/chats/clear")
+async def clear_chats(
+    sb_access_token: Optional[str] = Cookie(None)
+):
+    user = await get_user_from_token(sb_access_token)
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    deleted_count = await clear_all_chats(user["id"])
+    return {"success": True, "deleted": deleted_count}
+
 @router.post("/messages")
 async def save_message(
     body: AddMessageRequest,
@@ -225,8 +193,18 @@ async def save_message(
     else:
         raise HTTPException(status_code=400, detail="Either authentication with chat_id, or temp_session_id required")
 
+_temp_chat_limits: dict = defaultdict(list)
+
 @router.get("/temp-chats/{session_id}")
-async def get_temp_chat_messages(session_id: str):
+async def get_temp_chat_messages(session_id: str, request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    window = _temp_chat_limits[client_ip]
+    window[:] = [t for t in window if now - t < 60]
+    if len(window) >= 10:
+        raise HTTPException(status_code=429, detail="Too many requests")
+    window.append(now)
+
     temp_chat = await get_temp_chat(session_id)
     if not temp_chat:
         return {"exists": False, "messages": []}

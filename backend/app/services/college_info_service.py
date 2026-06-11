@@ -1,6 +1,6 @@
-import os
 import json
 import csv
+import threading
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
@@ -268,6 +268,50 @@ class CollegeInfoService:
                 summary_parts.append(f"\n**Placements (CSE):** Avg: ₹{cs.get('avg_package_lpa', 'N/A')} LPA, Highest: ₹{cs.get('highest_package_lpa', 'N/A')} LPA")
         
         return "\n".join(summary_parts)
+
+
+    def reload_all(self) -> Dict[str, int]:
+        """Hot-reload all college info data from CSV/JSON files.
+
+        Called by the admin upload endpoint after new files are written.
+        Uses copy-on-write: builds new data into temporaries, then
+        atomically swaps references so concurrent readers never see
+        partial/empty state.
+        """
+        # Build new data into a temporary instance (no shared state)
+        tmp = CollegeInfoService.__new__(CollegeInfoService)
+        tmp.data_dir = self.data_dir
+        tmp.colleges_info = {}
+        tmp.fee_structure = {}
+        tmp.placement_stats = {}
+        tmp.facilities = {}
+        tmp.seat_matrix = {}
+        tmp.branch_details = {}
+        tmp.admission_processes = {}
+        tmp._load_all_data()
+
+        # Atomic swap — readers will see the old OR the new, never empty
+        if not hasattr(self, '_reload_lock'):
+            self._reload_lock = threading.Lock()
+
+        with self._reload_lock:
+            self.colleges_info = tmp.colleges_info
+            self.fee_structure = tmp.fee_structure
+            self.placement_stats = tmp.placement_stats
+            self.facilities = tmp.facilities
+            self.seat_matrix = tmp.seat_matrix
+            self.branch_details = tmp.branch_details
+            self.admission_processes = tmp.admission_processes
+
+        return {
+            "colleges_info": len(self.colleges_info),
+            "fee_structure": len(self.fee_structure),
+            "placement_stats": len(self.placement_stats),
+            "facilities": len(self.facilities),
+            "seat_matrix": len(self.seat_matrix),
+            "branch_details": len(self.branch_details),
+            "admission_processes": len(self.admission_processes),
+        }
 
 
 college_info_service = CollegeInfoService()

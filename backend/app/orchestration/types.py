@@ -27,6 +27,9 @@ class RequestFrame(BaseModel):
     needs_web_context: bool = False
     confidence: float = 1.0
     raw_query: str = ""
+    # Auth context (populated by orchestrator, not intent parser)
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
 
 
 # ─── Agent Output Contracts ──────────────────────────────────────────
@@ -88,6 +91,7 @@ class WebKnowledgeChunk(BaseModel):
     source_url: Optional[str] = None
     is_official: bool = True
     freshness_bucket: Optional[str] = None
+    scraped_at: Optional[str] = None
     relevance_score: float = 0.0
 
 

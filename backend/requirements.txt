@@ -1,49 +1,41 @@
-fastapi
-uvicorn[standard]
-python-multipart
-pydantic
-pydantic-settings
+fastapi>=0.100.0
+starlette>=0.41.3,<1.0
+uvicorn[standard]>=0.20.0
+python-multipart>=0.0.6
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
 
-# LangChain & RAG - latest compatible versions
-langchain
-langchain-community
-langchain-groq
-langchain-huggingface
-sentence-transformers
-langsmith
+# LangChain & RAG
+langchain-groq>=0.1.0
+langchain-huggingface>=0.0.1
+sentence-transformers>=2.2.0
+langsmith>=0.1.0
 
 # Vector Database
-chromadb
+chromadb>=0.4.0
 
 # Data Processing
-pandas
-numpy
-python-dotenv
+pandas>=2.0.0
+numpy>=1.26.0
 
-# async support
-aiofiles
-httpx
-sse-starlette
+# Async support
+httpx>=0.28.1
 
 # Authentication
-supabase
-PyJWT
-
-# Agent platform
-sqlalchemy
-aiosqlite
+supabase>=2.0.0
+PyJWT>=2.8.0
 
 # Production server
-gunicorn
+gunicorn>=22.0.0
 
 # Production ingestion pipeline
-trafilatura
-tenacity
+trafilatura>=1.0.0
+tenacity>=8.0.0
 
 # Task queue
-celery[redis]
-redis
-flower
+celery[redis]>=5.3.1
+redis>=4.5.0
+flower>=1.0.0
 
 # Live web search fallback
-tavily-python
+tavily-python>=0.3.0

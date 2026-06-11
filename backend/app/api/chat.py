@@ -1,42 +1,82 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Cookie
 from fastapi.responses import StreamingResponse
-from app.models.requests import ChatRequest, CollegeFilterRequest
-from app.models.responses import CollegeListResponse, CollegeInfo
+from app.models.requests import ChatRequest
 from app.core.llm_client import llm_client
 from app.orchestration.orchestrator import supreme_orchestrator
-from app.retrieval.cutoff_engine import cutoff_engine
+from app.api.auth import verify_jwt
 import json
 import uuid
 import logging
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["chat"])
 
 
+def _get_user_from_cookie(sb_access_token: Optional[str]) -> Optional[dict]:
+    """Extract user info from the access token cookie (non-throwing)."""
+    if not sb_access_token:
+        return None
+    payload = verify_jwt(sb_access_token)
+    if not payload:
+        return None
+    return {
+        "id": payload.get("sub"),
+        "email": payload.get("email"),
+    }
+
+
 @router.post("/chat")
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(
+    request: ChatRequest,
+    sb_access_token: Optional[str] = Cookie(None),
+):
     if not request.message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty")
     
     session_id = request.session_id or str(uuid.uuid4())
     
+    # Detect authenticated vs anonymous user
+    user = _get_user_from_cookie(sb_access_token)
+    user_id = user["id"] if user else None
+
+    # ── Anonymous Prompt Gate ─────────────────────────────────────
+    if not user_id:
+        try:
+            from app.services.usage_service import usage_service
+            credit_check = usage_service.check_and_increment_anon_prompt(session_id)
+            if not credit_check.allowed:
+                # Return auth_required SSE event immediately
+                async def _auth_wall():
+                    yield f"data: {json.dumps({'type': 'auth_required', 'reason': 'prompt_limit', 'used': credit_check.remaining + 3, 'limit': 3})}\n\n"
+                return StreamingResponse(
+                    _auth_wall(),
+                    media_type="text/event-stream",
+                    headers={
+                        "Cache-Control": "no-cache",
+                        "Connection": "keep-alive",
+                        "X-Session-Id": session_id,
+                    },
+                )
+        except Exception as e:
+            logger.warning("Prompt gate check failed (fail-open): %s", e)
+
     history = None
     if request.history:
         history = [{"role": msg.role, "content": msg.content} for msg in request.history]
     
     return StreamingResponse(
-        _generate_stream(request.message, history, session_id),
+        _generate_stream(request.message, history, session_id, user_id),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
             "X-Session-Id": session_id,
-            "Access-Control-Allow-Origin": "*"
         }
     )
 
 
-async def _generate_stream(message: str, history, session_id):
+async def _generate_stream(message: str, history, session_id, user_id: Optional[str] = None):
     try:
         yield f"data: {json.dumps({'type': 'session', 'session_id': session_id})}\n\n"
         
@@ -45,6 +85,7 @@ async def _generate_stream(message: str, history, session_id):
             query=message,
             history=history,
             session_id=session_id,
+            user_id=user_id,
         )
         
         response_type = result.get("response_type", "stream")
@@ -78,104 +119,31 @@ async def _generate_stream(message: str, history, session_id):
                 if token:
                     yield f"data: {json.dumps({'type': 'token', 'data': token})}\n\n"
         
-        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+        # Build done event with optional tavily_skipped metadata
+        done_payload = {"type": "done"}
+        tavily_skipped = result.get("tavily_skipped", False)
+        if tavily_skipped:
+            try:
+                from app.services.usage_service import usage_service
+                done_payload["tavily_skipped"] = True
+                done_payload["resets_on"] = usage_service.get_next_reset_date()
+            except Exception:
+                done_payload["tavily_skipped"] = True
+
+        yield f"data: {json.dumps(done_payload)}\n\n"
+        
+        # Fire-and-forget passive profile enrichment
+        if user_id:
+            try:
+                from app.tasks.enrichment import enrich_profile_from_message
+                enrich_profile_from_message.delay(user_id, message)
+            except Exception as e:
+                logger.error("Failed to dispatch enrichment task: %s", e)
+                pass # Never block the response
         
     except Exception as e:
-        logger.error(f"Streaming error: {e}")
-        yield f"data: {json.dumps({'type': 'error', 'data': str(e)})}\n\n"
+        logger.error("Streaming error: %s", e)
+        yield f"data: {json.dumps({'type': 'error', 'data': 'An error occurred while generating the response'})}\n\n"
 
 
-@router.get("/colleges")
-async def get_colleges(
-    rank: int,
-    category: str = "General",
-    branch: str = None,
-    exam: str = "CEE",
-    limit: int = 10
-):
-    """Deterministic college prediction using structured cutoff data.
-    
-    V2: Now uses the CutoffEngine (pandas-backed CSV data) instead of
-    Chroma vector search. Results are auditable and reproducible.
-    """
-    try:
-        colleges_raw = cutoff_engine.get_colleges_list(
-            rank=rank,
-            category=category,
-            exam=exam,
-            branch=branch,
-            limit=limit,
-        )
-        
-        colleges = []
-        for c in colleges_raw:
-            colleges.append(CollegeInfo(
-                college_name=c["college_name"],
-                college_code=c.get("college_code", ""),
-                branch=c["branch"],
-                category=c["category"],
-                opening_rank=c.get("opening_rank", 0),
-                closing_rank=c["closing_rank"],
-                year=c["year"],
-                match_percentage=c["match_percentage"],
-                seat_type=c.get("seat_type", "Government"),
-                band=c.get("band"),
-            ))
-        
-        return CollegeListResponse(
-            colleges=colleges,
-            total=len(colleges),
-            query_params={
-                "rank": rank,
-                "category": category,
-                "branch": branch,
-                "exam": exam,
-                "limit": limit
-            }
-        )
-    except Exception as e:
-        logger.error(f"Error getting colleges: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
-
-@router.get("/health")
-async def health_check():
-    from app.core.chroma_client import chroma_client
-    from app.config import settings
-    
-    try:
-        cee_count = chroma_client.count_documents("cee")
-        jee_count = chroma_client.count_documents("jee")
-        engine_stats = cutoff_engine.get_stats()
-        
-        from app.services.cache_service import cache_service
-        from app.services.versioning_service import versioning_service
-        
-        return {
-            "status": "healthy",
-            "version": "2.0.0-alpha",
-            "architecture": "policy-driven-multi-agent",
-            "models": {
-                "provider": settings.llm_provider,
-                "primary": settings.primary_model,
-                "fallback_1": settings.fallback_model_1,
-                "fallback_2": settings.fallback_model_2
-            },
-            "vector_db": {
-                "type": settings.vector_db,
-                "cee_documents": cee_count,
-                "jee_documents": jee_count
-            },
-            "cutoff_engine": engine_stats,
-            "cache": cache_service.get_stats(),
-            "policy_versions": versioning_service.get_all_current(),
-            "embedding": {
-                "provider": settings.embedding_provider,
-                "model": settings.embedding_model
-            }
-        }
-    except Exception as e:
-        return {
-            "status": "unhealthy",
-            "error": str(e)
-        }
