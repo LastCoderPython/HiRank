@@ -1,0 +1,46 @@
+name: Migration Safety Check
+
+on:
+  pull_request:
+    paths:
+      - 'backend/app/db/migrations/**.sql'
+
+jobs:
+  check-backward-compatibility:
+    name: Enforce Zero-Downtime Migrations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Scan for destructive SQL
+        run: |
+          echo "Scanning added/modified SQL migration files for destructive operations..."
+          
+          # Get list of changed SQL files in the migrations directory
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD | grep '^backend/app/db/migrations/.*\.sql$' || true)
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No migrations changed."
+            exit 0
+          fi
+          
+          DESTRUCTIVE_FOUND=false
+          
+          for file in $CHANGED_FILES; do
+            echo "Checking $file..."
+            # Look for DROP or RENAME case-insensitively
+            if egrep -i 'DROP TABLE|DROP COLUMN|RENAME COLUMN' "$file"; then
+              echo "::error file=$file::Destructive operation found! You cannot DROP or RENAME columns in a single deployment. See docs/MIGRATION_POLICY.md"
+              DESTRUCTIVE_FOUND=true
+            fi
+          done
+          
+          if [ "$DESTRUCTIVE_FOUND" = true ]; then
+            echo "Migration Safety Check FAILED. Destructive operations cause downtime in Azure Container Apps."
+            exit 1
+          fi
+          
+          echo "✅ Migrations look backward-compatible!"

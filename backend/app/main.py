@@ -16,6 +16,7 @@ from app.api.health import router as health_router
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.observability import RequestContextMiddleware
 from app.middleware.csp import SecurityHeadersMiddleware
+from app.middleware.maintenance import MaintenanceMiddleware
 from contextlib import asynccontextmanager
 import logging
 
@@ -88,6 +89,7 @@ app.add_middleware(
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestContextMiddleware)
 app.add_middleware(TracingMiddleware)
+app.add_middleware(MaintenanceMiddleware)
 app.add_middleware(RateLimitMiddleware, max_requests=settings.agent_rate_limit_per_minute)
 
 

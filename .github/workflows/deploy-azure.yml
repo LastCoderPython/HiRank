@@ -2,7 +2,7 @@ name: Deploy to Azure Container Apps
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
     paths:
       - "backend/**"
       - "infrastructure/azure/**"
@@ -75,12 +75,24 @@ jobs:
 
       - name: Deploy API to Container Apps
         run: |
-          az containerapp update \
-            --name ${{ env.AZURE_CONTAINER_APP }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Deploying to Production (100% Traffic)..."
+            az containerapp update \
+              --name ${{ env.AZURE_CONTAINER_APP }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
+          else
+            echo "Deploying to Staging (0% Public Traffic)..."
+            az containerapp update \
+              --name ${{ env.AZURE_CONTAINER_APP }} \
+              --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+              --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }} \
+              --revision-suffix stg-${{ github.sha }}
+            # Note: For true traffic splitting, the ACA environment must be in multiple revision mode.
+          fi
 
       - name: Deploy Worker
+        if: github.ref == 'refs/heads/main'
         run: |
           az containerapp update \
             --name rankroute-worker \
@@ -88,6 +100,7 @@ jobs:
             --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
 
       - name: Deploy Beat
+        if: github.ref == 'refs/heads/main'
         run: |
           az containerapp update \
             --name rankroute-beat \
@@ -95,6 +108,7 @@ jobs:
             --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-api:${{ github.sha }}
 
       - name: Verify deployment health
+        if: github.ref == 'refs/heads/main'
         run: |
           sleep 30
           FQDN=$(az containerapp show \

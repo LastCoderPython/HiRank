@@ -19,6 +19,8 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const [cutoffStatus, setCutoffStatus] = useState<CutoffStatusResponse | null>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
+  const [maintenanceActive, setMaintenanceActive] = useState(false);
+  const [maintenanceLoading, setMaintenanceLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -35,6 +37,34 @@ export default function AdminDashboard() {
     })();
     return () => { cancelled = true; };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setMaintenanceLoading(true);
+      try {
+        const data = await api.getMaintenanceStatus();
+        if (!cancelled) setMaintenanceActive(data.active);
+      } catch {
+        // silently fail
+      } finally {
+        if (!cancelled) setMaintenanceLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const toggleMaintenance = async () => {
+    setMaintenanceLoading(true);
+    try {
+      const data = await api.toggleMaintenance(!maintenanceActive);
+      setMaintenanceActive(data.active);
+    } catch (err) {
+      alert("Failed to toggle maintenance mode");
+    } finally {
+      setMaintenanceLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 overflow-y-auto p-8">
@@ -61,6 +91,27 @@ export default function AdminDashboard() {
               <p className="text-sm text-neutral-400">{desc}</p>
             </Link>
           ))}
+        </div>
+
+        <div className="mt-8 bg-neutral-800/50 border border-neutral-700 rounded-xl p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                <Shield size={18} className={maintenanceActive ? "text-amber-500" : "text-neutral-400"} />
+                Maintenance Mode
+              </h2>
+              <p className="text-sm text-neutral-400">
+                When enabled, all non-admin traffic will be blocked with a 503 Service Unavailable response.
+              </p>
+            </div>
+            <button
+              onClick={toggleMaintenance}
+              disabled={maintenanceLoading}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${maintenanceActive ? 'bg-amber-500' : 'bg-neutral-600'} disabled:opacity-50`}
+            >
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${maintenanceActive ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+          </div>
         </div>
 
         <div className="mt-8">

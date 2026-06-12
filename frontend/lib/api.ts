@@ -137,4 +137,11 @@ export const api = {
   getAnalyticsOverview:      () => fetchApi<AnalyticsOverview>('/api/v1/admin/analytics/overview'),
   getDailyAnalytics:         (days = 30) => fetchApi<DailyAnalytics>(`/api/admin/analytics/daily?days=${days}`),
   getPredictionAnalytics:    () => fetchApi<PredictionAnalytics>('/api/v1/admin/analytics/predictions'),
+
+  // Maintenance
+  getMaintenanceStatus: () => fetchApi<{ active: boolean }>('/api/v1/admin/maintenance'),
+  toggleMaintenance: (active: boolean) => fetchApi<{ success: boolean; active: boolean }>('/api/v1/admin/maintenance', {
+    method: 'POST',
+    body: JSON.stringify({ active }),
+  }),
 };
