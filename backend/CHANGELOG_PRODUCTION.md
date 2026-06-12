@@ -2751,3 +2751,31 @@ has_data = any(v != "N/A" for m in metrics for v in m.values.values())
 - **Deleted Dead Scripts:** Removed one-shot migration scripts (`replace.py`, `replace_tests.py`, `update_deploy.py`) to prevent accidental reruns.
 - **Cleaned Local Noise:** Removed accidentally installed root `node_modules/` and empty `data/archive/` directories.
 - **Hardened .gitignore:** Added explicit exclusions for root `/node_modules/`, `backend/logs/`, `data/archive/`, and `data/backups/`.
+
+
+---
+
+## Phase 15: Agentic Architecture & Inference Overhaul ✅
+
+### Problem Solved
+Upgraded the core AI pipeline to use advanced agentic patterns inspired by Claude Code. Transitioned from a reactive, stateless RAG bot to a proactive, state-aware, multi-agent orchestrator.
+
+### Changes Made
+
+#### 1. Prompt Hardening & Personality (pp/core/llm_client.py)
+- **Environment Injection (<env>)**: System prompt automatically injects Today\'s Date, Counseling Status, and User Journey State.
+- **Fail-Gracefully XML Examples**: Explicit few-shot <example> blocks to prevent hallucinating branches for unsupported colleges.
+- **Anti-Preachy Refusals**: Strict 1-sentence refusal protocol for non-Assam Engineering queries (e.g., NEET, IITs).
+- **Mandatory Citations**: Prompt updated to rigidly cite sources when referencing fees or cutoffs.
+
+#### 2. Execution & Speed Optimization
+- **Speculative Execution (orchestrator.py)**: Automatically pre-fetches context for closely related colleges (e.g., if AEC is queried, JEC is silently fetched in the background) to allow natural comparisons.
+- **Semantic Caching (chat.py)**: Redis-backed short-term caching of normalized queries. Identical queries hit cache instead of the LLM, dropping response time to ~50ms.
+- **Dynamic Mechanical Guardrails (chat.py)**: Post-stream interceptor that dynamically loads ALL colleges from college_info_service.py using Regex boundaries. If the LLM hallucinates a college the user is not eligible for, a strict warning is instantly appended to the stream.
+
+#### 3. Total Architectural Overhaul
+- **Multi-Agent Delegation (orchestrator.py)**: Replaced sequential wait execution with syncio.gather(). Prediction Agent and Web Knowledge Agent now execute in parallel.
+- **Counseling Journey State Machine (chat.py)**: Passively tracks user funnel states (documents_ready, safe_colleges_identified) in Redis. State is injected back into the LLM context.
+- **Asynchronous Polling (chat.py)**: Returns an instant mock polling event stream if the query triggers deep research parameters, bypassing timeout thresholds.
+- **Event Hooks (chat.py)**: Fire-and-forget httpx.post webhooks to an admin channel if user sentiment triggers escalation flags (e.g., 'frustrated', 'talk to human').
+

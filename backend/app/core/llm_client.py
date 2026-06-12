@@ -57,8 +57,20 @@ class LLMClient:
             self.primary_model = settings.primary_model
             logger.info(f"Primary model set to: {self.primary_model}")
     
-    def get_system_prompt(self) -> str:
-        return """You are RankRoute AI for Assam CEE/JEE admissions.
+    def get_system_prompt(self, state_str: str = "Unknown") -> str:
+        from datetime import datetime
+        import os
+        
+        current_date = datetime.now().strftime("%B %d, %Y")
+        counseling_phase = os.getenv("COUNSELING_PHASE", "Preparation Phase")
+        
+        return f"""You are RankRoute AI for Assam CEE/JEE admissions.
+
+<env>
+Today's Date: {current_date}
+Counseling Status: {counseling_phase}
+User Journey State: {state_str}
+</env>
 
 CRITICAL RULE - ONLY USE COLLEGES FROM THE CONTEXT DATA:
 - You MUST ONLY mention colleges that are listed in the "ELIGIBLE COLLEGES" section
@@ -75,11 +87,23 @@ When showing college recommendations:
 RESPONSE FORMAT:
 - First congratulate them on their rank
 - List the matching colleges from the data (name, branch, closing rank, match %)
-- Keep response concise (3-4 sentences for rank queries)
-- Be helpful and encouraging"""
+- Keep response concise. If a question can be answered with a simple Yes or No, output only that word. Avoid introductions and explanations.
+- Be helpful and encouraging
+
+MANDATORY SOURCE CITATIONS:
+- Whenever you state a fee, cutoff, or deadline, you MUST cite the source at the end of the sentence (e.g., [Source: DTE 2025 Matrix, Pg 4]).
+
+REFUSAL POLICY:
+- If the user asks about non-Assam Engineering (like NEET, IITs, or unrelated topics), do NOT explain your limitations. Respond instantly with 1 sentence: "I only have data for Assam CEE/JEE state engineering admissions. I cannot help with that."
+
+<example>
+[Context Data: EMPTY]
+User: What is the cutoff for AEC Aerospace Engineering?
+Assistant: AEC does not currently offer an Aerospace Engineering branch based on official CEE data. Would you like to see Mechanical Engineering cutoffs instead?
+</example>"""
     
-    def create_prompt(self, context: str, query: str, history: List[dict] = None) -> ChatPromptTemplate:
-        system_prompt = self.get_system_prompt()
+    def create_prompt(self, context: str, query: str, history: List[dict] = None, state_str: str = "Unknown") -> ChatPromptTemplate:
+        system_prompt = self.get_system_prompt(state_str)
         
         messages = [
             SystemMessagePromptTemplate.from_template(system_prompt),
@@ -93,12 +117,15 @@ RESPONSE FORMAT:
                     messages.append(SystemMessagePromptTemplate.from_template(msg["content"]))
         
         context_template = f"""
-RETRIEVED COLLEGE DATA (USE ONLY THIS DATA):
+<retrieved_college_data>
 {context}
+</retrieved_college_data>
 
-USER QUERY: {query}
+<user_query>
+{query}
+</user_query>
 
-Based on the cutoff data above, provide a helpful response. Calculate match percentages and format clearly."""
+Based on the <retrieved_college_data> above, provide a helpful response. Calculate match percentages and format clearly."""
         
         messages.append(HumanMessagePromptTemplate.from_template(context_template))
         
@@ -109,7 +136,8 @@ Based on the cutoff data above, provide a helpful response. Calculate match perc
         context: str, 
         query: str, 
         history: List[dict] = None,
-        model_name: str = None
+        model_name: str = None,
+        state_str: str = "Unknown"
     ) -> AsyncIterator[str]:
         self.ensure_initialized()
         if not self.llms:
@@ -126,7 +154,7 @@ Based on the cutoff data above, provide a helpful response. Calculate match perc
             raise RuntimeError(f"Model {model_to_use} not available")
         
         llm = self.llms[model_to_use]
-        prompt = self.create_prompt(context, query, history)
+        prompt = self.create_prompt(context, query, history, state_str)
         chain = prompt | llm | StrOutputParser()
         
         try:

@@ -98,7 +98,7 @@ class SupremeOrchestrator:
         budget = budget_policy.get_budget(route)
         specialist_calls_made = 0
 
-        # ── Step 4: Execute agents based on route ──────────────────
+        # ── Step 4: Execute agents in parallel ──────────────────
         prediction_output: Optional[PredictionAgentOutput] = None
         web_output: Optional[WebKnowledgeOutput] = None
 
@@ -124,12 +124,13 @@ class SupremeOrchestrator:
                 "trace": trace.to_dict(),
             }
 
+        tasks = {}
+
         if route in (RouteCategory.PREDICTION_SIMPLE, RouteCategory.MIXED_COMPARISON):
             if specialist_calls_made < budget.max_specialist_calls:
                 trace.start_stage("structured_prediction")
                 trace.record_agent("structured_prediction_agent")
 
-                # Check prediction cache first
                 cache_key = self._cache.make_key(
                     frame.rank, frame.category, frame.exam, frame.branch_preference
                 )
@@ -139,15 +140,9 @@ class SupremeOrchestrator:
                     trace.retrieval_sources.append("cache:prediction")
                     logger.info("Cache HIT for prediction key=%s", cache_key[:12])
                 else:
-                    try:
-                        prediction_output = await asyncio.wait_for(
-                            self._run_prediction(frame), timeout=20.0
-                        )
-                    except asyncio.TimeoutError:
-                        logger.error("Prediction agent timed out after 20s")
-                        prediction_output = None
-                    if prediction_output is not None:
-                        self._cache.set("prediction", cache_key, prediction_output)
+                    tasks['prediction'] = asyncio.create_task(
+                        asyncio.wait_for(self._run_prediction(frame), timeout=20.0)
+                    )
                     specialist_calls_made += 1
                 trace.end_stage()
 
@@ -155,18 +150,29 @@ class SupremeOrchestrator:
             if specialist_calls_made < budget.max_specialist_calls:
                 trace.start_stage("web_knowledge")
                 trace.record_agent("web_knowledge_agent")
-                try:
-                    web_output = await asyncio.wait_for(
-                        self._run_web_knowledge(frame), timeout=20.0
-                    )
-                except asyncio.TimeoutError:
-                    logger.error("Web knowledge agent timed out after 20s")
-                    web_output = None
+                tasks['web'] = asyncio.create_task(
+                    asyncio.wait_for(self._run_web_knowledge(frame), timeout=20.0)
+                )
                 specialist_calls_made += 1
                 trace.end_stage()
             else:
                 logger.info("Budget exhausted: skipping web_knowledge_agent (used %d/%d)",
                            specialist_calls_made, budget.max_specialist_calls)
+
+        # Multi-Agent Delegation: Wait for all assigned agents concurrently
+        if tasks:
+            keys = list(tasks.keys())
+            results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+            for key, result in zip(keys, results):
+                if isinstance(result, Exception):
+                    logger.error("Agent %s failed or timed out: %s", key, result)
+                else:
+                    if key == 'prediction':
+                        prediction_output = result
+                        cache_key = self._cache.make_key(frame.rank, frame.category, frame.exam, frame.branch_preference)
+                        self._cache.set("prediction", cache_key, prediction_output)
+                    elif key == 'web':
+                        web_output = result
 
         # ── Step 5: Verify via VerifierAgent ──────────────────────
         trace.start_stage("verification")
@@ -238,7 +244,19 @@ class SupremeOrchestrator:
         """Parse the raw query into a structured RequestFrame
         using the IntentAgent (rules-first approach)."""
         output = await self._intent_agent.run(query)
-        return self._intent_agent.to_request_frame(output, raw_query=query)
+        frame = self._intent_agent.to_request_frame(output, raw_query=query)
+        
+        # Speculative Execution (Pre-fetching)
+        if frame.college_targets:
+            targets_str = " ".join(frame.college_targets).lower()
+            if "aec" in targets_str or "assam engineering college" in targets_str:
+                if not any("jec" in t.lower() for t in frame.college_targets):
+                    frame.college_targets.append("JEC")
+            elif "jec" in targets_str or "jorhat engineering college" in targets_str:
+                if not any("aec" in t.lower() for t in frame.college_targets):
+                    frame.college_targets.append("AEC")
+                    
+        return frame
 
     async def _run_prediction(self, frame: RequestFrame) -> PredictionAgentOutput:
         """Run the structured prediction agent (deterministic, cutoff-backed)."""

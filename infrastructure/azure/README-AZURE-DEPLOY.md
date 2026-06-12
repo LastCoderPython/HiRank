@@ -16,7 +16,7 @@
                │                            │
                │  ┌──────────────────────┐  │
                │  │  rankroute-api       │  │  ◄── HTTP ingress (port 9000)
-               │  │  FastAPI + Gunicorn  │  │       scales 1–3 replicas
+               │  │  FastAPI + Gunicorn  │  │       scales 1–10 replicas
                │  └──────────┬───────────┘  │
                │             │              │
                │  ┌──────────▼───────────┐  │
@@ -28,9 +28,20 @@
                │  │  rankroute-beat      │  │  ◄── Celery Beat (no ingress)
                │  │  weekly cron         │  │       always 1 replica
                │  └──────────────────────┘  │
-               └─────────────┬──────────────┘
+               │                            │
+               │  ┌──────────────────────┐  │
+               │  │  rankroute-chromadb  │  │  ◄── Internal ingress (port 8000)
+               │  │  Vector Database     │  │       always 1 replica
+               │  └──────────┬───────────┘  │       Token-authenticated
+               │             │              │
+               └─────────────┼──────────────┘
                              │
-               ┌─────────────▼──────────────┐
+                ┌────────────▼─────────────┐
+                │  Azure Files Share       │
+                │  (chroma-data, 5 GB)     │
+                └──────────────────────────┘
+
+               ┌────────────────────────────┐
                │  Azure Cache for Redis     │
                │  (Basic tier, SSL 6380)   │
                └────────────────────────────┘

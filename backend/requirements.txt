@@ -1,7 +1,7 @@
-fastapi>=0.100.0
-starlette>=0.41.3
+fastapi>=0.115.0
+starlette>=1.0.1
 uvicorn[standard]>=0.20.0
-python-multipart>=0.0.6
+python-multipart>=0.0.27
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
 
@@ -22,7 +22,7 @@ httpx>=0.28.1
 
 # Authentication
 supabase>=2.0.0
-PyJWT>=2.8.0
+PyJWT>=2.13.0
 
 # Production server
 gunicorn>=22.0.0
@@ -38,3 +38,11 @@ flower>=1.0.0
 
 # Live web search fallback
 tavily-python>=0.3.0
+
+# Security Patches
+aiohttp>=3.14.0
+cryptography>=46.0.7
+urllib3>=2.7.0
+transformers>=4.48.0,<5.0.0
+idna>=3.15
+h2>=4.3.0

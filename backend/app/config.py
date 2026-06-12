@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     # Vector Database
     vector_db: str = "chroma"
     chroma_persist_dir: str = "./data/chroma"
+    chroma_host: str = "chromadb"
+    chroma_port: int = 8000
+    chroma_auth_token: Optional[str] = None
 
     # Data CSV Paths
     cee_data_path: str = "./data/cee_cutoffs.csv"

@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
 
     from app.core.chroma_client import chroma_client
     chroma_client._ensure_initialized()
-    logging.info("ChromaDB initialized at: %s", settings.chroma_persist_dir)
+    logging.info("ChromaDB connected at: %s:%s", settings.chroma_host, settings.chroma_port)
 
     # Phase 2: non-critical components (background thread, not needed for chat)
     def _init_embeddings():
