@@ -82,7 +82,7 @@ colorama==0.4.6
     #   uvicorn
 courlan==1.4.0
     # via trafilatura
-cryptography==46.0.5
+cryptography==46.0.7
     # via pyjwt
 dateparser==1.4.0
     # via htmldate
