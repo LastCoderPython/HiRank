@@ -50,3 +50,13 @@ docs/csvs/
 backend/latency_report.json
 backend/server_output.log
 backend/server_error.log
+
+# Root-level package installs (prevent accidental npm install at root)
+/node_modules/
+
+# Runtime log directories
+backend/logs/
+
+# Empty runtime directories
+data/archive/
+data/backups/
