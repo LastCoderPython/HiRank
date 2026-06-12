@@ -10,7 +10,6 @@ and accessible via the admin log viewer.
 import logging
 from datetime import datetime, timezone
 
-from app.config import settings
 from app.services.log_service import log_service
 
 logger = logging.getLogger("rankroute.services.alert")

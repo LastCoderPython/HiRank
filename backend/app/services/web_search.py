@@ -12,7 +12,6 @@ import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import List, Dict, Optional, Tuple
-from urllib.parse import urlparse
 
 from langsmith import traceable
 from app.config import settings

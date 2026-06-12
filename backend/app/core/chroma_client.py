@@ -183,7 +183,6 @@ class ChromaClient:
     
     def reset_collection(self, collection_name: str = "cee"):
         self._ensure_initialized()
-        collection = self.cee_collection if collection_name == "cee" else self.jee_collection
         self.client.delete_collection(collection_name)
         if collection_name == "cee":
             self.cee_collection = self._get_or_create_collection("cee")

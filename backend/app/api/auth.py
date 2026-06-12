@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Request, Response, HTTPException, Cookie
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 from typing import Optional
 import httpx
 import jwt
 import logging
 import secrets
-from datetime import datetime
 from urllib.parse import quote
 from app.config import settings
 
@@ -347,7 +346,7 @@ async def google_login(request: Request):
 # Delivery chain: FastAPI → Supabase Auth API → Resend SMTP relay → User inbox
 # No Redis needed. Email IS the identity — no pre-storage required.
 
-from app.services.email_validator import validate_and_normalize_email
+from app.services.email_validator import validate_and_normalize_email  # noqa: E402
 
 
 class EmailSendOtpRequest(BaseModel):

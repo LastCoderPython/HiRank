@@ -1,7 +1,6 @@
 from supabase import create_client, Client
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone
-import uuid
 
 from starlette.concurrency import run_in_threadpool
 from app.config import settings

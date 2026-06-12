@@ -1,7 +1,7 @@
 import json
 import csv
 import threading
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Optional
 from pathlib import Path
 
 

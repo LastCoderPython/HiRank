@@ -8,7 +8,7 @@ Each agent returns structured JSON via Pydantic models, not prose.
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 from enum import Enum
 
 

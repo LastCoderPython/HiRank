@@ -8,7 +8,6 @@ A mostly-deterministic specialist agent that queries the cutoff engine
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from app.retrieval.cutoff_engine import cutoff_engine, PredictionBundle
 from app.orchestration.types import (

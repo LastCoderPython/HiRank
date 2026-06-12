@@ -27,7 +27,7 @@ server_state: str = "starting"  # starting → ready | degraded
 async def lifespan(app: FastAPI):
     global server_state
     logging.info("Starting RankRoute Backend v2.0...")
-    logging.info(f"Architecture: Policy-Driven Multi-Agent")
+    logging.info("Architecture: Policy-Driven Multi-Agent")
     logging.info(f"LLM Provider: {settings.llm_provider}")
     logging.info(f"Vector DB: {settings.vector_db}")
 
