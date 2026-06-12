@@ -55,7 +55,7 @@ async def _async_ingestion(
         scrape_version: If set, tags all new chunks with this version
             (used by self-heal for post-upsert stale purging).
     """
-    from app.ingestion.scrape_runner import fetch_page, is_approved_url
+    from app.ingestion.scrape_runner import is_approved_url
     from app.ingestion.page_cleaner import clean_page
     from app.ingestion.chunker import chunk_text
     from app.ingestion.upsert_service import upsert_chunks, delete_all_for_url

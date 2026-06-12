@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Query
 from app.config import settings
 from app.models.responses import CollegeListResponse, CollegeInfo, SimulationResponse, SimulatedOption
-from app.retrieval.cutoff_engine import cutoff_engine, PredictionResult, PredictionBundle
+from app.retrieval.cutoff_engine import cutoff_engine, PredictionBundle
 import logging
 
 logger = logging.getLogger(__name__)

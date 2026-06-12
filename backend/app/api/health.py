@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from app.config import settings
 import logging
 
 logger = logging.getLogger(__name__)

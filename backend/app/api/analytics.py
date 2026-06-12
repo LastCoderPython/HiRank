@@ -9,7 +9,7 @@ GET  /api/admin/analytics/predictions → Prediction distribution data
 import json
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 
 from fastapi import APIRouter, Depends, Query
 from starlette.concurrency import run_in_threadpool

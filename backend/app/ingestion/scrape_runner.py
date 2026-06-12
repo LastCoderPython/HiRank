@@ -9,16 +9,16 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, List, Optional
+from typing import List, Optional
 
 import httpx
 
 logger = logging.getLogger("rankroute.ingestion.scraper")
 
 
-from app.services.domain_registry import ALL_OFFICIAL_DOMAINS as APPROVED_DOMAINS
+from app.services.domain_registry import ALL_OFFICIAL_DOMAINS as APPROVED_DOMAINS  # noqa: E402
 
 @dataclass
 class ScrapeResult:
@@ -50,7 +50,7 @@ async def fetch_page(url: str, timeout: float = 15.0) -> ScrapeResult:
         return ScrapeResult(
             url=url,
             success=False,
-            error=f"Domain not in approved list. Only official college and counseling domains are allowed.",
+            error="Domain not in approved list. Only official college and counseling domains are allowed.",
         )
 
     try:

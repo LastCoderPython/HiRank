@@ -102,9 +102,9 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
             yield f"data: {json.dumps({'type': 'colleges', 'data': colleges})}\n\n"
         
         # For prediction routes with cutoff evidence, stream via LLM
-        prediction = result.get("prediction")
+        result.get("prediction")
         content = result.get("content", "")
-        processed = result.get("processed")
+        result.get("processed")
         
         if content:
             # Use the LLM to generate a natural language response

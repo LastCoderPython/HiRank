@@ -3,7 +3,7 @@ import time
 
 from fastapi import APIRouter, HTTPException, Cookie, Request
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 import logging
 
 from app.db.supabase import (

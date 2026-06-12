@@ -194,9 +194,7 @@ def validate_page(
         )
 
     # ── 4. Thin content gate ─────────────────────────────────────────
-    thin_valid = True
     if cleaned_page.page_type == "general" and cleaned_page.word_count < MIN_GENERAL_WORDS:
-        thin_valid = False
         checks["thin_content"] = False
         return ValidationResult(
             is_valid=False,

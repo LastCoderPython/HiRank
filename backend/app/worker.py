@@ -38,8 +38,8 @@ celery_app.conf.update(
 )
 
 # ── Scheduled tasks (Celery Beat) ─────────────────────────────────────
-from celery.schedules import crontab
-from app.services.domain_registry import START_URLS
+from celery.schedules import crontab  # noqa: E402
+from app.services.domain_registry import START_URLS  # noqa: E402
 
 celery_app.conf.beat_schedule = {
     # Re-scrape all approved colleges every Monday at 3 AM
