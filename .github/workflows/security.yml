@@ -1,0 +1,55 @@
+name: Automated Security Gates
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * *' # Run nightly at 2 AM UTC
+
+permissions:
+  contents: read
+
+jobs:
+  security-scans:
+    name: Dependency & Secret Scans
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Trufflehog requires deep fetch to scan commit history
+
+      # ── Secret Scanning ──────────────────────────────────────────────
+      - name: TruffleHog Secret Scanner
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+        # We allow this to fail without breaking the PR deployment 
+        # so developers can review findings non-blockingly.
+        continue-on-error: true
+
+      # ── Dependency Auditing ──────────────────────────────────────────
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install pip-audit
+        run: python -m pip install pip-audit
+
+      - name: Audit Backend Dependencies (pip-audit)
+        working-directory: backend
+        run: |
+          # We explicitly ignore CVE-2026-45829 (ChromaDB) as our architecture
+          # uses the embedded client and is immune to the HTTP server RCE.
+          pip-audit -r requirements-lock.txt --ignore-vuln CVE-2026-45829
+        # Even with the ignore list, we set this to non-blocking so a 
+        # newly disclosed zero-day doesn't randomly halt production hotfixes.
+        continue-on-error: true

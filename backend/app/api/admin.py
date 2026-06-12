@@ -1,5 +1,6 @@
 import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Cookie
+from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from datetime import datetime, timezone
 from pathlib import Path
@@ -572,3 +573,38 @@ def archive_cutoff_year(
         "archive": archive_name,
         "message": f"{exam.upper()} cutoff data for {year} archived to {archive_name}",
     }
+
+class MaintenanceToggleRequest(BaseModel):
+    active: bool
+
+@router.get("/maintenance")
+async def get_maintenance_status(payload: dict = Depends(require_admin)):
+    from app.middleware.maintenance import _get_redis_client, MAINTENANCE_KEY
+    client = _get_redis_client()
+    if not client:
+        return {"active": False, "error": "Redis unavailable"}
+    
+    val = client.get(MAINTENANCE_KEY)
+    active = val is not None and str(val).lower() == "true"
+    return {"active": active}
+
+@router.post("/maintenance")
+async def toggle_maintenance(req: MaintenanceToggleRequest, payload: dict = Depends(require_admin)):
+    from app.middleware.maintenance import _get_redis_client, MAINTENANCE_KEY
+    from app.services.log_service import log_service
+    client = _get_redis_client()
+    if not client:
+        raise HTTPException(status_code=503, detail="Redis unavailable")
+    
+    if req.active:
+        client.set(MAINTENANCE_KEY, "true")
+        status = "enabled"
+    else:
+        client.delete(MAINTENANCE_KEY)
+        status = "disabled"
+        
+    admin_id = payload.get("sub", "unknown")
+    log_service.insert("admin_action", "warning", f"Maintenance mode {status}", 
+        {"active": req.active}, source="admin.maintenance", actor_id=admin_id, actor_role="admin")
+        
+    return {"success": True, "active": req.active}
