@@ -14,6 +14,9 @@ REDIS_NAME="rankroute-redis"
 BACKEND_ACA="rankroute-api"
 WORKER_ACA="rankroute-worker"
 BEAT_ACA="rankroute-beat"
+CHROMADB_ACA="rankroute-chromadb"
+STORAGE_ACCOUNT="rankroutestorage"  # must be globally unique, lowercase
+CHROMA_SHARE="chroma-data"
 
 # ── Resource Group ──────────────────────────────────
 echo "Creating resource group..."
@@ -70,6 +73,40 @@ az containerapp env create \
   --location "$LOCATION" \
   --logs-destination none
 
+# ── Azure Storage (for ChromaDB persistence) ────────
+echo "Creating Azure Storage Account..."
+az storage account create \
+  --name "$STORAGE_ACCOUNT" \
+  --resource-group "$RESOURCE_GROUP" \
+  --location "$LOCATION" \
+  --sku Standard_LRS
+
+STORAGE_KEY=$(az storage account keys list \
+  --account-name "$STORAGE_ACCOUNT" \
+  --resource-group "$RESOURCE_GROUP" \
+  --query "[0].value" -o tsv)
+
+echo "Creating Azure Files Share..."
+az storage share-rm create \
+  --storage-account "$STORAGE_ACCOUNT" \
+  --name "$CHROMA_SHARE" \
+  --quota 5
+
+echo "Linking storage to ACA environment..."
+az containerapp env storage set \
+  --name "$ACA_ENV" \
+  --resource-group "$RESOURCE_GROUP" \
+  --storage-name chromastorage \
+  --azure-file-account-name "$STORAGE_ACCOUNT" \
+  --azure-file-account-key "$STORAGE_KEY" \
+  --azure-file-share-name "$CHROMA_SHARE" \
+  --access-mode ReadWrite
+
+# ── Generate ChromaDB Auth Token ────────────────────
+CHROMA_TOKEN=$(openssl rand -hex 32)
+echo "Storing ChromaDB auth token in Key Vault..."
+az keyvault secret set --vault-name "$KV_NAME" --name "chroma-auth-token" --value "$CHROMA_TOKEN" > /dev/null
+
 # ── Build Docker Images ─────────────────────────────
 echo "Building and pushing Docker images..."
 az acr build --registry "$ACR_NAME" --image rankroute-api:latest ../../backend/.
@@ -106,6 +143,7 @@ az containerapp create \
     tavily-api-key="keyvaultref:$KV_URI/secrets/tavily-api-key,identityref:$IDENTITY_ID" \
     agent-api-keys="keyvaultref:$KV_URI/secrets/agent-api-keys,identityref:$IDENTITY_ID" \
     huggingface-api-token="keyvaultref:$KV_URI/secrets/huggingface-api-token,identityref:$IDENTITY_ID" \
+    chroma-auth-token="keyvaultref:$KV_URI/secrets/chroma-auth-token,identityref:$IDENTITY_ID" \
   --env-vars \
     REDIS_URL=secretref:redis-url \
     SUPABASE_URL=secretref:supabase-url \
@@ -125,7 +163,10 @@ az containerapp create \
     FALLBACK_MODEL_2=llama-3.1-8b-instant \
     CORS_ORIGINS="$FRONTEND_URL" \
     EMBEDDING_PROVIDER=huggingface \
-    EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+    EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2 \
+    CHROMA_HOST=rankroute-chromadb \
+    CHROMA_PORT=8000 \
+    CHROMA_AUTH_TOKEN=secretref:chroma-auth-token
 
 # ── Deploy Celery Worker ────────────────────────────
 echo "Deploying Worker container..."
@@ -149,6 +190,7 @@ az containerapp create \
     groq-api-key="keyvaultref:$KV_URI/secrets/groq-api-key,identityref:$IDENTITY_ID" \
     tavily-api-key="keyvaultref:$KV_URI/secrets/tavily-api-key,identityref:$IDENTITY_ID" \
     huggingface-api-token="keyvaultref:$KV_URI/secrets/huggingface-api-token,identityref:$IDENTITY_ID" \
+    chroma-auth-token="keyvaultref:$KV_URI/secrets/chroma-auth-token,identityref:$IDENTITY_ID" \
   --env-vars \
     REDIS_URL=secretref:redis-url \
     SUPABASE_URL=secretref:supabase-url \
@@ -156,6 +198,9 @@ az containerapp create \
     GROQ_API_KEY=secretref:groq-api-key \
     TAVILY_API_KEY=secretref:tavily-api-key \
     HUGGINGFACE_API_TOKEN=secretref:huggingface-api-token \
+    CHROMA_HOST=rankroute-chromadb \
+    CHROMA_PORT=8000 \
+    CHROMA_AUTH_TOKEN=secretref:chroma-auth-token \
     DEBUG=false
 
 # ── Deploy Celery Beat ──────────────────────────────
@@ -177,10 +222,14 @@ az containerapp create \
     redis-url="keyvaultref:$KV_URI/secrets/redis-url,identityref:$IDENTITY_ID" \
     supabase-url="keyvaultref:$KV_URI/secrets/supabase-url,identityref:$IDENTITY_ID" \
     supabase-service-key="keyvaultref:$KV_URI/secrets/supabase-service-key,identityref:$IDENTITY_ID" \
+    chroma-auth-token="keyvaultref:$KV_URI/secrets/chroma-auth-token,identityref:$IDENTITY_ID" \
   --env-vars \
     REDIS_URL=secretref:redis-url \
     SUPABASE_URL=secretref:supabase-url \
-    SUPABASE_SERVICE_KEY=secretref:supabase-service-key
+    SUPABASE_SERVICE_KEY=secretref:supabase-service-key \
+    CHROMA_HOST=rankroute-chromadb \
+    CHROMA_PORT=8000 \
+    CHROMA_AUTH_TOKEN=secretref:chroma-auth-token
 
 # Output the API URL
 API_FQDN=$(az containerapp show --name "$BACKEND_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv)

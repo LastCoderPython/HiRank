@@ -80,6 +80,49 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
     try:
         yield f"data: {json.dumps({'type': 'session', 'session_id': session_id})}\n\n"
         
+        from app.services.cache_service import cache_service
+        
+        msg_lower = message.lower()
+        
+        # ── Phase 3: Journey State Machine ─────────────────────────────
+        journey_state = cache_service.get("journey", session_id) or {
+            "safe_colleges_identified": False,
+            "documents_ready": False,
+        }
+        if "cutoff" in msg_lower or "predict" in msg_lower or "rank" in msg_lower:
+            journey_state["safe_colleges_identified"] = True
+        if "document" in msg_lower or "certificate" in msg_lower or "prc" in msg_lower:
+            journey_state["documents_ready"] = True
+        cache_service.set("journey", session_id, journey_state, ttl=86400)
+        state_str = ", ".join([f"{k}: {'Yes' if v else 'No'}" for k,v in journey_state.items()])
+
+        # ── Phase 3: Asynchronous Polling (Mock) ────────────────────────
+        if "deep research" in msg_lower or "last 3 years" in msg_lower:
+            yield f"data: {json.dumps({'type': 'token', 'data': 'This is a deep research question. I am analyzing the PDFs in the background. Please check back in a few minutes.'})}\n\n"
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+            return
+            
+        # ── Phase 3: Event Hooks (Escalation) ───────────────────────────
+        escalation_triggers = ["talk to human", "real person", "customer service", "frustrated", "help me please"]
+        if any(trigger in msg_lower for trigger in escalation_triggers):
+            try:
+                import httpx
+                # Fire and forget webhook
+                httpx.post("https://discord.com/api/webhooks/dummy", json={
+                    "content": f"🚨 **Escalation Alert** 🚨\nSession ID: `{session_id}`\nUser message: *{message}*"
+                })
+            except Exception:
+                pass
+        
+        # Short-Term Semantic Caching (Phase 2)
+        cache_key = cache_service.make_key("query", msg_lower.strip())
+        cached_response = cache_service.get("answer", cache_key)
+        
+        if cached_response:
+            yield f"data: {json.dumps({'type': 'token', 'data': cached_response})}\n\n"
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+            return
+        
         # Route through the Supreme Orchestrator
         result = await supreme_orchestrator.handle_request(
             query=message,
@@ -112,12 +155,46 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
             stream = llm_client.generate_stream(
                 context=content,
                 query=message,
-                history=history
+                history=history,
+                state_str=state_str
             )
             
+            full_response = []
             async for token in stream:
                 if token:
+                    full_response.append(token)
                     yield f"data: {json.dumps({'type': 'token', 'data': token})}\n\n"
+                    
+            final_text = "".join(full_response)
+            
+            # Mechanical Guardrail & Caching
+            if colleges:
+                allowed_colleges = {c["college_name"].lower() for c in colleges}
+                allowed_colleges.update({c["college_code"].lower() for c in colleges})
+                
+                from app.services.college_info_service import college_info_service
+                import re
+                
+                # Dynamically build the list of ALL colleges in the database to catch hallucinations
+                all_known_colleges = set()
+                for code, info in college_info_service.colleges_info.items():
+                    all_known_colleges.add(code.lower())
+                    if info.get('name'):
+                        all_known_colleges.add(info['name'].lower())
+                
+                unauthorized_mentioned = False
+                for unauthorized in all_known_colleges:
+                    if len(unauthorized) > 2: # Skip very short codes to avoid false positives
+                        if re.search(r'\b' + re.escape(unauthorized) + r'\b', final_text.lower()) and not any(unauthorized in acc for acc in allowed_colleges):
+                            unauthorized_mentioned = True
+                            break
+                
+                if unauthorized_mentioned:
+                    correction = "\n\n*(Guardrail Warning: The response above mentions a college that is not in your eligible safe/target list. Please rely only on the structured data.)*"
+                    yield f"data: {json.dumps({'type': 'token', 'data': correction})}\n\n"
+                    final_text += correction
+
+            cache_service.set("answer", cache_key, final_text, ttl=900)
         
         # Build done event with optional tavily_skipped metadata
         done_payload = {"type": "done"}

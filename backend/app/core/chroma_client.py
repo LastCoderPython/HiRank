@@ -4,6 +4,9 @@ from chromadb.config import Settings as ChromaSettings
 from app.config import settings
 from typing import List, Dict, Any, Optional
 from app.core.embeddings import embedding_service
+import logging
+
+logger = logging.getLogger("rankroute.chroma")
 
 
 class ChromaClient:
@@ -26,13 +29,28 @@ class ChromaClient:
         with self._lock:
             if self._initialized:
                 return
-            self.client = chromadb.PersistentClient(
-                path=settings.chroma_persist_dir,
-                settings=ChromaSettings(
+
+            # Client/Server mode: connect to standalone ChromaDB over HTTP
+            client_kwargs = {
+                "host": settings.chroma_host,
+                "port": settings.chroma_port,
+                "settings": ChromaSettings(
                     anonymized_telemetry=False,
-                    allow_reset=True
-                )
+                ),
+            }
+
+            # Optional token-based authentication
+            if settings.chroma_auth_token:
+                client_kwargs["headers"] = {
+                    "Authorization": f"Bearer {settings.chroma_auth_token}"
+                }
+
+            logger.info(
+                "Connecting to ChromaDB server at %s:%s",
+                settings.chroma_host,
+                settings.chroma_port,
             )
+            self.client = chromadb.HttpClient(**client_kwargs)
 
             self.cee_collection = self._get_or_create_collection("cee")
             self.jee_collection = self._get_or_create_collection("jee")
