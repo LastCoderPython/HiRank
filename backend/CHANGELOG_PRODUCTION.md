@@ -2728,3 +2728,26 @@ has_data = any(v != "N/A" for m in metrics for v in m.values.values())
 - **Dependency Pinning:** Replaced `requirements.txt` with `requirements-lock.txt` for deterministic builds across `ci.yml`, `deploy-azure.yml`, and `backend/Dockerfile`.
 - **Automated Database Migrations:** Added a step to `.github/workflows/deploy-azure.yml` to execute `V1__base_schema.sql` via `psql` during deployment.
 - **Deployment Health Check:** Appended a blocking loop in `deploy-azure.yml` to `curl` the ACA FQDN `/api/health` to verify application readiness post-deploy.
+
+### Phase 17: Production Hardening & Repository Cleanup
+
+#### 1. API Versioning
+- **Global /api/v1 Prefix:** Transitioned all backend endpoints to use the `/api/v1` prefix. Updated CORS, Rate Limiting, and Authentication middleware to respect the new structure.
+- **Frontend Sync:** Updated `frontend/lib/api.ts` to route all calls through `/api/v1`.
+- **Test Suite Updates:** Updated all 160 tests to point to the new `/api/v1` prefix.
+
+#### 2. Container Size Optimization
+- **Purged ML Dependencies:** Removed `torch` and `sentence-transformers` from production dependencies. Switching to `HuggingFaceEndpointEmbeddings` reduced the Docker image size significantly, improving Azure Container App cold start times.
+
+#### 3. Infrastructure Security Upgrade
+- **Azure Key Vault Integration:** Removed hardcoded secrets from `deploy.sh`. Transitioned Azure Container Apps to use Key Vault references (`keyvaultref:`) authenticated via Azure Managed Identities.
+
+#### 4. Documentation Consolidation
+- **Canonical README:** Rewrote the root `README.md` to act as the single source of truth.
+- **Architecture Integration:** Extracted all critical design diagrams, policy tables, and ERD references from `ARCHITECTURE.md` into the root `README.md`. Corrected all API reference tables to use the `/api/v1` prefix.
+- **Removed Redundant Docs:** Deleted `ARCHITECTURE.md`, `backend/README.md`, `backend/SETUP.md`, and `backend/AGENT_PLATFORM.md` to prevent conflicting information.
+
+#### 5. Repository Cleanup
+- **Deleted Dead Scripts:** Removed one-shot migration scripts (`replace.py`, `replace_tests.py`, `update_deploy.py`) to prevent accidental reruns.
+- **Cleaned Local Noise:** Removed accidentally installed root `node_modules/` and empty `data/archive/` directories.
+- **Hardened .gitignore:** Added explicit exclusions for root `/node_modules/`, `backend/logs/`, `data/archive/`, and `data/backups/`.
