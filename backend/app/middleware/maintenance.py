@@ -41,8 +41,9 @@ class MaintenanceMiddleware(BaseHTTPMiddleware):
                 self._redis = client
                 logger.info("MaintenanceMiddleware: connected to Redis")
         except Exception as e:
-            logger.warning("MaintenanceMiddleware: Redis unavailable (%s)", e)
+            logger.warning("MaintenanceMiddleware: Redis unavailable (%s), will retry on next request", e)
             self._redis = None
+            self._redis_checked = False
 
     async def dispatch(self, request: Request, call_next):
         path = request.url.path

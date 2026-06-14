@@ -1,7 +1,7 @@
 """
 College Compare API — side-by-side comparison of colleges.
 
-GET /api/colleges/compare?colleges=AEC,JEC&branch=CSE
+GET /api/v1/colleges/compare?colleges=AEC,JEC&branch=CSE
 
 Returns structured metrics (fee, placement, hostel, seats) for each college.
 """

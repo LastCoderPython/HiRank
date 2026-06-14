@@ -137,7 +137,7 @@ export default function CollegeInfoUploadPage() {
                   <AlertCircle className="w-4 h-4" /> {preview.errors.length} Error{preview.errors.length > 1 ? 's' : ''}
                 </h3>
                 <ul className="text-xs text-red-300 space-y-1">
-                  {preview.errors.slice(0, 10).map((e: any, i) => (
+                  {preview.errors.slice(0, 10).map((e: { row?: number; column?: string; message: string }, i) => (
                     <li key={i}>{typeof e === 'string' ? e : `Row ${e.row}: ${e.column ? `"${e.column}" — ` : ''}${e.message}`}</li>
                   ))}
                 </ul>

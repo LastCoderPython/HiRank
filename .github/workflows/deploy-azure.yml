@@ -75,6 +75,8 @@ jobs:
             echo "Applying $f..."
             PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} psql \
               "${{ secrets.SUPABASE_DB_URL }}" \
+              --set ON_ERROR_STOP=1 \
+              -1 \
               -f "$f"
           done
         working-directory: ${{ env.WORKING_DIR }}
@@ -129,4 +131,4 @@ jobs:
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "properties.configuration.ingress.fqdn" -o tsv)
           curl --fail --retry 10 --retry-delay 10 \
-            "https://$FQDN/api/health"
+            "https://$FQDN/api/v1/health"

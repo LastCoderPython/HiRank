@@ -223,7 +223,16 @@ az containerapp create \
 
 # ── Deploy Caddy Gateway ────────────────────────────
 echo "Deploying Caddy Gateway container..."
-INTERNAL_API_FQDN=$(az containerapp show --name "$BACKEND_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv)
+for i in $(seq 1 6); do
+  INTERNAL_API_FQDN=$(az containerapp show --name "$BACKEND_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv 2>/dev/null || true)
+  if [ -n "$INTERNAL_API_FQDN" ]; then break; fi
+  echo "Waiting for API FQDN (attempt $i)..."
+  sleep 5
+done
+if [ -z "$INTERNAL_API_FQDN" ]; then
+  echo "FATAL: Could not resolve API container FQDN after 30 seconds" >&2
+  exit 1
+fi
 
 az containerapp create \
   --name "$CADDY_ACA" \

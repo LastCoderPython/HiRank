@@ -70,8 +70,8 @@ export const options = {
   },
 };
 
-const BASE_URL = __ENV.BENCHMARK_URL || 'http://localhost:9000';
-const CHAT_URL = `${BASE_URL}/api/chat`;
+const BASE_URL = __ENV.BENCHMARK_URL || 'http://localhost';
+const CHAT_URL = `${BASE_URL}/api/v1/chat`;
 const SESSION_PREFIX = __ENV.SESSION_PREFIX || 'k6-bench';
 
 export default function () {

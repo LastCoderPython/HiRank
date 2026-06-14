@@ -112,26 +112,6 @@ async def fetch_user_from_supabase(access_token: str) -> Optional[dict]:
     except Exception:
         return None
 
-def get_current_user(
-    sb_access_token: Optional[str] = Cookie(None),
-    sb_refresh_token: Optional[str] = Cookie(None)
-) -> Optional[dict]:
-    if not sb_access_token:
-        return None
-    
-    payload = verify_jwt(sb_access_token)
-    if payload:
-        user_id = payload.get("sub")
-        email = payload.get("email")
-        user_metadata = payload.get("user_metadata", {})
-        return {
-            "id": user_id,
-            "email": email,
-            "name": user_metadata.get("full_name") or user_metadata.get("name") or email.split("@")[0],
-            "avatar_url": user_metadata.get("avatar_url") or user_metadata.get("picture")
-        }
-    return None
-
 @router.get("/session", response_model=SessionResponse)
 async def get_session(
     request: Request,
@@ -167,7 +147,7 @@ async def login(request: Request):
     if not project_url:
         raise HTTPException(status_code=500, detail="Supabase not configured")
 
-    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/auth/callback"
+    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/v1/auth/callback"
 
     # C-02: Generate CSRF state token
     state = secrets.token_urlsafe(32)
@@ -214,7 +194,7 @@ async def auth_callback(
     if not project_url:
         return RedirectResponse(url=f"{FRONTEND_URL}/?auth_error=config_error")
 
-    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/auth/callback"
+    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/v1/auth/callback"
 
     data = await _exchange_code_for_session(project_url, code, redirect_uri)
     if not data:
@@ -317,7 +297,7 @@ async def google_login(request: Request):
     if not project_url:
         raise HTTPException(status_code=500, detail="Supabase not configured")
 
-    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/auth/callback"
+    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/v1/auth/callback"
 
     # C-02: Generate CSRF state token
     state = secrets.token_urlsafe(32)

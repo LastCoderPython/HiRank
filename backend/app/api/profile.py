@@ -1,8 +1,8 @@
 """
 User Profile API — GET and PATCH endpoints.
 
-GET  /api/profile      → Returns full profile including onboarding fields
-PATCH /api/profile     → Partial update (only provided fields are changed)
+GET  /api/v1/profile      → Returns full profile including onboarding fields
+PATCH /api/v1/profile     → Partial update (only provided fields are changed)
 
 Used by:
 - AuthProvider (fetchSession) to check onboarding_complete

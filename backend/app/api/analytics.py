@@ -1,9 +1,9 @@
 """
 Analytics API — admin-only endpoints for usage insights.
 
-GET  /api/admin/analytics/overview    → Summary stats
-GET  /api/admin/analytics/daily       → Daily chat volume (last N days)
-GET  /api/admin/analytics/predictions → Prediction distribution data
+GET  /api/v1/admin/analytics/overview    → Summary stats
+GET  /api/v1/admin/analytics/daily       → Daily chat volume (last N days)
+GET  /api/v1/admin/analytics/predictions → Prediction distribution data
 """
 
 import json

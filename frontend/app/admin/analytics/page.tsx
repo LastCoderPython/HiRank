@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { AnalyticsOverview, DailyAnalytics, PredictionAnalytics } from '@/lib/types';
-import { Loader2, MessageSquare, Users, TrendingUp, BarChart3, Activity } from 'lucide-react';
+import { Loader2, MessageSquare, Users, TrendingUp, BarChart3, Activity, type LucideIcon } from 'lucide-react';
 
-function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string | number; color: string }) {
+function StatCard({ icon: Icon, label, value, color }: { icon: LucideIcon; label: string; value: string | number; color: string }) {
   return (
     <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
       <div className="flex items-center gap-3 mb-2">
