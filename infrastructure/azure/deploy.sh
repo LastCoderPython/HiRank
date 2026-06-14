@@ -38,18 +38,7 @@ echo "Creating Container Registry..."
 az acr create --resource-group "$RESOURCE_GROUP" --name "$ACR_NAME" --sku Basic --admin-enabled true
 ACR_PASSWORD=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)
 
-# ── Azure Cache for Redis ───────────────────────────
-echo "Creating Azure Cache for Redis..."
-az redis create \
-  --resource-group "$RESOURCE_GROUP" \
-  --name "$REDIS_NAME" \
-  --location "$LOCATION" \
-  --sku Basic \
-  --vm-size c0 \
-  --enable-non-ssl-port false
-
-REDIS_HOST=$(az redis show --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "hostName" -o tsv)
-REDIS_KEY=$(az redis list-keys --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "primaryKey" -o tsv)
+# Redis will be deployed as an internal Azure Container App
 
 # ── Identity & Key Vault ────────────────────────────
 IDENTITY_NAME="rankroute-identity"
@@ -65,7 +54,6 @@ az keyvault set-policy --name "$KV_NAME" --object-id "$IDENTITY_PRINCIPAL_ID" --
 KV_URI="https://$KV_NAME.vault.azure.net"
 
 echo "Storing secrets in Key Vault..."
-az keyvault secret set --vault-name "$KV_NAME" --name "redis-url" --value "redis://:$REDIS_KEY@$REDIS_HOST:6380/0?ssl=True" > /dev/null
 az keyvault secret set --vault-name "$KV_NAME" --name "supabase-url" --value "${SUPABASE_URL:-}" > /dev/null
 az keyvault secret set --vault-name "$KV_NAME" --name "supabase-service-key" --value "${SUPABASE_SERVICE_KEY:-}" > /dev/null
 az keyvault secret set --vault-name "$KV_NAME" --name "supabase-jwt-secret" --value "${SUPABASE_JWT_SECRET:-}" > /dev/null
@@ -128,10 +116,34 @@ az acr build --registry "$ACR_NAME" --image rankroute-api:latest ../../backend/.
 az acr build --registry "$ACR_NAME" --image rankroute-worker:latest --file ../../backend/Dockerfile --build-arg CMD="celery" ../../backend/.
 az acr build --registry "$ACR_NAME" --image rankroute-caddy:latest --file ../../backend/Dockerfile.caddy ../../backend/.
 az acr import --name "$ACR_NAME" --source docker.io/chromadb/chroma:latest --image rankroute-chromadb:latest
+az acr import --name "$ACR_NAME" --source docker.io/redis:7.4.9-alpine --image rankroute-redis:latest
 
 echo "Granting identity access to ACR..."
 ACR_ID=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
 az role assignment create --assignee "$IDENTITY_PRINCIPAL_ID" --scope "$ACR_ID" --role AcrPull
+
+# ── Deploy Redis Container App ──────────────────────
+echo "Deploying Redis container..."
+az containerapp create \
+  --name "$REDIS_NAME" \
+  --resource-group "$RESOURCE_GROUP" \
+  --environment "$ACA_ENV" \
+  --image "$ACR_NAME.azurecr.io/rankroute-redis:latest" \
+  --registry-server "$ACR_NAME.azurecr.io" \
+  --target-port 6379 \
+  --ingress internal \
+  --min-replicas 1 \
+  --max-replicas 1 \
+  --cpu 0.25 \
+  --memory 0.5Gi \
+  --user-assigned "$IDENTITY_ID" \
+  --registry-identity "$IDENTITY_ID"
+
+echo "Retrieving Redis FQDN..."
+REDIS_HOST=$(az containerapp show --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv)
+
+echo "Storing Redis URL secret in Key Vault..."
+az keyvault secret set --vault-name "$KV_NAME" --name "redis-url" --value "redis://$REDIS_HOST:6379/0" > /dev/null
 
 # ── Deploy ChromaDB Container ───────────────────────
 echo "Deploying ChromaDB container..."
