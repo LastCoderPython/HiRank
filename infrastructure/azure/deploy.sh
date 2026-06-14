@@ -36,7 +36,7 @@ az group create --name "$RESOURCE_GROUP" --location "$LOCATION"
 # ── Azure Container Registry ────────────────────────
 echo "Creating Container Registry..."
 az acr create --resource-group "$RESOURCE_GROUP" --name "$ACR_NAME" --sku Basic --admin-enabled true
-ACR_PASSWORD=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)
+ACR_PASSWORD=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv | tr -d '\r')
 
 # Redis will be deployed as an internal Azure Container App
 
@@ -44,8 +44,8 @@ ACR_PASSWORD=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].v
 IDENTITY_NAME="rankroute-identity"
 echo "Creating User-Assigned Identity..."
 az identity create --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --location "$LOCATION"
-IDENTITY_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
-IDENTITY_PRINCIPAL_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "principalId" -o tsv)
+IDENTITY_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv | tr -d '\r')
+IDENTITY_PRINCIPAL_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "principalId" -o tsv | tr -d '\r')
 
 KV_NAME="rr-kv-rankroute-prod"
 if ! az keyvault show --name "$KV_NAME" --resource-group "$RESOURCE_GROUP" > /dev/null 2>&1; then
@@ -91,7 +91,7 @@ az storage account create \
 STORAGE_KEY=$(az storage account keys list \
   --account-name "$STORAGE_ACCOUNT" \
   --resource-group "$RESOURCE_GROUP" \
-  --query "[0].value" -o tsv)
+  --query "[0].value" -o tsv | tr -d '\r')
 
 echo "Creating Azure Files Share..."
 az storage share-rm create \
@@ -124,7 +124,7 @@ az acr import --name "$ACR_NAME" --source docker.io/chromadb/chroma:latest --ima
 az acr import --name "$ACR_NAME" --source docker.io/library/redis:7.4.9-alpine --image rankroute-redis:latest --force
 
 echo "Granting identity access to ACR..."
-ACR_ID=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
+ACR_ID=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv | tr -d '\r')
 az role assignment create --assignee "$IDENTITY_PRINCIPAL_ID" --scope "$ACR_ID" --role AcrPull
 
 # ── Deploy Redis Container App ──────────────────────
@@ -145,7 +145,7 @@ az containerapp create \
   --registry-identity "$IDENTITY_ID"
 
 echo "Retrieving Redis FQDN..."
-REDIS_HOST=$(az containerapp show --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv)
+REDIS_HOST=$(az containerapp show --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv | tr -d '\r')
 
 echo "Storing Redis URL secret in Key Vault..."
 az keyvault secret set --vault-name "$KV_NAME" --name "redis-url" --value "redis://$REDIS_HOST:6379/0" > /dev/null
@@ -241,7 +241,7 @@ az containerapp create \
 # ── Deploy Caddy Gateway ────────────────────────────
 echo "Deploying Caddy Gateway container..."
 for i in $(seq 1 6); do
-  INTERNAL_API_FQDN=$(az containerapp show --name "$BACKEND_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv 2>/dev/null || true)
+  INTERNAL_API_FQDN=$(az containerapp show --name "$BACKEND_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv 2>/dev/null | tr -d '\r' || true)
   if [ -n "$INTERNAL_API_FQDN" ]; then break; fi
   echo "Waiting for API FQDN (attempt $i)..."
   sleep 5
@@ -340,7 +340,7 @@ az containerapp create \
     CHROMA_AUTH_TOKEN=secretref:chroma-auth-token
 
 # Output the API URL
-API_FQDN=$(az containerapp show --name "$CADDY_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv)
+API_FQDN=$(az containerapp show --name "$CADDY_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv | tr -d '\r')
 echo "──────────────────────────────────────────────"
 echo "✅ Deployment complete!"
 echo "API URL (Caddy Gateway): https://$API_FQDN"

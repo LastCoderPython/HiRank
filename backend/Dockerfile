@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential libxml2-dev libxslt1-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements-lock.txt requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt && \
     rm -rf /root/.cache/pip
 
