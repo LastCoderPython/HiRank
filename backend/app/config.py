@@ -1,7 +1,7 @@
 import logging
 
-from pydantic import ConfigDict, field_validator
-from pydantic_settings import BaseSettings
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List
 from functools import lru_cache
 
@@ -83,7 +83,7 @@ class Settings(BaseSettings):
     def model_order(self) -> List[str]:
         return [self.primary_model, self.fallback_model_1, self.fallback_model_2]
 
-    model_config = ConfigDict(
+    model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,
         extra="ignore",

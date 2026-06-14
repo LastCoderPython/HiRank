@@ -107,7 +107,7 @@ export function ChatArea({
     try {
       const { fetchEventSource } = await import('@microsoft/fetch-event-source');
       let streamContent = '';
-      let streamMetadata: Record<string, unknown> | null = null;
+      let streamMetadata: Record<string, unknown> | undefined = undefined;
       let authBlocked = false;
       
       const requestHistory = [...messages.slice(-9), { role: 'user', content: query }].map(m => ({ role: m.role, content: m.content }));
