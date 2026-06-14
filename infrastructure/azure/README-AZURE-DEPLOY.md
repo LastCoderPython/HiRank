@@ -2,7 +2,7 @@
 
 ## Architecture
 
-```
+```text
                           Internet
                              │
                     ┌────────▼────────┐
@@ -15,8 +15,14 @@
                │   Environment (ACA Env)    │
                │                            │
                │  ┌──────────────────────┐  │
-               │  │  rankroute-api       │  │  ◄── HTTP ingress (port 9000)
-               │  │  FastAPI + Gunicorn  │  │       scales 1–10 replicas
+               │  │  rankroute-caddy     │  │  ◄── External ingress (port 80)
+               │  │  API Gateway (Rate   │  │       Scales 1–3 replicas
+               │  │  Limits, SSE buffer) │  │
+               │  └──────────┬───────────┘  │
+               │             │              │
+               │  ┌──────────▼───────────┐  │
+               │  │  rankroute-api       │  │  ◄── Internal ingress (port 9000)
+               │  │  FastAPI + Gunicorn  │  │       Scales 1–3 replicas
                │  └──────────┬───────────┘  │
                │             │              │
                │  ┌──────────▼───────────┐  │
@@ -73,6 +79,12 @@ export GROQ_API_KEY="your_groq_key"
 export TAVILY_API_KEY="your_tavily_key"
 export AGENT_API_KEYS="your_agent_api_key"
 export FRONTEND_URL="https://your-frontend-domain.com"
+
+# Freemium & Admin Email limits
+export SMTP_USER="your-email@gmail.com"
+export SMTP_PASSWORD="your-app-password"
+export ADMIN_ALERT_EMAIL="your-admin@gmail.com"
+export TAVILY_MONTHLY_QUOTA=1000
 ```
 
 ## Step 2: Provision Infrastructure
@@ -88,7 +100,7 @@ This creates:
 - Azure Container Registry `rankrouteacr`
 - Azure Cache for Redis (Basic tier, ~$15/month)
 - Container Apps Environment
-- 3 Container Apps (api, worker, beat)
+- 5 Container Apps (caddy, api, chromadb, worker, beat)
 - Builds and pushes Docker images
 
 ## Step 3: Configure Custom Domain + SSL
@@ -100,7 +112,7 @@ CERT_ID="/subscriptions/$(az account show --query id -o tsv)/resourceGroups/rank
 
 # Add custom domain
 az containerapp hostname add \
-  --name rankroute-api \
+  --name rankroute-caddy \
   --resource-group rankroute-prod \
   --hostname "$DOMAIN"
 
@@ -165,7 +177,7 @@ Set env var in Vercel dashboard:
 ## Step 7: Verify Deployment
 
 ```bash
-# Health check
+# Health check (goes through Caddy to the API)
 curl https://api.your-domain.com/api/health
 
 # Should return 200 with full system status
@@ -177,7 +189,7 @@ The workflow `.github/workflows/deploy-azure.yml` auto-deploys on every push to 
 
 1. Runs all 136+ unit tests
 2. Builds Docker image via ACR
-3. Updates all 3 Container Apps
+3. Updates all 5 Container Apps
 
 **Setup GitHub secrets:**
 | Secret | Value |
@@ -190,12 +202,13 @@ The workflow `.github/workflows/deploy-azure.yml` auto-deploys on every push to 
 |---------|------|------|
 | Azure Container Registry | Basic | ~$5 |
 | Azure Cache for Redis | Basic (C0) | ~$15 |
-| Container Apps (3 apps) | Consumption | ~$10–$50 (depends on traffic) |
+| Container Apps (5 apps) | Consumption | ~$15–$60 (depends on traffic) |
 | Azure Static Web Apps | Free | $0 |
-| **Total** | | **~$30–$70/month** |
+| **Total** | | **~$35–$80/month** |
 
 To reduce costs:
-- Set `--min-replicas 0` on the API (scales to zero when idle)
+- Set `--min-replicas 0` on the API and Worker (scales to zero when idle)
+- ChromaDB and Beat must be `--min-replicas 1` to run properly
 - Downsize Redis to the free tier doesn't exist, but C0 Basic is the minimum
 
 ## Troubleshooting

@@ -18,7 +18,7 @@ import {
   CutoffStatusResponse,
 } from './types';
 
-const getApiUrl = () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000';
+const getApiUrl = () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = `${getApiUrl()}${endpoint}`;
@@ -58,18 +58,18 @@ export const api = {
   }),
 
   // Chats (Authenticated)
-  getChats: (limit = 50, offset = 0) => fetchApi<ChatListResponse>(`/api/chats?limit=${limit}&offset=${offset}`),
+  getChats: (limit = 50, offset = 0) => fetchApi<ChatListResponse>(`/api/v1/chats?limit=${limit}&offset=${offset}`),
   createChat: (title: string, tempSessionId?: string) => 
     fetchApi<ChatCreateResponse>('/api/v1/chats', {
       method: 'POST',
       body: JSON.stringify({ title, temp_session_id: tempSessionId }),
     }),
-  getChat: (id: string) => fetchApi<SingleChatResponse>(`/api/chats/${id}`),
-  renameChat: (id: string, title: string) => fetchApi<{ success: boolean; chat: any }>(`/api/chats/${id}`, {
+  getChat: (id: string) => fetchApi<SingleChatResponse>(`/api/v1/chats/${id}`),
+  renameChat: (id: string, title: string) => fetchApi<{ success: boolean; chat: any }>(`/api/v1/chats/${id}`, {
     method: 'PATCH',
     body: JSON.stringify({ title }),
   }),
-  deleteChat: (id: string) => fetchApi<{ success: boolean }>(`/api/chats/${id}`, { method: 'DELETE' }),
+  deleteChat: (id: string) => fetchApi<{ success: boolean }>(`/api/v1/chats/${id}`, { method: 'DELETE' }),
   clearAllChats: () => fetchApi<{ success: boolean; deleted: number }>('/api/v1/chats/clear', { method: 'POST' }),
 
   // Messages (Auth & Temp)
@@ -94,18 +94,18 @@ export const api = {
     if (params.exam)     q.set('exam', params.exam);
     if (params.branch)   q.set('branch', params.branch);
     if (params.limit)    q.set('limit', String(params.limit));
-    return fetchApi<SimulationResponse>(`/api/colleges/simulate?${q.toString()}`);
+    return fetchApi<SimulationResponse>(`/api/v1/colleges/simulate?${q.toString()}`);
   },
 
   // Temp Chats
-  getTempChat: (sessionId: string) => fetchApi<TempChatResponse>(`/api/temp-chats/${sessionId}`),
+  getTempChat: (sessionId: string) => fetchApi<TempChatResponse>(`/api/v1/temp-chats/${sessionId}`),
 
   // College Compare
   compareColleges: (colleges: string, branch?: string) => {
     const q = new URLSearchParams();
     q.set('colleges', colleges);
     if (branch) q.set('branch', branch);
-    return fetchApi<ComparisonResponse>(`/api/colleges/compare?${q.toString()}`);
+    return fetchApi<ComparisonResponse>(`/api/v1/colleges/compare?${q.toString()}`);
   },
 
   // Admin
@@ -114,7 +114,7 @@ export const api = {
   validateCutoffs:   (formData: FormData) => fetchApi<UploadPreview>('/api/v1/admin/validate/cutoffs', { method: 'POST', body: formData }),
   validateCollegeInfo: (formData: FormData) => fetchApi<UploadPreview>('/api/v1/admin/validate/college-info', { method: 'POST', body: formData }),
   listBackups:       () => fetchApi<{ backups: BackupEntry[] }>('/api/v1/admin/backups'),
-  restoreBackup:     (id: string) => fetchApi<{ success: boolean; restored_file: string; rows: number }>(`/api/admin/restore/${id}`, { method: 'POST' }),
+  restoreBackup:     (id: string) => fetchApi<{ success: boolean; restored_file: string; rows: number }>(`/api/v1/admin/restore/${id}`, { method: 'POST' }),
   // Admin Logs
   getLogs:           (params?: { event_type?: string; severity?: string; source?: string; date_from?: string; date_to?: string; limit?: number; offset?: number }) => {
     const q = new URLSearchParams();
@@ -126,7 +126,7 @@ export const api = {
     if (params?.limit)       q.set('limit', String(params.limit));
     if (params?.offset)      q.set('offset', String(params.offset));
     const qs = q.toString();
-    return fetchApi<LogQueryResult>(`/api/admin/logs${qs ? '?' + qs : ''}`);
+    return fetchApi<LogQueryResult>(`/api/v1/admin/logs${qs ? '?' + qs : ''}`);
   },
   getLogStats:       () => fetchApi<LogStats>('/api/v1/admin/logs/stats'),
 
@@ -135,7 +135,7 @@ export const api = {
 
   // Analytics
   getAnalyticsOverview:      () => fetchApi<AnalyticsOverview>('/api/v1/admin/analytics/overview'),
-  getDailyAnalytics:         (days = 30) => fetchApi<DailyAnalytics>(`/api/admin/analytics/daily?days=${days}`),
+  getDailyAnalytics:         (days = 30) => fetchApi<DailyAnalytics>(`/api/v1/admin/analytics/daily?days=${days}`),
   getPredictionAnalytics:    () => fetchApi<PredictionAnalytics>('/api/v1/admin/analytics/predictions'),
 
   // Maintenance

@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [fetchSession]);
 
   const signIn = useCallback(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
     window.location.href = `${apiUrl}/api/v1/auth/google`;
   }, []);
 

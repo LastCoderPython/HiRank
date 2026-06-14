@@ -2779,3 +2779,7 @@ Upgraded the core AI pipeline to use advanced agentic patterns inspired by Claud
 - **Asynchronous Polling (chat.py)**: Returns an instant mock polling event stream if the query triggers deep research parameters, bypassing timeout thresholds.
 - **Event Hooks (chat.py)**: Fire-and-forget httpx.post webhooks to an admin channel if user sentiment triggers escalation flags (e.g., 'frustrated', 'talk to human').
 
+#### 4. Frontend-Backend Connection Fixes
+- **Port Synchronization**: Fixed `frontend/.env` and API fallbacks to point to `http://localhost` instead of `http://localhost:9000` to correctly route through the Caddy Gateway (port 80) and enforce rate limiting.
+- **Route Prefixes**: Fixed 10 missing `/v1` endpoint prefixes in `frontend/lib/api.ts` to prevent 404s for features like the rank simulator, chat history, and temp chats.
+
