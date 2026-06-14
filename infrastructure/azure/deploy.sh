@@ -95,6 +95,7 @@ STORAGE_KEY=$(az storage account keys list \
 
 echo "Creating Azure Files Share..."
 az storage share-rm create \
+  --resource-group "$RESOURCE_GROUP" \
   --storage-account "$STORAGE_ACCOUNT" \
   --name "$CHROMA_SHARE" \
   --quota 5
@@ -119,8 +120,8 @@ echo "Building and pushing Docker images..."
 az acr build --registry "$ACR_NAME" --image rankroute-api:latest ../../backend/.
 az acr build --registry "$ACR_NAME" --image rankroute-worker:latest --file ../../backend/Dockerfile --build-arg CMD="celery" ../../backend/.
 az acr build --registry "$ACR_NAME" --image rankroute-caddy:latest --file ../../backend/Dockerfile.caddy ../../backend/.
-az acr import --name "$ACR_NAME" --source docker.io/chromadb/chroma:latest --image rankroute-chromadb:latest
-az acr import --name "$ACR_NAME" --source docker.io/redis:7.4.9-alpine --image rankroute-redis:latest
+az acr import --name "$ACR_NAME" --source docker.io/chromadb/chroma:latest --image rankroute-chromadb:latest --force
+az acr import --name "$ACR_NAME" --source docker.io/library/redis:7.4.9-alpine --image rankroute-redis:latest --force
 
 echo "Granting identity access to ACR..."
 ACR_ID=$(az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
