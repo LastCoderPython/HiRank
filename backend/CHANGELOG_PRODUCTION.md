@@ -2783,3 +2783,30 @@ Upgraded the core AI pipeline to use advanced agentic patterns inspired by Claud
 - **Port Synchronization**: Fixed `frontend/.env` and API fallbacks to point to `http://localhost` instead of `http://localhost:9000` to correctly route through the Caddy Gateway (port 80) and enforce rate limiting.
 - **Route Prefixes**: Fixed 10 missing `/v1` endpoint prefixes in `frontend/lib/api.ts` to prevent 404s for features like the rank simulator, chat history, and temp chats.
 
+
+---
+
+## Phase 19: Pre-Launch Caddy & Infrastructure Hardening ✅
+
+### Problem Solved
+Hardened the production deployment pipeline after adding the Caddy reverse-proxy gateway. Ensured all required environment variables fail early instead of silently defaulting to empty/`localhost`, validated health checks route through the full Caddy→API chain on every main deploy, and added production guardrails to the backend config layer.
+
+### Changes Made
+
+#### 1. Required Environment Variable Validation (`infrastructure/azure/deploy.sh`)
+- **Hard Fail on Missing Vars**: Added a `: "${VAR:?Must set VAR (...)}"` guard for `FRONTEND_URL`, `BACKEND_URL`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_JWT_SECRET`, `SUPABASE_ANON_KEY`, `GROQ_API_KEY`, and `TAVILY_API_KEY` — the script now aborts immediately if any are unset, preventing silent deployment of a misconfigured stack.
+- **Removed Misleading `:-` Fallbacks**: Changed `FRONTEND_URL="${FRONTEND_URL:-}"`, `BACKEND_URL="${BACKEND_URL:-}"`, and `CORS_ORIGINS="${FRONTEND_URL:-}"` to bare variable references (`"${FRONTEND_URL}"` etc.) so the validation block is the single source of truth.
+
+#### 2. Health Check Through Caddy Gate (`.github/workflows/deploy-azure.yml`)
+- **End-to-End Validation**: The `Verify deployment health` step now resolves the FQDN of `rankroute-caddy` instead of `rankroute-api`, ensuring every production deploy validates that the Caddy proxy, rate limiting, and API backend all respond correctly.
+- **Caddy Deploys on All Branches**: Removed the `if: github.ref == 'refs/heads/main'` gate from the `Deploy Caddy Gateway` step so that Caddy config changes take effect on staging pushes immediately, matching the behavior of the API container.
+
+#### 3. Backend Config Guardrails (`backend/app/config.py`)
+- **Empty CORS Warning**: Added a `field_validator("cors_origins")` that emits a `logging.warning` when `CORS_ORIGINS` is empty — production infra should always set this, but the app won't crash on startup if misconfigured.
+- **Runtime Environment Field**: Added `runtime_env: str = "development"` to allow the deployed container to self-identify as `"production"` vs `"staging"` without relying on `DEBUG`.
+- Added `import logging` and `from pydantic import field_validator` for the new validator.
+
+#### 4. Production Env Template Coverage (`infrastructure/azure/.env.azure.example`)
+- **Added `BACKEND_URL`**: Placed alongside `FRONTEND_URL` in the CORS section so deployers don't forget to map their custom API domain.
+- **Added `REDIS_PASSWORD`**: Documented under the Redis section as the access key that populates `REDIS_URL` via the deployment script.
+

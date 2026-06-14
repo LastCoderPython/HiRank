@@ -19,6 +19,16 @@ CHROMADB_ACA="rankroute-chromadb"
 STORAGE_ACCOUNT="rankroutestoreind"  # must be globally unique, lowercase
 CHROMA_SHARE="chroma-data"
 
+# ── Required Env Vars ──────────────────────────────
+: "${FRONTEND_URL:?Must set FRONTEND_URL (e.g. https://app.rankroute.vocoweb.in)}"
+: "${BACKEND_URL:?Must set BACKEND_URL (e.g. https://api.rankroute.vocoweb.in)}"
+: "${SUPABASE_URL:?Must set SUPABASE_URL}"
+: "${SUPABASE_SERVICE_KEY:?Must set SUPABASE_SERVICE_KEY}"
+: "${SUPABASE_JWT_SECRET:?Must set SUPABASE_JWT_SECRET}"
+: "${SUPABASE_ANON_KEY:?Must set SUPABASE_ANON_KEY}"
+: "${GROQ_API_KEY:?Must set GROQ_API_KEY}"
+: "${TAVILY_API_KEY:?Must set TAVILY_API_KEY}"
+
 # ── Resource Group ──────────────────────────────────
 echo "Creating resource group..."
 az group create --name "$RESOURCE_GROUP" --location "$LOCATION"
@@ -188,14 +198,14 @@ az containerapp create \
     TAVILY_API_KEY=secretref:tavily-api-key \
     HUGGINGFACE_API_TOKEN=secretref:huggingface-api-token \
     AGENT_API_KEYS=secretref:agent-api-keys \
-    FRONTEND_URL="${FRONTEND_URL:-}" \
-    BACKEND_URL="${BACKEND_URL:-}" \
+    FRONTEND_URL="${FRONTEND_URL}" \
+    BACKEND_URL="${BACKEND_URL}" \
     DEBUG=false \
     LLM_PROVIDER=groq \
     PRIMARY_MODEL=llama-3.3-70b-versatile \
     FALLBACK_MODEL_1=llama-3.1-8b-instant \
     FALLBACK_MODEL_2=llama-3.1-8b-instant \
-    CORS_ORIGINS="${FRONTEND_URL:-}" \
+    CORS_ORIGINS="${FRONTEND_URL}" \
     EMBEDDING_PROVIDER=huggingface \
     EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2 \
     CHROMA_HOST=rankroute-chromadb \

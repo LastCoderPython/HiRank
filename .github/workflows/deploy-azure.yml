@@ -98,7 +98,6 @@ jobs:
           fi
 
       - name: Deploy Caddy Gateway
-        if: github.ref == 'refs/heads/main'
         run: |
           az containerapp update \
             --name rankroute-caddy \
@@ -126,7 +125,7 @@ jobs:
         run: |
           sleep 30
           FQDN=$(az containerapp show \
-            --name ${{ env.AZURE_CONTAINER_APP }} \
+            --name rankroute-caddy \
             --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
             --query "properties.configuration.ingress.fqdn" -o tsv)
           curl --fail --retry 10 --retry-delay 10 \
