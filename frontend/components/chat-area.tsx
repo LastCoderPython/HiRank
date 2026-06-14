@@ -99,19 +99,7 @@ export function ChatArea({
       textareaRef.current.style.height = 'auto';
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    
-    if (!apiUrl) {
-      setTimeout(() => {
-        setStreamingMessages(prev => [...(prev ?? []), { 
-          id: `temp-${Date.now()}-ai`,
-          role: 'assistant', 
-          content: `(Simulation) Set NEXT_PUBLIC_API_URL to connect.`,
-          created_at: new Date().toISOString()
-        }]);
-      }, 1000);
-      return;
-    }
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
 
     const tempAsstMsg: Message = { id: `temp-${Date.now()}-ai`, role: 'assistant', content: '', created_at: new Date().toISOString() };
     setStreamingMessages(prev => [...(prev ?? []), tempAsstMsg]);

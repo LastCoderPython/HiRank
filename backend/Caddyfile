@@ -16,7 +16,7 @@
     respond /openapi.json 403
 
     handle /api/health* {
-        reverse_proxy api:9000
+        reverse_proxy {$API_UPSTREAM:api:9000}
     }
 
     handle /api/* {
@@ -27,7 +27,7 @@
                 window 2s
             }
         }
-        reverse_proxy api:9000 {
+        reverse_proxy {$API_UPSTREAM:api:9000} {
             flush_interval -1
         }
     }
@@ -48,7 +48,7 @@
     respond /openapi.json 403
 
     handle /api/health* {
-        reverse_proxy api:9000
+        reverse_proxy {$API_UPSTREAM:api:9000}
     }
 
     handle /api/* {
@@ -59,7 +59,7 @@
                 window 2s
             }
         }
-        reverse_proxy api:9000 {
+        reverse_proxy {$API_UPSTREAM:api:9000} {
             flush_interval -1
         }
     }
