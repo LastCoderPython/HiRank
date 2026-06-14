@@ -48,8 +48,12 @@ IDENTITY_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOUR
 IDENTITY_PRINCIPAL_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "principalId" -o tsv)
 
 KV_NAME="rr-kv-rankroute-prod"
-echo "Creating Key Vault ($KV_NAME)..."
-az keyvault create --name "$KV_NAME" --resource-group "$RESOURCE_GROUP" --location "$LOCATION" --enable-rbac-authorization false
+if ! az keyvault show --name "$KV_NAME" --resource-group "$RESOURCE_GROUP" > /dev/null 2>&1; then
+  echo "Creating Key Vault ($KV_NAME)..."
+  az keyvault create --name "$KV_NAME" --resource-group "$RESOURCE_GROUP" --location "$LOCATION" --enable-rbac-authorization false
+else
+  echo "Key Vault ($KV_NAME) already exists, skipping creation."
+fi
 az keyvault set-policy --name "$KV_NAME" --object-id "$IDENTITY_PRINCIPAL_ID" --secret-permissions get list
 KV_URI="https://$KV_NAME.vault.azure.net"
 
@@ -60,13 +64,13 @@ az keyvault secret set --vault-name "$KV_NAME" --name "supabase-jwt-secret" --va
 az keyvault secret set --vault-name "$KV_NAME" --name "supabase-anon-key" --value "${SUPABASE_ANON_KEY:-}" > /dev/null
 az keyvault secret set --vault-name "$KV_NAME" --name "groq-api-key" --value "${GROQ_API_KEY:-}" > /dev/null
 az keyvault secret set --vault-name "$KV_NAME" --name "tavily-api-key" --value "${TAVILY_API_KEY:-}" > /dev/null
-az keyvault secret set --vault-name "$KV_NAME" --name "agent-api-keys" --value "${AGENT_API_KEYS:-}" > /dev/null
-az keyvault secret set --vault-name "$KV_NAME" --name "huggingface-api-token" --value "${HUGGINGFACE_API_TOKEN:-}" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "agent-api-keys" --value "${AGENT_API_KEYS:-NOT_SET}" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "huggingface-api-token" --value "${HUGGINGFACE_API_TOKEN:-NOT_SET}" > /dev/null
 
 # Freemium & SMTP Secrets
-az keyvault secret set --vault-name "$KV_NAME" --name "smtp-user" --value "${SMTP_USER:-}" > /dev/null
-az keyvault secret set --vault-name "$KV_NAME" --name "smtp-password" --value "${SMTP_PASSWORD:-}" > /dev/null
-az keyvault secret set --vault-name "$KV_NAME" --name "admin-alert-email" --value "${ADMIN_ALERT_EMAIL:-}" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "smtp-user" --value "${SMTP_USER:-NOT_SET}" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "smtp-password" --value "${SMTP_PASSWORD:-NOT_SET}" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "admin-alert-email" --value "${ADMIN_ALERT_EMAIL:-NOT_SET}" > /dev/null
 
 # ── Container Apps Environment ──────────────────────
 echo "Creating Container Apps Environment..."
