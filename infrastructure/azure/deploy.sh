@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Disable Git Bash path conversion for Azure CLI arguments that start with / (e.g. /subscriptions/...)
+export MSYS_NO_PATHCONV=1
+
 # ───────────────────────────────────────────────────────
 # RankRoute — Azure Deployment Script
 # Prerequisites: az CLI logged in, GitHub repo configured
@@ -172,8 +175,24 @@ az containerapp create \
     CHROMA_SERVER_AUTH_CREDENTIALS=secretref:chroma-auth-token \
     CHROMA_SERVER_AUTH_PROVIDER="chromadb.auth.token.TokenAuthServerProvider" \
     IS_PERSISTENT=TRUE \
-    PERSIST_DIRECTORY=/chroma/chroma \
-  --bind-storage-volume chromastorage
+    PERSIST_DIRECTORY=/chroma/chroma
+
+echo "Mounting storage volume to ChromaDB..."
+az containerapp show --name "$CHROMADB_ACA" --resource-group "$RESOURCE_GROUP" -o json > chroma.json
+python -c '
+import json
+with open("chroma.json") as f:
+    data = json.load(f)
+if "template" not in data["properties"]:
+    data["properties"]["template"] = {}
+data["properties"]["template"]["volumes"] = [{"name": "chromastorage", "storageName": "chromastorage", "storageType": "AzureFile"}]
+if "containers" in data["properties"]["template"] and len(data["properties"]["template"]["containers"]) > 0:
+    data["properties"]["template"]["containers"][0]["volumeMounts"] = [{"volumeName": "chromastorage", "mountPath": "/chroma/chroma"}]
+with open("chroma_patched.json", "w") as f:
+    json.dump(data, f)
+'
+az containerapp update --name "$CHROMADB_ACA" --resource-group "$RESOURCE_GROUP" --yaml chroma_patched.json > /dev/null
+rm -f chroma.json chroma_patched.json
 
 # ── Deploy Backend API ──────────────────────────────
 echo "Deploying API container..."
