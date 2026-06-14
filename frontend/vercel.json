@@ -23,11 +23,5 @@
         }
       ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/api/:match*",
-      "destination": "https://rankroute-api.prod.azurecontainer.io/api/:match*"
-    }
   ]
 }
