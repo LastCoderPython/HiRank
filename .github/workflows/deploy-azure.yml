@@ -20,7 +20,6 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +46,14 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -v --tb=short --disable-warnings
         working-directory: ${{ env.WORKING_DIR }}
+
+      - name: Debug Secrets
+        run: |
+          if [ -n "${{ secrets.AZURE_CREDENTIALS }}" ]; then
+            echo "AZURE_CREDENTIALS is set."
+          else
+            echo "AZURE_CREDENTIALS is EMPTY! GitHub cannot see the secret."
+          fi
 
       - name: Azure Login
         uses: azure/login@v1
