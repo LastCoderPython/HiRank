@@ -7,8 +7,8 @@ set -euo pipefail
 # ───────────────────────────────────────────────────────
 
 RESOURCE_GROUP="rankroute-prod"
-LOCATION="eastus"
-ACR_NAME="rankrouteacr"  # must be globally unique, all lowercase
+LOCATION="centralindia"
+ACR_NAME="rankrouteacrind"  # must be globally unique, all lowercase
 ACA_ENV="rankroute-env"
 REDIS_NAME="rankroute-redis"
 BACKEND_ACA="rankroute-api"
@@ -16,7 +16,7 @@ CADDY_ACA="rankroute-caddy"
 WORKER_ACA="rankroute-worker"
 BEAT_ACA="rankroute-beat"
 CHROMADB_ACA="rankroute-chromadb"
-STORAGE_ACCOUNT="rankroutestorage"  # must be globally unique, lowercase
+STORAGE_ACCOUNT="rankroutestoreind"  # must be globally unique, lowercase
 CHROMA_SHARE="chroma-data"
 
 # ── Resource Group ──────────────────────────────────
