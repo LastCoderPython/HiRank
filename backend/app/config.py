@@ -1,8 +1,8 @@
 import logging
 
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import Optional, List
+from typing import Optional, List, Any
 from functools import lru_cache
 
 
@@ -82,6 +82,15 @@ class Settings(BaseSettings):
     @property
     def model_order(self) -> List[str]:
         return [self.primary_model, self.fallback_model_1, self.fallback_model_2]
+
+    @model_validator(mode='before')
+    @classmethod
+    def replace_not_set(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            for k, v in data.items():
+                if v == "NOT_SET":
+                    data[k] = None
+        return data
 
     model_config = SettingsConfigDict(
         env_file=".env",
