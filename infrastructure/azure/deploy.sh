@@ -294,7 +294,6 @@ az containerapp create \
   --environment "$ACA_ENV" \
   --image "$ACR_NAME.azurecr.io/rankroute-api:latest" \
   --registry-server "$ACR_NAME.azurecr.io" \
-  --command "celery" "-A" "app.worker:celery_app" "worker" "--loglevel=info" "--queues=ingestion" "--concurrency=2" \
   --min-replicas 1 \
   --max-replicas 1 \
   --cpu 0.5 \
@@ -330,6 +329,18 @@ az containerapp create \
     TAVILY_MONTHLY_QUOTA="${TAVILY_MONTHLY_QUOTA:-1000}" \
     DEBUG=false
 
+echo "Configuring Celery Worker command..."
+az containerapp show --name "$WORKER_ACA" --resource-group "$RESOURCE_GROUP" -o json > worker.json
+python -c '
+import json
+with open("worker.json") as f: data = json.load(f)
+data["properties"]["template"]["containers"][0]["command"] = ["celery"]
+data["properties"]["template"]["containers"][0]["args"] = ["-A", "app.worker:celery_app", "worker", "--loglevel=info", "--queues=ingestion", "--concurrency=2"]
+with open("worker_patched.json", "w") as f: json.dump(data, f)
+'
+MSYS_NO_PATHCONV=1 az containerapp update --name "$WORKER_ACA" --resource-group "$RESOURCE_GROUP" --yaml worker_patched.json > /dev/null
+rm -f worker.json worker_patched.json
+
 # ── Deploy Celery Beat ──────────────────────────────
 echo "Deploying Beat container..."
 az containerapp create \
@@ -338,7 +349,6 @@ az containerapp create \
   --environment "$ACA_ENV" \
   --image "$ACR_NAME.azurecr.io/rankroute-api:latest" \
   --registry-server "$ACR_NAME.azurecr.io" \
-  --command "celery" "-A" "app.worker:celery_app" "beat" "--loglevel=info" \
   --min-replicas 1 \
   --max-replicas 1 \
   --cpu 0.25 \
@@ -357,6 +367,18 @@ az containerapp create \
     CHROMA_HOST=rankroute-chromadb \
     CHROMA_PORT=8000 \
     CHROMA_AUTH_TOKEN=secretref:chroma-auth-token
+
+echo "Configuring Celery Beat command..."
+az containerapp show --name "$BEAT_ACA" --resource-group "$RESOURCE_GROUP" -o json > beat.json
+python -c '
+import json
+with open("beat.json") as f: data = json.load(f)
+data["properties"]["template"]["containers"][0]["command"] = ["celery"]
+data["properties"]["template"]["containers"][0]["args"] = ["-A", "app.worker:celery_app", "beat", "--loglevel=info"]
+with open("beat_patched.json", "w") as f: json.dump(data, f)
+'
+MSYS_NO_PATHCONV=1 az containerapp update --name "$BEAT_ACA" --resource-group "$RESOURCE_GROUP" --yaml beat_patched.json > /dev/null
+rm -f beat.json beat_patched.json
 
 # Output the API URL
 API_FQDN=$(az containerapp show --name "$CADDY_ACA" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv | tr -d '\r')

@@ -11,7 +11,7 @@ on:
 env:
   AZURE_RESOURCE_GROUP: rankroute-prod
   AZURE_CONTAINER_APP: rankroute-api
-  ACR_NAME: rankrouteacr
+  ACR_NAME: rankrouteacrind
   WORKING_DIR: backend
 
 jobs:
@@ -34,13 +34,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-lock.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
 
       - name: Install dependencies
         env:
           PYO3_USE_ABI3_FORWARD_COMPATIBILITY: "1"
         run: |
-          pip install -r requirements-lock.txt
+          pip install -r requirements.txt
           pip install pytest pytest-asyncio
         working-directory: ${{ env.WORKING_DIR }}
 
