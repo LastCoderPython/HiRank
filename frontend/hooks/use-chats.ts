@@ -49,9 +49,9 @@ export function useChats() {
           if (res.exists && res.chat) {
             setChats([{
               id: anonSessionId,
-              title: res.chat.title || 'Temporary Chat',
-              created_at: res.chat.created_at,
-              updated_at: res.chat.updated_at
+              title: (res.chat.title as string) || 'Temporary Chat',
+              created_at: res.chat.created_at as string,
+              updated_at: res.chat.updated_at as string
             }]);
           } else {
              setChats([]);
@@ -88,9 +88,9 @@ export function useChats() {
             if (res.exists && res.chat) {
               setChats([{
                 id: anonSessionId,
-                title: res.chat.title || 'Temporary Chat',
-                created_at: res.chat.created_at,
-                updated_at: res.chat.updated_at
+                title: (res.chat.title as string) || 'Temporary Chat',
+                created_at: res.chat.created_at as string,
+                updated_at: res.chat.updated_at as string
               }]);
             } else {
                setChats([]);
