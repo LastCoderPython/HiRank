@@ -60,6 +60,12 @@ jobs:
             --image rankroute-api:${{ github.sha }} \
             --image rankroute-api:latest \
             .
+          az acr build \
+            --registry ${{ env.ACR_NAME }} \
+            --image rankroute-caddy:${{ github.sha }} \
+            --image rankroute-caddy:latest \
+            --file Dockerfile.caddy \
+            .
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Run database migrations
@@ -90,6 +96,14 @@ jobs:
               --revision-suffix stg-${{ github.sha }}
             # Note: For true traffic splitting, the ACA environment must be in multiple revision mode.
           fi
+
+      - name: Deploy Caddy Gateway
+        if: github.ref == 'refs/heads/main'
+        run: |
+          az containerapp update \
+            --name rankroute-caddy \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/rankroute-caddy:${{ github.sha }}
 
       - name: Deploy Worker
         if: github.ref == 'refs/heads/main'

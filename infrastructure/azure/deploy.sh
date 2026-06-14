@@ -48,7 +48,7 @@ az identity create --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --
 IDENTITY_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "id" -o tsv)
 IDENTITY_PRINCIPAL_ID=$(az identity show --name "$IDENTITY_NAME" --resource-group "$RESOURCE_GROUP" --query "principalId" -o tsv)
 
-KV_NAME="rr-kv-${RANDOM}"
+KV_NAME="rr-kv-rankroute-prod"
 echo "Creating Key Vault ($KV_NAME)..."
 az keyvault create --name "$KV_NAME" --resource-group "$RESOURCE_GROUP" --location "$LOCATION" --enable-rbac-authorization false
 az keyvault set-policy --name "$KV_NAME" --object-id "$IDENTITY_PRINCIPAL_ID" --secret-permissions get list
@@ -189,6 +189,7 @@ az containerapp create \
     HUGGINGFACE_API_TOKEN=secretref:huggingface-api-token \
     AGENT_API_KEYS=secretref:agent-api-keys \
     FRONTEND_URL="${FRONTEND_URL:-}" \
+    BACKEND_URL="${BACKEND_URL:-}" \
     DEBUG=false \
     LLM_PROVIDER=groq \
     PRIMARY_MODEL=llama-3.3-70b-versatile \
