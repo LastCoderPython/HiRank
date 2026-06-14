@@ -45,7 +45,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    fetchSession();
+    const init = async () => {
+      await fetchSession();
+    };
+    init();
   }, [fetchSession]);
 
   const updateProfile = useCallback(async (data: Partial<AuthUser>) => {
