@@ -63,9 +63,10 @@ export function LandingAuth() {
     setIsSending(true);
     setError('');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000'}/api/v1/auth/email/send-otp`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost'}/api/v1/auth/email/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ email })
       });
       
@@ -75,8 +76,8 @@ export function LandingAuth() {
       setNormalizedEmail(data.email || email);
       setStep('otp');
       setCountdown(30);
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSending(false);
     }
@@ -89,9 +90,10 @@ export function LandingAuth() {
     setError('');
     
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000'}/api/v1/auth/email/verify`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost'}/api/v1/auth/email/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ 
           email: normalizedEmail, 
           token: codeStr,
@@ -104,8 +106,8 @@ export function LandingAuth() {
       
       // User is logged in via cookies now. Move to onboarding step.
       setStep('onboarding');
-    } catch (err: any) {
-      setError(err.message || 'Verification failed');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Verification failed');
       setOtp(['', '', '', '', '', '']);
       inputRefs.current[0]?.focus();
     } finally {
@@ -153,7 +155,7 @@ export function LandingAuth() {
   const handleFinishOnboarding = async (skip: boolean) => {
     setIsSaving(true);
     try {
-      const payload: any = { onboarding_complete: true };
+      const payload: Record<string, string | number | boolean> = { onboarding_complete: true };
       
       if (!skip) {
         if (exam) payload.exam = exam;
@@ -177,7 +179,7 @@ export function LandingAuth() {
   };
 
   const handleGoogleLogin = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:9000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
     window.location.href = `${apiUrl}/api/v1/auth/google`;
   };
 

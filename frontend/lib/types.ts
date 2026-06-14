@@ -32,7 +32,7 @@ export interface Message {
   session_id?: string;
   role: 'user' | 'assistant';
   content: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
@@ -49,7 +49,7 @@ export interface SingleChatResponse {
 export interface TempChatResponse {
   exists: boolean;
   messages: Message[];
-  chat?: Record<string, any>;
+  chat?: Record<string, unknown>;
 }
 
 export interface ChatCreateResponse {
@@ -68,7 +68,7 @@ export interface MessageSaveResponse {
 
 export interface StreamEvent {
   type: 'token' | 'colleges' | 'session' | 'auth_required' | 'done' | 'error';
-  data?: any;
+  data?: unknown;
   session_id?: string;
   reason?: string;
   used?: number;
@@ -82,7 +82,7 @@ export interface UploadPreview {
   rows: number;
   columns: string[];
   errors: { row?: number; column?: string; message: string }[];
-  preview: Record<string, any>[];
+  preview: Record<string, unknown>[];
 }
 
 export interface UploadResult {
@@ -111,7 +111,7 @@ export interface LogEntry {
   actor_id?: string;
   actor_role: string;
   summary: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   source: string;
   created_at: string;
 }

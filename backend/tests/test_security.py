@@ -60,24 +60,19 @@ class TestProfileFieldAllowlist:
 
 
 class TestSecurityHeaders:
-    def test_csp_header_present(self):
+    def test_csp_not_on_api_responses(self):
+        """CSP headers are only added to text/html responses, not JSON API responses."""
         response = client.get("/api/v1/health")
-        assert "Content-Security-Policy" in response.headers
-
-    def test_csp_defaults(self):
-        response = client.get("/api/v1/health")
-        csp = response.headers["Content-Security-Policy"]
-        assert "default-src 'self'" in csp
-        assert "script-src 'self'" in csp
-        assert "frame-ancestors 'none'" in csp
+        assert "Content-Security-Policy" not in response.headers
 
     def test_x_content_type_options(self):
         response = client.get("/api/v1/health")
         assert response.headers.get("X-Content-Type-Options") == "nosniff"
 
-    def test_x_frame_options(self):
+    def test_x_frame_options_not_on_api_responses(self):
+        """X-Frame-Options is only added to text/html responses, not JSON API responses."""
         response = client.get("/api/v1/health")
-        assert response.headers.get("X-Frame-Options") == "DENY"
+        assert response.headers.get("X-Frame-Options") is None
 
     def test_referrer_policy(self):
         response = client.get("/api/v1/health")

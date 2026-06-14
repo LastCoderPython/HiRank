@@ -20,7 +20,7 @@ interface ChatAreaProps {
   isLoadingMessages: boolean;
   activeChatId: string | null;
   sessionId: string | null;
-  onStreamComplete: (userContent: string, assistantContent: string, metadata?: any) => Promise<void>;
+  onStreamComplete: (userContent: string, assistantContent: string, metadata?: Record<string, unknown>) => Promise<void>;
 }
 
 export function ChatArea({ 
@@ -34,7 +34,6 @@ export function ChatArea({
   sessionId,
   onStreamComplete
 }: ChatAreaProps) {
-  const { signIn } = useAuth();
   const [inputValue, setInputValue] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingMessages, setStreamingMessages] = useState<Message[] | null>(null);
@@ -108,7 +107,7 @@ export function ChatArea({
     try {
       const { fetchEventSource } = await import('@microsoft/fetch-event-source');
       let streamContent = '';
-      let streamMetadata: any = null;
+      let streamMetadata: Record<string, unknown> | null = null;
       let authBlocked = false;
       
       const requestHistory = [...messages.slice(-9), { role: 'user', content: query }].map(m => ({ role: m.role, content: m.content }));

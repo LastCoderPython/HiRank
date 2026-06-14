@@ -6,8 +6,8 @@ from uuid import uuid4
 import httpx
 import pytest
 
-BENCHMARK_URL = os.getenv("BENCHMARK_URL", "http://localhost:9000")
-CHAT_URL = f"{BENCHMARK_URL}/api/chat"
+BENCHMARK_URL = os.getenv("BENCHMARK_URL", "http://localhost")
+CHAT_URL = f"{BENCHMARK_URL}/api/v1/chat"
 REQ_TIMEOUT = float(os.getenv("BENCHMARK_TIMEOUT", "120"))
 TTFT_THRESHOLD_MS = float(os.getenv("TTFT_THRESHOLD_MS", "10000"))
 TOTAL_THRESHOLD_MS = float(os.getenv("TOTAL_THRESHOLD_MS", "60000"))

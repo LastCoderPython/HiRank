@@ -16,8 +16,9 @@ export function useChats() {
 
   // Initialize anonymous session ID
   useEffect(() => {
+    const abort = new AbortController();
     const initSession = async () => {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined' || abort.signal.aborted) return;
       
       try {
         const fp = await FingerprintJS.load();
@@ -26,6 +27,7 @@ export function useChats() {
         localStorage.setItem('rankroute_session_id', visitorId);
         setAnonSessionId(visitorId);
       } catch (err) {
+        if (abort.signal.aborted) return;
         // Fallback if FingerprintJS blocked
         let sid = localStorage.getItem('rankroute_session_id');
         if (!sid) {
@@ -36,6 +38,7 @@ export function useChats() {
       }
     };
     initSession();
+    return () => abort.abort();
   }, []);
 
   const loadChats = useCallback(async () => {
@@ -71,15 +74,17 @@ export function useChats() {
     }
   }, [isSignedIn, anonSessionId]);
 
-  // Initial load — inlined to avoid set-state-in-effect via indirect callback
   useEffect(() => {
+    const abort = new AbortController();
     if (!authLoaded) return;
 
     const initialLoad = async () => {
+      if (abort.signal.aborted) return;
       if (!isSignedIn) {
         if (anonSessionId) {
           try {
             const res = await api.getTempChat(anonSessionId);
+            if (abort.signal.aborted) return;
             if (res.exists && res.chat) {
               setChats([{
                 id: anonSessionId,
@@ -91,6 +96,7 @@ export function useChats() {
                setChats([]);
             }
           } catch (e) {
+            if (abort.signal.aborted) return;
             console.error('Failed to load temp chat:', e);
           }
         }
@@ -100,8 +106,10 @@ export function useChats() {
       setIsLoadingList(true);
       try {
         const res = await api.getChats();
+        if (abort.signal.aborted) return;
         setChats(res.chats || []);
       } catch (error) {
+        if (abort.signal.aborted) return;
         console.error('Failed to load chats:', error);
       } finally {
         setIsLoadingList(false);
@@ -109,6 +117,7 @@ export function useChats() {
     };
 
     initialLoad();
+    return () => abort.abort();
   }, [authLoaded, isSignedIn, anonSessionId]);
 
   const selectChat = useCallback(async (chatId: string | null) => {
@@ -157,7 +166,7 @@ export function useChats() {
     }
   }, [isSignedIn, loadChats]);
 
-  const saveMessages = useCallback(async (userContent: string, assistantContent: string, metadata?: any) => {
+  const saveMessages = useCallback(async (userContent: string, assistantContent: string, metadata?: Record<string, unknown>) => {
     let currentChatId = activeChatId;
 
     if (!currentChatId) {

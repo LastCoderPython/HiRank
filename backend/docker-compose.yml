@@ -18,7 +18,7 @@ services:
       chromadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:9000/api/health')"]
+      test: ["CMD", "python", "-c", "import httpx; r = httpx.get('http://localhost:9000/api/v1/health'); exit(0 if r.status_code == 200 else 1)"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -49,7 +49,7 @@ services:
 
   # ── ChromaDB Server (Vector Database) ───────────────────
   chromadb:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:1.5.9
     volumes:
       - chroma_data:/chroma/chroma
     environment:
@@ -67,7 +67,7 @@ services:
 
   # ── Redis (Broker + Result Backend + Cache) ─────────────
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.9-alpine
     command: ["redis-server", "--appendonly", "yes", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redis_data:/data

@@ -5,9 +5,9 @@ Provides endpoints to trigger and monitor background web ingestion jobs.
 Uses Celery for durable task execution (jobs survive restarts).
 
 Endpoints:
-  - POST /api/scrape/run       — trigger scrape for approved URLs
-  - POST /api/scrape/discover  — discover + ingest subpages from homepages
-  - GET  /api/scrape/status/{job_id} — check job progress
+  - POST /api/v1/scrape/run       — trigger scrape for approved URLs
+  - POST /api/v1/scrape/discover  — discover + ingest subpages from homepages
+  - GET  /api/v1/scrape/status/{job_id} — check job progress
 """
 
 from __future__ import annotations

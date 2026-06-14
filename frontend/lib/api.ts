@@ -65,7 +65,7 @@ export const api = {
       body: JSON.stringify({ title, temp_session_id: tempSessionId }),
     }),
   getChat: (id: string) => fetchApi<SingleChatResponse>(`/api/v1/chats/${id}`),
-  renameChat: (id: string, title: string) => fetchApi<{ success: boolean; chat: any }>(`/api/v1/chats/${id}`, {
+  renameChat: (id: string, title: string) => fetchApi<{ success: boolean; chat: Record<string, unknown> }>(`/api/v1/chats/${id}`, {
     method: 'PATCH',
     body: JSON.stringify({ title }),
   }),
@@ -73,7 +73,7 @@ export const api = {
   clearAllChats: () => fetchApi<{ success: boolean; deleted: number }>('/api/v1/chats/clear', { method: 'POST' }),
 
   // Messages (Auth & Temp)
-  saveMessage: (params: { chatId?: string; tempSessionId?: string; role: string; content: string; metadata?: any }) => 
+  saveMessage: (params: { chatId?: string; tempSessionId?: string; role: string; content: string; metadata?: Record<string, unknown> }) => 
     fetchApi<MessageSaveResponse>('/api/v1/messages', {
       method: 'POST',
       body: JSON.stringify({

@@ -53,7 +53,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self._local_lock = asyncio.Lock()
 
     def _ensure_redis(self):
-        """Try once to connect to Redis; fall back to local on failure."""
+        """Lazy-init Redis connection; retry on next call if this attempt fails."""
         if self._redis_checked:
             return
         self._redis_checked = True
@@ -64,8 +64,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 self._redis = client
                 logger.info("Rate limiter: using Redis-backed sliding window")
         except Exception as e:
-            logger.warning("Rate limiter: Redis unavailable (%s), falling back to local memory", e)
+            logger.warning("Rate limiter: Redis unavailable (%s), will retry on next request", e)
             self._redis = None
+            self._redis_checked = False
 
     async def dispatch(self, request: Request, call_next):
         path = request.url.path

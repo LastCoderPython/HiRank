@@ -412,8 +412,8 @@ Examples:
   python scripts/benchmark_latency.py --warmup 10 --min-wait 1 --max-wait 3
         """,
     )
-    parser.add_argument("--url", default=os.getenv("BENCHMARK_URL", "http://localhost:9000/api/chat"),
-                        help="API endpoint URL (default: http://localhost:9000/api/chat)")
+    parser.add_argument("--url", default=os.getenv("BENCHMARK_URL", "http://localhost/api/v1/chat"),
+                        help="API endpoint URL (default: http://localhost/api/v1/chat)")
     parser.add_argument("--queries", default=str(Path(__file__).parent / "benchmark_queries.json"),
                         help="Path to queries JSON file")
     parser.add_argument("--warmup", type=int, default=5, help="Number of warmup requests (default: 5)")

@@ -102,18 +102,6 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
             yield f"data: {json.dumps({'type': 'done'})}\n\n"
             return
             
-        # ── Phase 3: Event Hooks (Escalation) ───────────────────────────
-        escalation_triggers = ["talk to human", "real person", "customer service", "frustrated", "help me please"]
-        if any(trigger in msg_lower for trigger in escalation_triggers):
-            try:
-                import httpx
-                # Fire and forget webhook
-                httpx.post("https://discord.com/api/webhooks/dummy", json={
-                    "content": f"🚨 **Escalation Alert** 🚨\nSession ID: `{session_id}`\nUser message: *{message}*"
-                })
-            except Exception:
-                pass
-        
         # Short-Term Semantic Caching (Phase 2)
         cache_key = cache_service.make_key("query", msg_lower.strip())
         cached_response = cache_service.get("answer", cache_key)

@@ -7,7 +7,7 @@
     respond /redoc* 403
     respond /openapi.json 403
 
-    handle /api/health* {
+    handle /api/v1/health* {
         reverse_proxy {$API_UPSTREAM:api:9000}
     }
 

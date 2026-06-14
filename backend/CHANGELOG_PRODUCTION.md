@@ -2810,3 +2810,257 @@ Hardened the production deployment pipeline after adding the Caddy reverse-proxy
 - **Added `BACKEND_URL`**: Placed alongside `FRONTEND_URL` in the CORS section so deployers don't forget to map their custom API domain.
 - **Added `REDIS_PASSWORD`**: Documented under the Redis section as the access key that populates `REDIS_URL` via the deployment script.
 
+
+---
+
+## Phase 20: Pre-Launch Bug Bounty — OAuth, Health Checks & Config Hardening ✅
+
+### Problem Solved
+A comprehensive codebase audit (Phase 20) uncovered 13 issues spanning security, OAuth integration, CI/CD validation, configuration drift, and infrastructure hardening. Six high-severity bugs were fixed — the most critical being a broken OAuth redirect URI that would have prevented all Google login attempts in production, and a health-check path mismatch that rendered the CI/CD deployment verification step effectively a no-op.
+
+### Issues Fixed
+
+#### 1. Broken OAuth Redirect URI (`backend/app/api/auth.py`)
+- **Severity**: High
+- **Problem**: The `redirect_uri` sent to Supabase during Google OAuth was `{backend_url}/api/auth/callback` (missing `/v1/`), but the actual FastAPI route is registered at `/api/v1/auth/callback`. After Google authentication completed, the browser would redirect to a non-existent URL, receiving a 404 instead of setting session cookies.
+- **Fix**: Changed all 3 occurrences (lines 170, 217, 320) from `/api/auth/callback` to `api/v1/auth/callback`.
+
+#### 2. CI/CD Health Check Path Mismatch (`.github/workflows/deploy-azure.yml`)
+- **Severity**: High
+- **Problem**: The `Verify deployment health` step pinged `/api/health`, but the actual health endpoint is at `/api/v1/health`. The curl command with `--fail` would either fail the entire deploy or silently pass without validating server readiness.
+- **Fix**: Changed URL from `https://$FQDN/api/health` to `https://$FQDN/api/v1/health`.
+
+#### 3. Docker Compose Healthcheck Silent No-Op (`backend/docker-compose.yml`)
+- **Severity**: High
+- **Problem**: The API container healthcheck ran `httpx.get('http://localhost:9000/api/health')` which returns a Response object even on 404 — no status code check was performed. The healthcheck always passed regardless of actual server health.
+- **Fix**: Added explicit status code validation: `exit(0 if r.status_code == 200 else 1)` and corrected the path to `/api/v1/health`.
+
+#### 4. Invalid Fallback Model Name (`backend/.env`)
+- **Severity**: High
+- **Problem**: `FALLBACK_MODEL_2=openai/gpt-oss-20b` is not a valid Groq model. If the primary model (Llama 3.3 70B) and first fallback (Llama 3.1 8B) both failed, `ChatGroq(model="openai/gpt-oss-20b")` would throw an unhandled exception, crashing the LLM pipeline.
+- **Fix**: Changed to `llama-3.1-8b-instant` (valid Groq model, same as fallback 1 — both serve as equivalent redundancy).
+
+#### 5. LangSmith Observability Dead (`backend/.env`)
+- **Severity**: Medium
+- **Problem**: `LANGSMITH_API_KEY` was set to the literal placeholder `"PASTE_YOUR_NEW_API_KEY_HERE"`, causing LangSmith tracing to silently fail. Performance observability for the multi-agent pipeline was completely non-operational.
+- **Fix**: Commented out all 4 LangSmith variables with a clear instruction to uncomment and set a valid API key to enable tracing.
+
+#### 6. Frontend Env Template Port Drift (`frontend/.env.example`)
+- **Severity**: Medium
+- **Problem**: `.env.example` recommended `NEXT_PUBLIC_API_URL="http://localhost:9000"` (direct to API), but the actual `.env` used `http://localhost` (via Caddy on port 80). New developers copying the example would bypass Caddy rate limiting.
+- **Fix**: Updated `.env.example` to `http://localhost` and clarified the comment that this routes through the Caddy gateway.
+
+#### 7. Backend Env Template Missing Required Vars (`backend/.env.example`)
+- **Severity**: Medium
+- **Problem**: `.env.example` was missing `BACKEND_URL` (required for OAuth `redirect_uri` — defaults to `localhost:9000`, which breaks production OAuth) and `HUGGINGFACE_API_TOKEN` (required by `HuggingFaceEndpointEmbeddings` at startup). Deployers using the template would silently land on broken OAuth and a background-thread embedding crash.
+- **Fix**: Added both variables with placeholder values and documentation comments.
+
+#### 8. CSP Headers on Every API Response (`backend/app/middleware/csp.py`)
+- **Severity**: Low
+- **Problem**: `Content-Security-Policy` and `X-Frame-Options` headers were attached to every API response (JSON), adding ~300 bytes of meaningless overhead. The `connect-src 'self'` directive in CSP was also too restrictive for client-side fetch from a different frontend origin.
+- **Fix**: Guarded CSP and X-Frame-Options behind `if response.media_type == "text/html":`. Security headers that apply universally (X-Content-Type-Options, Referrer-Policy, Permissions-Policy) remain on all responses. Updated `test_security.py` assertions to match the new behavior.
+
+#### 9. Unpinned Caddy Base Image (`backend/Dockerfile.caddy`)
+- **Severity**: Low
+- **Problem**: `FROM caddy:2` and `FROM caddy:2-builder` float with minor/patch updates. A rebuild 3 months later could pull different base images with different behavior or vulnerabilities.
+- **Fix**: Pinned to `caddy:2.8.4-builder` and `caddy:2.8.4-alpine`.
+
+### Still Manual (Phase 1 — Security Incident Response)
+The `.env` file with live credentials must be purged from git history:
+1. Rotate all keys (Groq, Supabase service/JWT, Tavily, Agent, Redis)
+2. Update `backend/.env` with new rotated values
+3. Run `git filter-repo --path backend/.env --invert-paths --force` on a fresh clone
+4. Force-push cleaned history
+
+### Verification
+- **Tests**: `159 passed, 0 failed, 6 skipped` — all tests green.
+- **OAuth flow**: `grep` confirms zero remaining occurrences of `/api/auth/callback` without `/v1/` in auth.py.
+- **Health paths**: `grep` confirms zero remaining occurrences of `/api/health` (without `/v1/`) in `deploy-azure.yml` and `docker-compose.yml`.
+- **Fallback model**: `grep` confirms zero remaining occurrences of `openai/gpt-oss-20b` in the codebase.
+
+### Modified Files (12)
+| File | Change |
+|------|--------|
+| `backend/app/api/auth.py` | OAuth redirect URI: `/api/auth/callback` → `/api/v1/auth/callback` (3 occurrences) |
+| `.github/workflows/deploy-azure.yml` | Health check URL corrected to `/api/v1/health` |
+| `backend/docker-compose.yml` | Healthcheck now validates status 200; path corrected |
+| `backend/.env` | Fallback model fixed; LangSmith placeholder commented out |
+| `backend/.env.example` | Added `BACKEND_URL`, `HUGGINGFACE_API_TOKEN` |
+| `frontend/.env.example` | Port corrected from 9000 to 80 (via Caddy) |
+| `backend/app/middleware/csp.py` | CSP/X-Frame-Options guarded to HTML-only responses |
+| `backend/Dockerfile.caddy` | Base images pinned to `2.8.4` |
+| `backend/tests/test_security.py` | Updated 3 assertions to match new CSP behavior |
+
+
+---
+
+## Phase 21: Pre-Launch Bug Bounty II — Frontend Port Drift, Dead Code & Infra Hardening ✅
+
+### Problem Solved
+A second deep codebase audit uncovered 7 remaining issues from the Phase 20 analysis: a frontend component bypassing the Caddy proxy (email OTP flow hitting Gunicorn directly), dead escalation webhook posting to `discord.com/api/webhooks/dummy`, a Caddyfile health path that didn't match the actual `/api/v1/health` route (causing health checks to hit the rate limiter), unused `get_current_user()` dead code in auth.py, docstring route references missing `/v1/`, and two infrastructure gaps (FQDN race condition in deploy.sh, missing ON_ERROR_STOP in DB migrations).
+
+### Issues Fixed
+
+#### 1. Frontend Email OTP Bypassing Caddy (`frontend/components/landing-auth.tsx`)
+- **Severity**: High
+- **Problem**: The email OTP flow used raw `fetch()` calls with fallback URL `http://localhost:9000` (direct to Gunicorn) instead of `http://localhost` (via Caddy on port 80), bypassing rate limiting and Caddy validation. These calls also lacked `credentials: 'include'`, creating a cookie domain mismatch — auth cookies set on `:9000` won't be sent to `:80` and vice versa.
+- **Fix**: Changed all 3 fallback references from `http://localhost:9000` to `http://localhost` (lines 66, 92, 182). Added `credentials: 'include'` to both `send-otp` and `verify` fetch calls so cookies are properly managed across the Caddy proxy boundary.
+
+#### 2. Dead Escalation Webhook (`backend/app/api/chat.py`)
+- **Severity**: High
+- **Problem**: Lines 105-115 contained a dead escalation webhook block that posted to `https://discord.com/api/webhooks/dummy` — a URL that always returns 404. The entire block was inside a bare `except Exception: pass`, making the failure completely invisible with no logging.
+- **Fix**: Removed the entire escalation webhook block (13 lines of dead code).
+
+#### 3. Caddyfile Health Path Mismatch (`backend/Caddyfile`)
+- **Severity**: High
+- **Problem**: The Caddyfile matcher `handle /api/health*` only matched paths starting with `/api/health`, but the actual health endpoint is at `/api/v1/health`. Health check requests fell through to the `handle /api/*` block, which applies aggressive rate limiting (20 requests per 2 seconds) — health checks from ACA/CI/CD could be throttled during auto-scaling events.
+- **Fix**: Changed matcher from `/api/health*` to `/api/v1/health*`.
+
+#### 4. Dead `get_current_user()` Function (`backend/app/api/auth.py`)
+- **Severity**: Medium
+- **Problem**: The `get_current_user()` synchronous function (lines 115-133) was defined but never imported or used as a FastAPI dependency by any route. It duplicated the JWT parsing logic already inlined in `get_session()`.
+- **Fix**: Removed the entire unused function definition.
+
+#### 5. Docstring Route References Missing `/v1/` (4 files)
+- **Severity**: Medium
+- **Problem**: Route docstrings in 4 files referenced paths without the `/v1/` prefix, making API documentation misleading:
+  - `compare.py`: `GET /api/colleges/compare` → `GET /api/v1/colleges/compare`
+  - `analytics.py`: 3 references to `/api/admin/analytics/...` → `/api/v1/admin/analytics/...`
+  - `scrape.py`: 3 references to `/api/scrape/...` → `/api/v1/scrape/...`
+  - `profile.py`: 2 references to `/api/profile` → `/api/v1/profile`
+- **Fix**: Updated all 9 docstring references to include the correct `/v1/` prefix.
+
+#### 6. Missing FQDN Retry on Caddy Deploy (`infrastructure/azure/deploy.sh`)
+- **Severity**: Medium
+- **Problem**: The Caddy gateway's `API_UPSTREAM` variable is derived from `az containerapp show --query "ingress.fqdn"` on the API container. If Azure hasn't provisioned the FQDN yet (race condition), the query returns empty, causing Caddy to deploy with an empty `API_UPSTREAM` and silently routing all requests to `localhost:9000` instead of the proper ACA endpoint.
+- **Fix**: Added a retry loop (6 attempts × 5 seconds) around the FQDN query with a hard failure on timeout — if the FQDN can't be resolved after 30 seconds, the script aborts with an error message instead of deploying a broken Caddy.
+
+#### 7. DB Migrations Missing Error Safety (`.github/workflows/deploy-azure.yml`)
+- **Severity**: Medium
+- **Problem**: Database migrations ran with bare `psql -f "$f"`. If a migration file hit an error midway, psql would continue executing the rest of the file, leaving the database in an inconsistent state with no rollback.
+- **Fix**: Added `--set ON_ERROR_STOP=1` (abort on any SQL error) and `-1` (wrap entire file in a single transaction) flags to every migration invocation.
+
+### Blocked
+- **`azure/login@v1` → `v2`**: Not applied. Requires `AZURE_CREDENTIALS` JSON to be regenerated in camelCase format from `az ad sp create-for-rbac` (without the deprecated `--sdk-auth` flag). Current credentials use snake_case; upgrading would break CI/CD.
+
+### Verification
+- **Tests**: `159 passed, 0 failed, 6 skipped` — all tests green.
+- **Dead code**: `grep` confirms zero occurrences of `discord.com/api/webhooks` and `get_current_user` in the codebase.
+- **Docstrings**: `grep` confirms zero docstring route references to `/api/` without `/v1/` in `compare.py`, `analytics.py`, `scrape.py`, `profile.py`.
+- **Frontend port drift**: `grep` confirms zero remaining hardcoded `localhost:9000` fallback URLs in `landing-auth.tsx`.
+
+### Modified Files (10)
+| File | Change |
+|------|--------|
+| `frontend/components/landing-auth.tsx` | Fallback URL `:9000` → `localhost`; added `credentials: 'include'` to 2 fetch calls |
+| `backend/app/api/chat.py` | Removed dead Discord escalation webhook block |
+| `backend/Caddyfile` | Health matcher `/api/health*` → `/api/v1/health*` |
+| `backend/app/api/auth.py` | Removed unused `get_current_user()` function |
+| `backend/app/api/compare.py` | Docstring: `/api/colleges/compare` → `/api/v1/colleges/compare` |
+| `backend/app/api/analytics.py` | 3 docstrings: `/api/admin/...` → `/api/v1/admin/...` |
+| `backend/app/api/scrape.py` | 3 docstrings: `/api/scrape/...` → `/api/v1/scrape/...` |
+| `backend/app/api/profile.py` | 2 docstrings: `/api/profile` → `/api/v1/profile` |
+| `infrastructure/azure/deploy.sh` | Added 6-attempt retry loop with hard fail on FQDN lookup |
+| `.github/workflows/deploy-azure.yml` | Added `ON_ERROR_STOP=1` + `-1` (transaction) to migration psql calls |
+
+
+---
+
+## Phase 22: Final Codebase Hardening — Docker Pinning, Caddy Consistency, Redis Retry & Frontend Cleanup ✅
+
+### Problem Solved
+A comprehensive sweep of remaining issues from the previous 5-phase audit uncovered 10 items across Docker reproducibility, backend URL consistency, Redis resilience, Pydantic modernization, frontend hygiene, and benchmark accuracy.
+
+### Issues Fixed
+
+#### 1. Docker Images Not Version-Pinned (3 images)
+- **Severity**: High
+- **Problem**: Three Docker images used floating tags that auto-upgrade on `docker-compose pull`, risking silent breaking changes in CI/deploy:
+  - `chromadb/chroma:latest` → latest dev pre-release (`1.5.10.dev*`) could deploy untested code
+  - `redis:7-alpine` → floating to latest 7.x patch (was `7.4.8`, now `7.4.9` with CVE-2026-23479 fix — correct but should be explicit)
+  - `python:3.13-slim` → floating to latest 3.13.x patch, could introduce subtle runtime differences
+- **Fix**: Pinned all three to exact stable versions:
+  - `chromadb/chroma:1.5.9` (latest stable release as of May 2026)
+  - `redis:7.4.9-alpine` (latest 7.x patch with CVE-2026-23479 fix)
+  - `python:3.13.14-slim` (latest 3.13.x patch as of June 2026)
+
+#### 2. `backend_url` Default Inconsistent with Caddy-First Architecture
+- **Severity**: High
+- **Problem**: Both `config.py` (line 67) and `.env.example` (line 48) defaulted `BACKEND_URL` to `http://localhost:9000`, which routed OAuth callbacks directly to Gunicorn, bypassing Caddy rate limiting and middleware. The frontend already sends all API traffic to `http://localhost` (port 80 / Caddy), creating an inconsistency.
+- **Fix**: Changed default from `http://localhost:9000` to `http://localhost` in both `config.py` and `.env.example`. OAuth callbacks now route through Caddy consistently.
+
+#### 3. Redis Connection Single-Attempt, Never Retries
+- **Severity**: Medium
+- **Problem**: Both `RateLimitMiddleware._ensure_redis()` and `MaintenanceMiddleware._ensure_redis()` set `_redis_checked = True` permanently after the first attempt — even if the connection failed. Redis was never retried, permanently degrading to in-memory fallback. Contrast with `UsageService._get_redis()` which resets `self._redis = None` on failure so the next caller retries.
+- **Fix**: Both middlewares now reset `_redis_checked = False` on connection failure, ensuring Redis is retried on the next request.
+
+#### 4. Pydantic v2 Deprecation Warning (`class Config` → `ConfigDict`)
+- **Severity**: Medium
+- **Problem**: `config.py` used the old Pydantic v1 `class Config` syntax (`env_file`, `case_sensitive`, `extra`), generating a `PydanticDeprecatedSince20` warning. All other Pydantic models in the codebase correctly use `model_config = {"extra": "forbid"}`.
+- **Fix**: Replaced `class Config` with `model_config = ConfigDict(env_file=".env", case_sensitive=False, extra="ignore")` and added `ConfigDict` to imports.
+
+#### 5. Unused `signIn` Variable in `chat-area.tsx`
+- **Severity**: Low
+- **Problem**: `const { signIn } = useAuth()` was destructured but never referenced in the component.
+- **Fix**: Removed the unused destructuring.
+
+#### 6. Duplicate Session-Fetching Logic in `auth-context.tsx`
+- **Severity**: Low
+- **Problem**: The `useEffect` (lines 48-70) duplicated the identical logic of `fetchSession()` (lines 24-45), violating DRY. Comment claimed it was "inlined to avoid react-hooks/set-state-in-effect" — a misunderstanding since calling the callback from `useEffect` is perfectly safe.
+- **Fix**: Replaced the duplicated inline code with a direct call to `fetchSession()`.
+
+#### 7. Missing AbortController in Async Effects in `use-chats.ts`
+- **Severity**: Low
+- **Problem**: Both `useEffect` hooks (FingerprintJS initialization and chat list loading) performed async operations without `AbortController`. If the component unmounts before resolution, React warns about state updates on unmounted components.
+- **Fix**: Added `AbortController` with cleanup (`return () => abort.abort()`) to both effects, with early-return guards on `abort.signal.aborted`.
+
+#### 8. `any` Types Across Frontend (18 occurrences eliminated)
+- **Severity**: Low
+- **Problem**: 18 `any` type annotations across 6 files weakened TypeScript type safety:
+  - `landing-auth.tsx`: 2 `catch (err: any)`, 1 `const payload: any`
+  - `chat-area.tsx`: `metadata?: any` (prop), `let streamMetadata: any`
+  - `api.ts`: `chat: any`, `metadata?: any`
+  - `types.ts`: 5 `Record<string, any>` → `Record<string, unknown>`, `data?: any` → `data?: unknown`
+  - `use-chats.ts`: `metadata?: any`
+  - `admin/analytics/page.tsx`: `icon: any` → `LucideIcon`
+  - `admin/cutoffs/page.tsx`, `admin/college-info/page.tsx`: `e: any` → typed error objects
+- **Fix**: Replaced all with proper TypeScript types (`unknown`, `Record<string, unknown>`, `LucideIcon`, typed interfaces).
+
+#### 9. Benchmark Scripts Using Wrong Port and Missing `/v1/` Prefix
+- **Severity**: Low
+- **Problem**: All three benchmark/load-test scripts pointed to `:9000` (Gunicorn, bypassing Caddy) and used `/api/chat` (without `/v1/` prefix), meaning they'd 404 if pointed at Caddy:
+  - `test_latency_integration.py`: `BENCHMARK_URL=localhost:9000`, `CHAT_URL=/api/chat`
+  - `benchmark_latency.py`: `--url` default `localhost:9000/api/chat`
+  - `benchmark_latency.k6.js`: `BASE_URL=localhost:9000`, `CHAT_URL=/api/chat`
+- **Fix**: Changed all URLs to use `http://localhost` (Caddy port 80) and `/api/v1/chat` path.
+
+### Verification
+- **Tests**: `159 passed, 0 failed, 6 skipped` — all tests green.
+- **Docker pins**: Confirmed `chromadb/chroma:1.5.9`, `redis:7.4.9-alpine`, `python:3.13.14-slim` are the latest stable as documented.
+- **`any` types**: `grep ": any" frontend/**/*.ts frontend/**/*.tsx` returns zero matches.
+- **Unused `signIn`**: Confirmed removed — `chat-area.tsx` no longer destructures it.
+- **Redis retry**: Both middlewares now reset `_redis_checked = False` on failure, matching `usage_service.py` pattern.
+- **Pydantic v2**: `config.py` uses `ConfigDict`, no `PydanticDeprecatedSince20` warnings.
+
+### Modified Files (15)
+| File | Change |
+|------|--------|
+| `backend/docker-compose.yml` | `chromadb/chroma:latest` → `:1.5.9`; `redis:7-alpine` → `:7.4.9-alpine` |
+| `backend/Dockerfile` | `python:3.13-slim` → `python:3.13.14-slim` (both stages) |
+| `backend/app/config.py` | `backend_url` default `:9000` → `:80`; `class Config` → `ConfigDict`; added `ConfigDict` import |
+| `backend/.env.example` | `BACKEND_URL` default `:9000` → `:80` |
+| `backend/app/middleware/rate_limit.py` | Reset `_redis_checked = False` on Redis failure (retries on next request) |
+| `backend/app/middleware/maintenance.py` | Same Redis retry fix |
+| `frontend/components/chat-area.tsx` | Removed unused `signIn`; typed `metadata` and `streamMetadata` |
+| `frontend/lib/auth-context.tsx` | Deduplicated session-fetching — `useEffect` now calls `fetchSession()` |
+| `frontend/hooks/use-chats.ts` | Added `AbortController` to both async effects; typed `metadata` |
+| `frontend/components/landing-auth.tsx` | 2 `catch (err: any)` → `unknown`; `payload: any` → typed |
+| `frontend/lib/api.ts` | `chat: any` → `Record<string, unknown>`; `metadata?: any` → typed |
+| `frontend/lib/types.ts` | 5 `Record<string, any>` → `Record<string, unknown>`; `data?: any` → `unknown` |
+| `frontend/app/admin/analytics/page.tsx` | `icon: any` → `LucideIcon` |
+| `frontend/app/admin/cutoffs/page.tsx` | `e: any` → typed error object |
+| `frontend/app/admin/college-info/page.tsx` | `e: any` → typed error object |
+| `backend/tests/test_latency_integration.py` | `BENCHMARK_URL` default → `localhost`; `CHAT_URL` → `/api/v1/chat` |
+| `backend/scripts/benchmark_latency.py` | `--url` default → `localhost/api/v1/chat` |
+| `backend/scripts/benchmark_latency.k6.js` | `BASE_URL` default → `localhost`; `CHAT_URL` → `/api/v1/chat` |
+

@@ -44,30 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Initial session fetch — inlined to avoid react-hooks/set-state-in-effect
   useEffect(() => {
-    const initSession = async () => {
-      try {
-        const authRes = await api.fetchSession();
-        if (authRes.authenticated) {
-          try {
-            const profile = await api.getProfile();
-            setUser(profile);
-          } catch {
-            setUser(authRes.user);
-          }
-        } else {
-          setUser(null);
-        }
-      } catch {
-        setUser(null);
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-
-    initSession();
-  }, []);
+    fetchSession();
+  }, [fetchSession]);
 
   const updateProfile = useCallback(async (data: Partial<AuthUser>) => {
     try {

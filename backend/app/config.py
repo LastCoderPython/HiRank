@@ -1,6 +1,6 @@
 import logging
 
-from pydantic import field_validator
+from pydantic import ConfigDict, field_validator
 from pydantic_settings import BaseSettings
 from typing import Optional, List
 from functools import lru_cache
@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
 
     # Backend URL (used for OAuth redirect_uri — never derive from Host header)
-    backend_url: str = "http://localhost:9000"
+    backend_url: str = "http://localhost"
 
     # Tavily (Live Web Search)
     tavily_api_key: Optional[str] = None
@@ -83,10 +83,11 @@ class Settings(BaseSettings):
     def model_order(self) -> List[str]:
         return [self.primary_model, self.fallback_model_1, self.fallback_model_2]
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-        extra = "ignore"
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore",
+    )
 
 
 @lru_cache()
