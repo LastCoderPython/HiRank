@@ -1,3 +1,6 @@
+import logging
+
+from pydantic import field_validator
 from pydantic_settings import BaseSettings
 from typing import Optional, List
 from functools import lru_cache
@@ -6,6 +9,7 @@ from functools import lru_cache
 class Settings(BaseSettings):
     # Application
     debug: bool = False
+    runtime_env: str = "development"
 
     # CORS
     cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001"
@@ -43,6 +47,14 @@ class Settings(BaseSettings):
 
     # Frontend URL for redirects
     frontend_url: str = "http://localhost:3000"
+
+    @classmethod
+    def validate_cors(cls, v: str) -> str:
+        if not v.strip():
+            logging.warning("CORS_ORIGINS is empty — all cross-origin requests will be blocked")
+        return v
+
+    _validate_cors = field_validator("cors_origins")(validate_cors)
 
     # Agent API
     agent_api_keys: Optional[str] = None
