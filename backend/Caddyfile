@@ -8,7 +8,9 @@
     respond /openapi.json 403
 
     handle /api/v1/health* {
-        reverse_proxy {$API_UPSTREAM:api:9000}
+        reverse_proxy {$API_UPSTREAM:api:9000} {
+            header_up Host {upstream_hostport}
+        }
     }
 
     handle /api/* {
@@ -20,6 +22,7 @@
             }
         }
         reverse_proxy {$API_UPSTREAM:api:9000} {
+            header_up Host {upstream_hostport}
             flush_interval -1
         }
     }
