@@ -54,15 +54,17 @@ class ProfileEnricher:
                 updates["exam"] = key
                 break
 
-        # Rank extraction (e.g. "4521 rank", "AIR 12345")
-        rank_match = re.search(RANK_PATTERN, m)
+        # Rank extraction (e.g. "4521 rank", "AIR 12345", "rank 4521")
+        rank_match = re.search(r"\b(?:rank|air)\s*(\d{1,6})\b|\b(\d{1,6})\s*(?:rank|air)\b", m)
         if rank_match:
-            updates["rank"] = int(rank_match.group(1))
+            rank_str = rank_match.group(1) or rank_match.group(2)
+            updates["rank"] = int(rank_str)
 
-        # Percentile extraction (e.g. "94.5 percentile", "97.2%ile")
-        pct_match = re.search(PERCENTILE_PATTERN, m)
+        # Percentile extraction (e.g. "94.5 percentile", "percentile 97.2")
+        pct_match = re.search(r"\b(?:percentile|%ile|pct)\s*(100(?:\.0{1,2})?|\d{1,2}(?:\.\d{1,2})?)|\b(100(?:\.0{1,2})?|\d{1,2}(?:\.\d{1,2})?)\s*(?:percentile|%ile|%|pct)\b", m)
         if pct_match:
-            updates["percentile"] = float(pct_match.group(1))
+            pct_str = pct_match.group(1) or pct_match.group(2)
+            updates["percentile"] = float(pct_str)
 
         # Category extraction
         for cat_key, pattern in CATEGORY_PATTERNS.items():
