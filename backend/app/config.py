@@ -67,10 +67,18 @@ class Settings(BaseSettings):
     def validate_redis_url(cls, v: str) -> str:
         if v and v.startswith("rediss://") and "ssl_cert_reqs=" not in v:
             separator = "&" if "?" in v else "?"
-            return f"{v}{separator}ssl_cert_reqs=CERT_NONE"
+            # redis-py expects 'none'
+            return f"{v}{separator}ssl_cert_reqs=none"
         return v
 
     _validate_redis_url = field_validator("redis_url")(validate_redis_url)
+
+    @property
+    def celery_redis_url(self) -> str:
+        """Celery specifically requires CERT_NONE uppercase."""
+        if self.redis_url and self.redis_url.startswith("rediss://"):
+            return self.redis_url.replace("ssl_cert_reqs=none", "ssl_cert_reqs=CERT_NONE")
+        return self.redis_url
 
     # Backend URL (used for OAuth redirect_uri — never derive from Host header)
     backend_url: str = "http://localhost"
