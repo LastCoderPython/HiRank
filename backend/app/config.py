@@ -63,6 +63,15 @@ class Settings(BaseSettings):
     # Celery / Redis broker
     redis_url: str = "redis://localhost:6379/0"
 
+    @classmethod
+    def validate_redis_url(cls, v: str) -> str:
+        if v and v.startswith("rediss://") and "ssl_cert_reqs=" not in v:
+            separator = "&" if "?" in v else "?"
+            return f"{v}{separator}ssl_cert_reqs=CERT_NONE"
+        return v
+
+    _validate_redis_url = field_validator("redis_url")(validate_redis_url)
+
     # Backend URL (used for OAuth redirect_uri — never derive from Host header)
     backend_url: str = "http://localhost"
 
