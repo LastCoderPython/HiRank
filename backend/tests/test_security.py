@@ -14,11 +14,11 @@ client = TestClient(app)
 class TestProfileExtraForbid:
     def test_extra_field_rejected(self):
         with pytest.raises(ValidationError):
-            ProfileUpdateRequest(**{"name": "test", "role": "admin"})
+            ProfileUpdateRequest.model_validate({"name": "test", "role": "admin"})
 
     def test_extra_field_role_rejected(self):
         with pytest.raises(ValidationError):
-            ProfileUpdateRequest(**{"name": "test", "rank": 100, "is_admin": True})
+            ProfileUpdateRequest.model_validate({"name": "test", "rank": 100, "is_admin": True})
 
     def test_valid_fields_accepted(self):
         model = ProfileUpdateRequest(name="test", rank=100, category="OBC")
@@ -33,7 +33,9 @@ class TestProfileExtraForbid:
 
 class TestProfileFieldAllowlist:
     def test_profile_api_rejects_role(self, monkeypatch):
-        monkeypatch.setattr("app.api.profile._get_user_id", lambda x: "test-user")
+        async def mock_get_user_id(x):
+            return "test-user"
+        monkeypatch.setattr("app.api.profile._get_user_id", mock_get_user_id)
 
         async def _mock(uid, updates):
             return updates
@@ -46,7 +48,9 @@ class TestProfileFieldAllowlist:
         assert response.status_code == 422
 
     def test_profile_api_allows_valid_fields(self, monkeypatch):
-        monkeypatch.setattr("app.api.profile._get_user_id", lambda x: "test-user")
+        async def mock_get_user_id(x):
+            return "test-user"
+        monkeypatch.setattr("app.api.profile._get_user_id", mock_get_user_id)
 
         async def _mock(uid, updates):
             return updates
