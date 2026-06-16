@@ -34,6 +34,8 @@ _SOURCE_MAP = {
     "facility_inquiry": AuthoritativeSource.COLLEGE_WEB_DOCS,
     "college_info": AuthoritativeSource.COLLEGE_WEB_DOCS,
     "recent_update": AuthoritativeSource.COLLEGE_WEB_DOCS,
+    "seat_inquiry": AuthoritativeSource.COLLEGE_WEB_DOCS,
+    "general_inquiry": AuthoritativeSource.COLLEGE_WEB_DOCS,
     "comparison": None,  # both sources needed
 }
 
