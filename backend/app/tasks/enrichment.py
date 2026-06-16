@@ -30,17 +30,20 @@ def enrich_profile_from_message(user_id: str, message: str):
         return
 
     try:
-        existing = asyncio.run(get_user_by_id(user_id))
-        if not existing:
-            return
+        async def _do_enrichment():
+            existing = await get_user_by_id(user_id)
+            if not existing:
+                return
 
-        # Only fill in NULL fields — never overwrite explicit onboarding data
-        filtered = {k: v for k, v in updates.items() if not existing.get(k)}
-        if filtered:
-            asyncio.run(patch_profile(user_id, filtered))
-            logger.info(
-                "Enriched profile for %s: %s",
-                user_id, list(filtered.keys()),
-            )
+            # Only fill in NULL fields — never overwrite explicit onboarding data
+            filtered = {k: v for k, v in updates.items() if not existing.get(k)}
+            if filtered:
+                await patch_profile(user_id, filtered)
+                logger.info(
+                    "Enriched profile for %s: %s",
+                    user_id, list(filtered.keys()),
+                )
+
+        asyncio.run(_do_enrichment())
     except Exception as e:
         logger.error("Profile enrichment failed for %s: %s", user_id, e)
