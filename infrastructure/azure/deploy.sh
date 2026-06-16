@@ -31,6 +31,7 @@ CHROMA_SHARE="chroma-data"
 : "${SUPABASE_ANON_KEY:?Must set SUPABASE_ANON_KEY}"
 : "${GROQ_API_KEY:?Must set GROQ_API_KEY}"
 : "${TAVILY_API_KEY:?Must set TAVILY_API_KEY}"
+: "${REDIS_PASSWORD:?Must set REDIS_PASSWORD}"
 
 # ── Resource Group ──────────────────────────────────
 echo "Creating resource group..."
@@ -145,13 +146,14 @@ az containerapp create \
   --cpu 0.25 \
   --memory 0.5Gi \
   --user-assigned "$IDENTITY_ID" \
-  --registry-identity "$IDENTITY_ID"
+  --registry-identity "$IDENTITY_ID" \
+  --args "redis-server" "--requirepass" "$REDIS_PASSWORD" "--appendonly" "yes" "--maxmemory" "256mb" "--maxmemory-policy" "allkeys-lru"
 
 echo "Retrieving Redis FQDN..."
 REDIS_HOST=$(az containerapp show --name "$REDIS_NAME" --resource-group "$RESOURCE_GROUP" --query "properties.configuration.ingress.fqdn" -o tsv | tr -d '\r')
 
 echo "Storing Redis URL secret in Key Vault..."
-az keyvault secret set --vault-name "$KV_NAME" --name "redis-url" --value "redis://$REDIS_HOST:6379/0" > /dev/null
+az keyvault secret set --vault-name "$KV_NAME" --name "redis-url" --value "redis://:${REDIS_PASSWORD}@$REDIS_HOST:6379/0" > /dev/null
 
 # ── Deploy ChromaDB Container ───────────────────────
 echo "Deploying ChromaDB container..."

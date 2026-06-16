@@ -13,7 +13,7 @@ Used by:
 from fastapi import APIRouter, HTTPException, Cookie
 from pydantic import BaseModel
 from typing import Optional, List
-from app.api.auth import verify_jwt
+from app.api.auth import verify_jwt, fetch_user_from_supabase
 import logging
 
 logger = logging.getLogger("rankroute.api.profile")
@@ -38,23 +38,26 @@ class ProfileUpdateRequest(BaseModel):
     location_preference: Optional[str] = None
 
 
-def _get_user_id(sb_access_token: Optional[str]) -> str:
+async def _get_user_id(sb_access_token: Optional[str]) -> str:
     """Extract user ID from the access token cookie."""
     if not sb_access_token:
         raise HTTPException(status_code=401, detail="Authentication required")
+        
     payload = verify_jwt(sb_access_token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token payload")
-    return user_id
+    if payload and payload.get("sub"):
+        return payload.get("sub")
+        
+    user = await fetch_user_from_supabase(sb_access_token)
+    if user and user.get("id"):
+        return user.get("id")
+        
+    raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 @router.get("")
 async def get_profile(sb_access_token: Optional[str] = Cookie(None)):
     """Returns the full user profile including all onboarding fields."""
-    user_id = _get_user_id(sb_access_token)
+    user_id = await _get_user_id(sb_access_token)
     from app.db.supabase import get_user_by_id
     profile = await get_user_by_id(user_id)
     if not profile:
@@ -76,7 +79,7 @@ async def update_profile(
     sb_access_token: Optional[str] = Cookie(None),
 ):
     """Partial profile update — only provided (non-None) fields are changed."""
-    user_id = _get_user_id(sb_access_token)
+    user_id = await _get_user_id(sb_access_token)
     from app.db.supabase import patch_profile
     updates = body.model_dump(exclude_none=True)
     if not updates:

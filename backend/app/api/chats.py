@@ -12,7 +12,7 @@ from app.db.supabase import (
     create_temp_chat, get_temp_chat, add_temp_message, get_temp_messages,
     transfer_temp_to_user_chat, clear_all_chats
 )
-from app.api.auth import verify_jwt
+from app.api.auth import verify_jwt, fetch_user_from_supabase
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chats"])
@@ -42,13 +42,20 @@ async def get_user_from_token(sb_access_token: Optional[str] = Cookie(None)) -> 
         return None
 
     payload = verify_jwt(sb_access_token)
-    if not payload:
-        return None
+    if payload:
+        return {
+            "id": payload.get("sub"),
+            "email": payload.get("email")
+        }
+        
+    user = await fetch_user_from_supabase(sb_access_token)
+    if user:
+        return {
+            "id": user.get("id"),
+            "email": user.get("email")
+        }
 
-    return {
-        "id": payload.get("sub"),
-        "email": payload.get("email")
-    }
+    return None
 
 @router.post("/chats")
 async def create_new_chat(

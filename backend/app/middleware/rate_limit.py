@@ -33,7 +33,13 @@ def _get_redis_client():
     try:
         import redis
         from app.config import settings
-        return redis.Redis.from_url(settings.redis_url, decode_responses=True)
+        return redis.Redis.from_url(
+            settings.redis_url, 
+            decode_responses=True,
+            socket_connect_timeout=2.0,
+            socket_timeout=2.0,
+            health_check_interval=30
+        )
     except Exception:
         return None
 

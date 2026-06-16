@@ -38,6 +38,8 @@ class ChromaClient:
                     anonymized_telemetry=False,
                 ),
             }
+            if str(settings.chroma_port) == "443":
+                client_kwargs["ssl"] = True
 
             # Optional token-based authentication
             if settings.chroma_auth_token:

@@ -114,6 +114,7 @@ export function ChatArea({
 
       await fetchEventSource(`${apiUrl}/api/v1/chat`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'text/event-stream',

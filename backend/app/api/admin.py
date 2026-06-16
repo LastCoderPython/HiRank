@@ -20,17 +20,28 @@ router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
 
 async def require_admin(sb_access_token: Optional[str] = Cookie(None)):
-    from app.api.auth import verify_jwt
-    payload = verify_jwt(sb_access_token)
-    if not payload:
+    from app.api.auth import verify_jwt, fetch_user_from_supabase
+    if not sb_access_token:
         raise HTTPException(status_code=401, detail="Authentication required")
-    user_id = payload.get("sub")
+        
+    user_id = None
+    payload = verify_jwt(sb_access_token)
+    if payload:
+        user_id = payload.get("sub")
+        
     if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token: missing sub")
+        user = await fetch_user_from_supabase(sb_access_token)
+        if user:
+            user_id = user.get("id")
+            payload = {"sub": user_id, "role": user.get("role")}
+            
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Invalid token")
+        
     profile = await get_user_by_id(user_id)
     if not profile or profile.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
-    return payload
+    return payload or {"sub": user_id}
 
 
 VALID_COLLEGE_DATA_TYPES = frozenset({
