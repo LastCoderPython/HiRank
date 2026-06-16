@@ -9,7 +9,7 @@
 
     handle /api/v1/health* {
         reverse_proxy {$API_UPSTREAM:api:9000} {
-            header_up Host {upstream_hostport}
+            header_up Host {$INTERNAL_API_FQDN}
         }
     }
 
@@ -22,7 +22,7 @@
             }
         }
         reverse_proxy {$API_UPSTREAM:api:9000} {
-            header_up Host {upstream_hostport}
+            header_up Host {$INTERNAL_API_FQDN}
             flush_interval -1
         }
     }

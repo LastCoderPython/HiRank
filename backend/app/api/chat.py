@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 from app.models.requests import ChatRequest
 from app.core.llm_client import llm_client
 from app.orchestration.orchestrator import supreme_orchestrator
-from app.api.auth import verify_jwt
+from app.api.auth import verify_jwt, fetch_user_from_supabase
 import json
 import uuid
 import logging
@@ -13,17 +13,25 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
 
-def _get_user_from_cookie(sb_access_token: Optional[str]) -> Optional[dict]:
+async def _get_user_from_cookie(sb_access_token: Optional[str]) -> Optional[dict]:
     """Extract user info from the access token cookie (non-throwing)."""
     if not sb_access_token:
         return None
     payload = verify_jwt(sb_access_token)
-    if not payload:
-        return None
-    return {
-        "id": payload.get("sub"),
-        "email": payload.get("email"),
-    }
+    if payload:
+        return {
+            "id": payload.get("sub"),
+            "email": payload.get("email"),
+        }
+        
+    user = await fetch_user_from_supabase(sb_access_token)
+    if user:
+        return {
+            "id": user.get("id"),
+            "email": user.get("email")
+        }
+        
+    return None
 
 
 @router.post("/chat")
@@ -37,7 +45,7 @@ async def chat_endpoint(
     session_id = request.session_id or str(uuid.uuid4())
     
     # Detect authenticated vs anonymous user
-    user = _get_user_from_cookie(sb_access_token)
+    user = await _get_user_from_cookie(sb_access_token)
     user_id = user["id"] if user else None
 
     # ── Anonymous Prompt Gate ─────────────────────────────────────

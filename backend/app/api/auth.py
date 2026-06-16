@@ -417,7 +417,7 @@ async def verify_email_otp(body: EmailVerifyRequest, response: Response):
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
             verify_response = await client.post(
-                f"{project_url}/auth/v1/token?grant_type=email_otp",
+                f"{project_url}/auth/v1/verify",
                 json={
                     "email": normalized_email,
                     "token": body.token,
@@ -428,6 +428,21 @@ async def verify_email_otp(body: EmailVerifyRequest, response: Response):
                     "Content-Type": "application/json",
                 },
             )
+            
+            # If verification fails, it might be a new user signup token instead of an email login token
+            if verify_response.status_code != 200:
+                verify_response = await client.post(
+                    f"{project_url}/auth/v1/verify",
+                    json={
+                        "email": normalized_email,
+                        "token": body.token,
+                        "type": "signup",
+                    },
+                    headers={
+                        "apikey": SUPABASE_ANON_KEY,
+                        "Content-Type": "application/json",
+                    },
+                )
 
         if verify_response.status_code != 200:
             error_detail = verify_response.json().get("msg", "Invalid or expired OTP")

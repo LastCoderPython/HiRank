@@ -1,4 +1,6 @@
+venv
 venv/
+venv/**
 __pycache__/
 *.pyc
 .env
@@ -11,6 +13,5 @@ test_*.py
 *.md
 Dockerfile*
 docker-compose*
-
 .pytest_cache/
 tests/
