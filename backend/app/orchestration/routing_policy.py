@@ -51,23 +51,22 @@ class RoutingPolicy:
         has_college_targets = bool(frame.college_targets)
         needs_web = frame.needs_web_context
 
-        # Pure prediction path: user gave rank, no descriptive info needed
-        if has_rank and not needs_web:
-            if frame.intent in ("college_prediction", "cutoff_inquiry"):
-                return RouteCategory.PREDICTION_SIMPLE
+        # Pure prediction path
+        if frame.intent in ("college_prediction", "cutoff_inquiry") and has_rank:
+            return RouteCategory.PREDICTION_SIMPLE
 
-        # Pure descriptive path: user asks about a college, no rank given
-        if not has_rank and (needs_web or frame.intent in (
-            "college_info", "fee_inquiry", "placement_inquiry",
-            "hostel_inquiry", "facility_inquiry",
-        )):
-            return RouteCategory.DESCRIPTIVE_SIMPLE
-
-        # Mixed path: user gives rank AND asks for descriptive college comparison
-        if has_rank and (needs_web or frame.intent == "comparison"):
+        # Mixed path: Comparison where rank is helpful
+        if frame.intent == "comparison" and has_rank:
             return RouteCategory.MIXED_COMPARISON
 
-        # Descriptive with college targets but no rank
+        # Pure descriptive path
+        if needs_web or frame.intent in (
+            "college_info", "fee_inquiry", "placement_inquiry",
+            "hostel_inquiry", "facility_inquiry", "seat_inquiry", "general_inquiry"
+        ):
+            return RouteCategory.DESCRIPTIVE_SIMPLE
+
+        # Descriptive with college targets but no rank (fallback)
         if has_college_targets and not has_rank:
             return RouteCategory.DESCRIPTIVE_SIMPLE
 
