@@ -9,8 +9,8 @@ from app.config import settings
 
 celery_app = Celery(
     "rankroute",
-    broker=settings.redis_url,
-    backend=settings.redis_url,
+    broker=settings.celery_redis_url,
+    backend=settings.celery_redis_url,
 )
 
 celery_app.conf.update(
