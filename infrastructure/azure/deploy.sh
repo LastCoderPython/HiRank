@@ -337,7 +337,7 @@ python -c '
 import json
 with open("worker.json") as f: data = json.load(f)
 data["properties"]["template"]["containers"][0]["command"] = ["celery"]
-data["properties"]["template"]["containers"][0]["args"] = ["-A", "app.worker:celery_app", "worker", "--loglevel=info", "--queues=ingestion", "--concurrency=2"]
+data["properties"]["template"]["containers"][0]["args"] = ["-A", "app.worker:celery_app", "worker", "--loglevel=info", "--queues=ingestion,enrichment", "--concurrency=2"]
 with open("worker_patched.json", "w") as f: json.dump(data, f)
 '
 MSYS_NO_PATHCONV=1 az containerapp update --name "$WORKER_ACA" --resource-group "$RESOURCE_GROUP" --yaml worker_patched.json > /dev/null
