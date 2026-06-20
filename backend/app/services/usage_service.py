@@ -189,6 +189,45 @@ class UsageService:
             return f"{now.year + 1}-01-01"
         return f"{now.year}-{now.month + 1:02d}-01"
 
+    # ── Tavily Failover Helpers ───────────────────────────────────────
+
+    def is_tavily_key_exhausted(self, api_key: str) -> bool:
+        """Check if a Tavily API key is marked as exhausted in Redis."""
+        r = self._get_redis()
+        if r is None:
+            return False
+        try:
+            # We hash the key lightly or just use it directly (it's safe in Redis, but let's take a substring for the key name so it's not fully exposed in plain text if not needed)
+            key_suffix = api_key[-8:] if len(api_key) > 8 else api_key
+            return bool(r.get(f"tavily:exhausted:{key_suffix}"))
+        except Exception:
+            return False
+
+    def mark_tavily_key_exhausted(self, api_key: str) -> None:
+        """Mark a Tavily API key as permanently exhausted and send an alert."""
+        # 1. Delete from running config memory to ensure it is not used again by this worker
+        from app.config import settings
+        if settings.tavily_api_key:
+            keys = [k.strip() for k in settings.tavily_api_key.split(",") if k.strip()]
+            if api_key in keys:
+                keys.remove(api_key)
+                settings.tavily_api_key = ",".join(keys)
+                logger.warning("Deleted exhausted Tavily key from current worker config memory.")
+                
+        r = self._get_redis()
+        if r is None:
+            return
+        try:
+            key_suffix = api_key[-8:] if len(api_key) > 8 else api_key
+            # Use setnx so we only trigger the alert once per key across all workers
+            is_new = r.setnx(f"tavily:exhausted:{key_suffix}", "1")
+            if is_new:
+                logger.warning(f"Marked Tavily key (...{key_suffix}) as permanently exhausted in Redis.")
+                from app.services.alert_service import alert_service
+                alert_service.send_dead_key_alert(api_key)
+        except Exception as e:
+            logger.error("Failed to mark Tavily key as exhausted: %s", e)
+
 
 # Singleton
 usage_service = UsageService()

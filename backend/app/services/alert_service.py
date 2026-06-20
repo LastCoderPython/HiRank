@@ -55,5 +55,26 @@ class AlertService:
             actor_role="system",
         )
 
+    def send_dead_key_alert(self, api_key: str) -> bool:
+        """Send a critical alert when a Tavily API key becomes exhausted or dead."""
+        key_suffix = api_key[-8:] if len(api_key) > 8 else api_key
+        summary = f"Tavily API key exhausted/dead: ...{key_suffix}"
+        
+        details = {
+            "key_suffix": key_suffix,
+            "action_required": "Remove or replace the exhausted key in the environment variables.",
+            "level": "critical",
+        }
+        
+        return log_service.insert(
+            event_type="api_key_exhausted",
+            severity="critical",
+            summary=summary,
+            details=details,
+            source="alert_service",
+            actor_role="system",
+        )
+
+
 
 alert_service = AlertService()

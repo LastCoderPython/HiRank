@@ -50,15 +50,46 @@ class VerifierAgent:
         issues: List[str] = []
         missing_fields: List[str] = []
 
-        # Check prediction evidence for rank-related intents
+        # Check prediction evidence for rank-related intents.
+        # IMPORTANT: cutoff_inquiry with college targets but NO rank is a
+        # descriptive lookup ("what are the cutoffs for AEC?"), NOT a prediction.
+        # Only require rank/exam when the user is asking for a PERSONAL prediction.
+        is_personal_prediction = (
+            frame.intent in ("college_prediction", "cutoff_inquiry")
+            and frame.rank is not None  # user provided their rank → personal prediction
+        )
+        is_descriptive_cutoff_lookup = (
+            frame.intent == "cutoff_inquiry"
+            and frame.rank is None
+            and bool(frame.college_targets)  # user named a college → historical lookup
+        )
+
         has_cutoff_evidence = (
             prediction is not None and prediction.evidence_rows_used > 0
         )
-        if frame.intent in ("college_prediction", "cutoff_inquiry"):
+
+        # BUG-01/09 FIX: Detect the out-of-range gate case.
+        # When the cutoff engine ran but returned 0 results because the user's
+        # rank exceeds every closing rank in the dataset, that is a VALID and
+        # COMPLETE engine response — not a verification failure.
+        # The honest-framing path in _synthesize will handle the response.
+        out_of_range_gate_triggered = (
+            prediction is not None
+            and prediction.evidence_rows_used == 0
+            and bool(getattr(prediction, "assumptions", None))
+            and any(
+                "exceeds the closing rank" in a
+                for a in (prediction.assumptions or [])
+            )
+        )
+
+        if is_personal_prediction and not out_of_range_gate_triggered:
             if not has_cutoff_evidence:
                 issues.append("rank_claim_without_cutoff_evidence")
-            if frame.rank is None:
-                missing_fields.append("rank")
+            # Do NOT add to missing_fields — rank is already present
+        elif frame.intent == "college_prediction" and frame.rank is None:
+            # Pure prediction intent with no rank → ask for rank
+            missing_fields.append("rank")
             if frame.exam is None:
                 missing_fields.append("exam")
 
@@ -81,7 +112,8 @@ class VerifierAgent:
 
         # Check source authority
         source_violated = self._check_source_authority(
-            frame.intent, has_cutoff_evidence, has_web_evidence
+            frame.intent, has_cutoff_evidence, has_web_evidence,
+            out_of_range_gate_triggered=out_of_range_gate_triggered,
         )
         if source_violated:
             issues.append("source_authority_violated")
@@ -94,6 +126,7 @@ class VerifierAgent:
             has_freshness_source=has_freshness,
             missing_fields=missing_fields if missing_fields else None,
             source_authority_violated=source_violated,
+            out_of_range_gate_triggered=out_of_range_gate_triggered,
         )
 
         return VerifierOutput(
@@ -108,12 +141,31 @@ class VerifierAgent:
         intent: str,
         has_cutoff: bool,
         has_web: bool,
+        out_of_range_gate_triggered: bool = False,
     ) -> bool:
         """Check if source authority rules are violated.
 
         Key rule: a prediction answer MUST come from cutoff_truth,
         not from web_docs alone. Web docs may enrich but not override.
+
+        Comparison and descriptive cutoff lookups are NEVER blocked
+        by source authority — they are designed to use whatever data
+        is available.
+
+        Out-of-range gate responses are also never blocked — the engine
+        ran correctly and found no eligible colleges.
         """
+        # Out-of-range gate: prediction ran, found no results → approve for honest framing
+        if out_of_range_gate_triggered:
+            return False
+
+        # Comparison and descriptive intents are never blocked by source authority
+        if intent in ("comparison", "general_inquiry", "seat_inquiry",
+                      "branch_inquiry", "recent_update"):
+            return False
+
+        # cutoff_inquiry without a rank is a descriptive lookup — not blocked
+        # (handled upstream by is_descriptive_cutoff_lookup)
         required_sources = source_policy.get_required_sources(intent)
 
         if AuthoritativeSource.CUTOFF_TRUTH in required_sources and not has_cutoff:

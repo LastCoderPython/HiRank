@@ -85,6 +85,13 @@ class Settings(BaseSettings):
 
     # Tavily (Live Web Search)
     tavily_api_key: Optional[str] = None
+
+    @property
+    def tavily_api_keys_list(self) -> List[str]:
+        if not self.tavily_api_key:
+            return []
+        return [k.strip() for k in self.tavily_api_key.split(",") if k.strip()]
+
     tavily_max_results: int = 5
     fallback_enabled: bool = True
     official_domain_suffixes: str = ".ac.in,.edu.in,.gov.in,.nic.in"

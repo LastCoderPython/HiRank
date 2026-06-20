@@ -302,6 +302,36 @@ class CutoffEngine:
         target.sort(key=lambda r: r.match_percentage, reverse=True)
         ambitious.sort(key=lambda r: r.match_percentage, reverse=True)
 
+        # ── BUG-01 FIX: Hard eligibility gate ─────────────────────
+        # If the student's rank is worse (higher number) than every single
+        # closing rank in the filtered dataset, ALL results are out of range.
+        # Showing them as Target/Ambitious is misleading — return an honest
+        # empty bundle instead.
+        if not filtered.empty:
+            max_closing_rank = int(filtered["closing_rank"].max())
+            if rank > max_closing_rank and not safe:
+                # Student cannot get ANY college in this category
+                assumptions.append(
+                    f"Your rank ({rank}) exceeds the closing rank of every college "
+                    f"in our {category} category dataset (highest cutoff: {max_closing_rank}). "
+                    f"No college predictions can be made with confidence. "
+                    f"Consider checking General category or other exam options."
+                )
+                return PredictionBundle(
+                    safe_options=[],
+                    target_options=[],
+                    ambitious_options=[],
+                    evidence_rows_used=0,
+                    assumptions=assumptions,
+                    query_params={
+                        "rank": rank,
+                        "category": category,
+                        "exam": exam,
+                        "branch": branch,
+                        "year": filtered["year"].max() if not filtered.empty else None,
+                    },
+                )
+
         # Apply limits
         safe = safe[:limit]
         target = target[:limit]
