@@ -66,10 +66,7 @@ def upsert_chunks(
     """
     from app.core.chroma_client import chroma_client
 
-    collection = chroma_client.client.get_or_create_collection(
-        name=COLLECTION_NAME,
-        metadata={"hnsw:space": "cosine"},
-    )
+    collection = chroma_client.get_collection(COLLECTION_NAME)
 
     if not chunks:
         return {"upserted": 0, "skipped": 0, "errors": []}
@@ -151,10 +148,7 @@ def delete_all_for_url(source_url: str) -> int:
     """
     from app.core.chroma_client import chroma_client
 
-    collection = chroma_client.client.get_or_create_collection(
-        name=COLLECTION_NAME,
-        metadata={"hnsw:space": "cosine"},
-    )
+    collection = chroma_client.get_collection(COLLECTION_NAME)
 
     try:
         # Get count before delete for logging
@@ -178,10 +172,7 @@ def purge_stale_for_url(source_url: str, current_version: str) -> int:
     """
     from app.core.chroma_client import chroma_client
 
-    collection = chroma_client.client.get_or_create_collection(
-        name=COLLECTION_NAME,
-        metadata={"hnsw:space": "cosine"},
-    )
+    collection = chroma_client.get_collection(COLLECTION_NAME)
 
     try:
         # Find all chunks for this URL
