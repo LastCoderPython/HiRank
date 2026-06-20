@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from langsmith.middleware import TracingMiddleware
 from app.config import settings
+from app.worker import celery_app  # noqa: F401 (Forces Celery initialization so @shared_task binds correctly)
 from app.api.chat import router as chat_router
 from app.api.auth import router as auth_router
 from app.api.chats import router as chats_router
