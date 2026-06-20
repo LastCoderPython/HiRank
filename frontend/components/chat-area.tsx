@@ -18,10 +18,18 @@ import remarkGfm from 'remark-gfm';
 const CustomCitationPill = ({ href, children }: { href?: string, children?: React.ReactNode }) => {
   if (!href) return <span>{children}</span>;
   
+  let domain = "";
+  let isValidUrl = false;
+
   try {
     const url = new URL(href);
-    const domain = url.hostname.replace('www.', '');
-    
+    domain = url.hostname.replace('www.', '');
+    isValidUrl = true;
+  } catch (e) {
+    isValidUrl = false;
+  }
+
+  if (isValidUrl) {
     return (
       <a 
         href={href} 
@@ -33,10 +41,10 @@ const CustomCitationPill = ({ href, children }: { href?: string, children?: Reac
         {domain}
       </a>
     );
-  } catch (e) {
-    // Fallback if URL parsing fails
-    return <a href={href} className="text-blue-400 hover:underline">{children}</a>;
   }
+
+  // Fallback if URL parsing fails
+  return <a href={href} className="text-blue-400 hover:underline">{children}</a>;
 };
 
 interface ChatAreaProps {
