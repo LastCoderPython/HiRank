@@ -46,15 +46,18 @@ class WebSearchFallback:
     def __init__(self):
         self._client = None
 
-    def _get_client(self):
-        """Lazy-init Tavily client (avoids import errors if not installed)."""
-        if self._client is None:
-            if not settings.tavily_api_key:
-                logger.warning("TAVILY_API_KEY not set — fallback disabled")
-                return None
-            from tavily import TavilyClient
-            self._client = TavilyClient(api_key=settings.tavily_api_key)
-        return self._client
+    def _get_working_keys(self) -> List[str]:
+        keys = settings.tavily_api_keys_list
+        if not keys:
+            logger.warning("TAVILY_API_KEY not set — fallback disabled")
+            return []
+            
+        from app.services.usage_service import usage_service
+        working_keys = []
+        for key in keys:
+            if not usage_service.is_tavily_key_exhausted(key):
+                working_keys.append(key)
+        return working_keys
 
     @traceable(run_type="tool", name="Tavily Live Search Fallback")
     async def search(
@@ -102,40 +105,55 @@ class WebSearchFallback:
         except Exception as e:
             logger.warning("Usage check failed (proceeding with search): %s", e)
 
-        client = self._get_client()
-        if client is None:
+        working_keys = self._get_working_keys()
+        if not working_keys:
+            logger.warning("All Tavily keys are either missing or exhausted.")
             return FallbackResult(context="", was_fallback=True)
 
-        # ── Step 1: Call Tavily with domain filter ────────────────────
+        from tavily import TavilyClient
         include_domains = domain_registry.build_site_filter(college_code)
+        raw_results = []
 
-        try:
-            response = client.search(
-                query=query,
-                max_results=settings.tavily_max_results,
-                include_domains=include_domains,
-                search_depth="advanced",
-                include_raw_content=False,
-            )
-        except Exception as e:
-            logger.error(f"Tavily search failed: {e}")
-            return FallbackResult(context="", was_fallback=True)
-
-        raw_results = response.get("results", [])
-        if not raw_results:
-            # ── Retry without domain filter (broader search) ──────────
-            logger.info("No results with domain filter, retrying broader search")
+        # ── Step 1: Call Tavily with domain filter (with Failover) ────
+        for attempt, api_key in enumerate(working_keys):
+            client = TavilyClient(api_key=api_key)
             try:
                 response = client.search(
                     query=query,
                     max_results=settings.tavily_max_results,
-                    search_depth="basic",
+                    include_domains=include_domains,
+                    search_depth="advanced",
                     include_raw_content=False,
                 )
                 raw_results = response.get("results", [])
+                
+                if not raw_results:
+                    # ── Retry without domain filter (broader search) ──────────
+                    logger.info("No results with domain filter, retrying broader search")
+                    response = client.search(
+                        query=query,
+                        max_results=settings.tavily_max_results,
+                        search_depth="basic",
+                        include_raw_content=False,
+                    )
+                    raw_results = response.get("results", [])
+                
+                # Successful response (even if empty), break failover loop
+                break
+
             except Exception as e:
-                logger.error(f"Tavily broad search failed: {e}")
-                return FallbackResult(context="", was_fallback=True)
+                error_msg = str(e).lower()
+                if "unauthorized" in error_msg or "quota" in error_msg or "limit" in error_msg or "401" in error_msg or "403" in error_msg:
+                    logger.warning(f"Tavily key failover triggered: {e}")
+                    from app.services.usage_service import usage_service
+                    usage_service.mark_tavily_key_exhausted(api_key)
+                    # continue to the next key
+                else:
+                    logger.error(f"Tavily search failed with non-auth error: {e}")
+                    return FallbackResult(context="", was_fallback=True)
+        else:
+            logger.error("All available Tavily keys failed during search.")
+            return FallbackResult(context="", was_fallback=True)
 
         # ── Step 2: Zero-Trust Interceptor ────────────────────────────
         official, educational, unofficial = self._classify_results(raw_results)

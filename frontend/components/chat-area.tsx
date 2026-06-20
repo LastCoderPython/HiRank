@@ -11,6 +11,34 @@ import { TypewriterGreeting } from '@/components/typewriter-greeting';
 import { SimulatorModal } from '@/components/simulator-modal';
 import { Message } from '@/lib/types';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+// Custom renderer for Markdown links to look like Perplexity citation pills
+const CustomCitationPill = ({ href, children }: { href?: string, children?: React.ReactNode }) => {
+  if (!href) return <span>{children}</span>;
+  
+  try {
+    const url = new URL(href);
+    const domain = url.hostname.replace('www.', '');
+    
+    return (
+      <a 
+        href={href} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="inline-flex items-center mx-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-neutral-800 text-neutral-300 hover:bg-neutral-700 hover:text-white transition-colors border border-neutral-700/50 align-middle no-underline"
+        title={href}
+      >
+        {domain}
+      </a>
+    );
+  } catch (e) {
+    // Fallback if URL parsing fails
+    return <a href={href} className="text-blue-400 hover:underline">{children}</a>;
+  }
+};
+
 interface ChatAreaProps {
   isSidebarOpen: boolean;
   onToggleSidebar: () => void;
@@ -278,9 +306,18 @@ export function ChatArea({
                       "text-[15px] leading-relaxed whitespace-pre-wrap",
                       msg.role === 'user' 
                         ? "bg-neutral-800 px-5 py-2.5 rounded-3xl text-neutral-100" 
-                        : "text-neutral-100 py-1"
+                        : "text-neutral-100 py-1 prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-neutral-900 prose-pre:border prose-pre:border-neutral-800 prose-a:no-underline"
                     )}>
-                      {msg.content}
+                      {msg.role === 'user' ? (
+                        msg.content
+                      ) : (
+                        <ReactMarkdown 
+                          remarkPlugins={[remarkGfm]}
+                          components={{ a: CustomCitationPill }}
+                        >
+                          {msg.content}
+                        </ReactMarkdown>
+                      )}
                     </div>
 
                     {msg.role === 'assistant' && (

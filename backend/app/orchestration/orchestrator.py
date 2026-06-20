@@ -327,18 +327,18 @@ class SupremeOrchestrator:
         if web_knowledge and web_knowledge.sources_used > 0:
             context_parts.append("=== COLLEGE INFORMATION (WEB KNOWLEDGE) ===")
             for chunk in web_knowledge.chunks:
-                source_label = f"[{chunk.college_name}]" if chunk.college_name else ""
-                type_label = f"({chunk.page_type})" if chunk.page_type else ""
-                # Surface the scrape date so the LLM can qualify its claims
+                # Only include date qualifier — do NOT inject raw source/page_type labels
+                # that would cause the LLM to echo them in its response (BUG-08)
                 date_label = ""
                 if chunk.scraped_at:
                     try:
                         from datetime import datetime
                         dt = datetime.fromisoformat(chunk.scraped_at)
-                        date_label = f" — Data from: {dt.strftime('%d %b %Y')}"
+                        date_label = f" (Data from: {dt.strftime('%d %b %Y')})"
                     except Exception:
                         date_label = ""
-                context_parts.append(f"{source_label} {type_label}{date_label}")
+                college_label = f"[{chunk.college_name}]" if chunk.college_name else ""
+                context_parts.append(f"{college_label}{date_label}")
                 context_parts.append(chunk.text)
                 context_parts.append("")
 
@@ -380,6 +380,26 @@ class SupremeOrchestrator:
                 "response_type": "stream",
                 "content": "\n".join(context_parts),
                 "colleges": colleges_for_display,
+                "is_off_topic": False,
+                "prediction": prediction.model_dump() if prediction else None,
+            }
+
+        # ── BUG-09 FIX: Out-of-range rank — honest framing ────────────
+        # prediction ran but returned 0 evidence (rank exceeds all cutoffs)
+        if prediction and prediction.evidence_rows_used == 0 and prediction.assumptions:
+            honest_message = " ".join(prediction.assumptions)
+            return {
+                "response_type": "stream",
+                "content": (
+                    "=== RESPONSE INSTRUCTIONS ===\n"
+                    f"{honest_message}\n\n"
+                    "Please communicate this honestly and helpfully to the student. "
+                    "Suggest they: (1) check if the cutoffs change in the upcoming counseling round, "
+                    "(2) explore private engineering colleges in Assam, "
+                    "(3) consider appearing for CEE again next year if eligible. "
+                    "Be empathetic and constructive — do not just say 'you cannot get admission'."
+                ),
+                "colleges": [],
                 "is_off_topic": False,
                 "prediction": prediction.model_dump() if prediction else None,
             }
@@ -436,13 +456,13 @@ class SupremeOrchestrator:
 
     def _build_off_topic_response(self, trace: RequestTrace) -> Dict[str, Any]:
         import random
-        
+
         OFF_TOPIC_RESPONSES = [
-            "I'm sorry, I'm specifically trained to answer questions about engineering college admissions, cutoffs, and facilities in Assam. I can't help with that.",
-            "That sounds interesting, but my expertise is limited to CEE/JEE cutoffs and college data in Assam. Can I help you with anything related to that?",
-            "I don't have information on that topic. Try asking me to predict your colleges based on your rank or to tell you about a college's fee structure."
+            "I'm a specialist for Assam CEE/JEE college admissions — happy to help with rank predictions, cutoffs, hostel info, or placements! Is there anything along those lines I can assist with?",
+            "Ha, that's outside my lane! 😄 I'm built specifically for Assam engineering college admissions. Ask me about your CEE/JEE rank, college cutoffs, fees, or placements — I've got you covered.",
+            "Great question, but I'm afraid that's beyond my expertise. I'm your go-to for Assam CEE/JEE admissions — college predictions, cutoffs, or facility info. What can I help you with on that front?"
         ]
-        
+
         return {
             "response_type": "direct",
             "content": random.choice(OFF_TOPIC_RESPONSES),

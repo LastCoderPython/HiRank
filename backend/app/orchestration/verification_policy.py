@@ -40,12 +40,14 @@ class VerificationPolicy:
         has_freshness_source: bool = False,
         missing_fields: Optional[List[str]] = None,
         source_authority_violated: bool = False,
+        out_of_range_gate_triggered: bool = False,
     ) -> VerificationResult:
         issues: List[str] = []
 
         # Rule: no rank claim without structured evidence
         if intent in ("college_prediction", "cutoff_inquiry") and not has_cutoff_evidence:
-            issues.append("rank_claim_without_cutoff_evidence")
+            if not out_of_range_gate_triggered:
+                issues.append("rank_claim_without_cutoff_evidence")
 
         # Rule: no freshness claim without qualified source
         if intent == "recent_update" and not has_freshness_source:
