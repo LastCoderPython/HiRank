@@ -58,11 +58,6 @@ class VerifierAgent:
             frame.intent in ("college_prediction", "cutoff_inquiry")
             and frame.rank is not None  # user provided their rank → personal prediction
         )
-        is_descriptive_cutoff_lookup = (
-            frame.intent == "cutoff_inquiry"
-            and frame.rank is None
-            and bool(frame.college_targets)  # user named a college → historical lookup
-        )
 
         has_cutoff_evidence = (
             prediction is not None and prediction.evidence_rows_used > 0
