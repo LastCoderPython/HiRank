@@ -124,12 +124,100 @@ class VerifierAgent:
             out_of_range_gate_triggered=out_of_range_gate_triggered,
         )
 
+        # Build constitutional directive for pre-flight behavioral guidance
+        constitutional_directive = self._build_constitutional_directive(
+            frame=frame,
+            prediction=prediction,
+            web_knowledge=web_knowledge,
+            out_of_range=out_of_range_gate_triggered,
+        )
+
         return VerifierOutput(
             approved=policy_result.verdict == VerificationVerdict.APPROVED,
             issues=policy_result.issues,
             downgrade_reason=policy_result.downgrade_reason,
             missing_fields=missing_fields,
+            constitutional_directive=constitutional_directive,
         )
+
+    def _build_constitutional_directive(
+        self,
+        frame: RequestFrame,
+        prediction: Optional[PredictionAgentOutput],
+        web_knowledge: Optional[WebKnowledgeOutput],
+        out_of_range: bool,
+    ) -> str:
+        """Generate a pre-flight behavioral directive for the LLM synthesizer.
+
+        This implements the Pre-flight Directive system from the RankRoute Constitution.
+        The directive is a concise instruction injected into the LLM context before
+        streaming begins, guiding tone, empathy, and helpfulness strategy without
+        blocking the stream for a full critique-and-rewrite cycle.
+        """
+        directives = []
+
+        # Case 1: Student's rank exceeds every cutoff in the dataset
+        if out_of_range:
+            directives.append(
+                "The student's rank unfortunately exceeds all available cutoffs. "
+                "Deliver this honestly but with warmth and empathy — do NOT just say 'you cannot get admission'. "
+                "Acknowledge the difficulty, then pivot constructively to: (1) private engineering colleges in Assam, "
+                "(2) appearing for CEE again next year if eligible, (3) checking if cutoffs shift in later counseling rounds."
+            )
+
+        # Case 2: Student qualifies for strong safe options
+        elif (
+            prediction
+            and prediction.evidence_rows_used > 0
+            and len(prediction.safe_options) >= 3
+            and not prediction.ambitious_options
+        ):
+            directives.append(
+                "The student has multiple strong safe options. Be encouraging and celebratory but not over-the-top. "
+                "Help them make a good choice by highlighting branch quality and placement trends if available in the data."
+            )
+
+        # Case 3: Student is in a mix of safe and ambitious — help them strategize
+        elif (
+            prediction
+            and prediction.evidence_rows_used > 0
+            and prediction.ambitious_options
+            and prediction.safe_options
+        ):
+            directives.append(
+                "The student has both safe and ambitious options. Present this as a strategic choice: "
+                "lock in a safe option, but also consider the ambitious ones if they are willing to take the risk. "
+                "Be honest about the lower match percentage for ambitious options — frame it as a stretch, not impossible."
+            )
+
+        # Case 4: Only ambitious options — be honest about the stretch
+        elif (
+            prediction
+            and prediction.evidence_rows_used > 0
+            and prediction.ambitious_options
+            and not prediction.safe_options
+            and not prediction.target_options
+        ):
+            directives.append(
+                "The student only qualifies for ambitious stretch options. Be honest that these are long shots "
+                "based on last year's cutoffs, but frame it positively — cutoffs do shift and counseling has multiple rounds. "
+                "Suggest they keep a backup plan."
+            )
+
+        # Case 5: Descriptive query with no web evidence retrieved
+        elif frame.intent in ("fee_inquiry", "placement_inquiry", "hostel_inquiry", "facility_inquiry") and (
+            web_knowledge is None or web_knowledge.sources_used == 0
+        ):
+            directives.append(
+                "No specific data was retrieved for this descriptive query. "
+                "Honestly acknowledge the data gap, but offer to help with related information you do have "
+                "(e.g., cutoffs, general college overview). Do not refuse — redirect helpfully."
+            )
+
+        if not directives:
+            return ""
+
+        return "\n".join(directives)
 
     def _check_source_authority(
         self,

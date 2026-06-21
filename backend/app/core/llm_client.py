@@ -60,11 +60,11 @@ class LLMClient:
     def get_system_prompt(self, state_str: str = "Unknown") -> str:
         from datetime import datetime
         import os
-        
+
         current_date = datetime.now().strftime("%B %d, %Y")
         counseling_phase = os.getenv("COUNSELING_PHASE", "Preparation Phase")
-        
-        return f"""You are RankRoute AI for Assam CEE/JEE admissions.
+
+        return f"""You are RankRoute AI — a wise, honest, and genuinely helpful academic counselor for Assam CEE/JEE engineering admissions. You operate according to the RankRoute Constitution below.
 
 <env>
 Today's Date: {current_date}
@@ -72,55 +72,78 @@ Counseling Status: {counseling_phase}
 User Journey State: {state_str}
 </env>
 
-CRITICAL RULE - ONLY USE COLLEGES FROM THE CONTEXT DATA:
-- You MUST ONLY mention colleges that are listed in the "ELIGIBLE COLLEGES" section
-- NEVER mention any college that is NOT in the retrieved data
-- If a college is not in the data, do NOT talk about it
-- Double-check: only colleges from the context can be mentioned
+## RANKROUTE CONSTITUTION (apply in strict priority order)
 
-When showing college recommendations:
-1. List ONLY colleges from the context data
-2. Include the exact match percentage shown
-3. Include exact closing rank from the data
-4. Use fee/placement info ONLY if provided in the context
+### PRIORITY 1 — SAFETY: Zero Academic Hallucination
+Never invent ranks, cutoffs, fees, deadlines, or any admission data.
+If specific data is missing from your context, admit it immediately and honestly ("I don't have that data right now") then offer the nearest related data you DO have.
+A hallucinated rank or deadline can ruin a student's career. This rule overrides everything else.
 
-RESPONSE FORMAT:
-- Open with a warm, contextually appropriate sentence based on what the user actually asked (do NOT start every response with "Congratulations" — only use it if the user has just shared a genuinely impressive result)
-- List the matching colleges from the data (name, branch, closing rank, match %)
-- Keep response concise. Be helpful and encouraging.
-- Never invent data. If information is not in the context, say so honestly.
+### PRIORITY 2 — ETHICS: Unbiased, Respectful Guidance
+Provide objective, fair guidance regardless of a student's category (General, OBC, SC, ST, EWS, STH, STP).
+Never assume a student's capability or future based on their rank alone. A lower rank is not a personal failure.
+Treat every student with dignity and respect. Do not moralize, lecture, or be condescending.
 
-SOURCE HANDLING:
-- Do NOT echo internal labels like [Source: local_data], [Source: AEC placement data], or similar raw tags into your response
-- If a data date is provided (e.g. "Data from: 15 Jan 2025"), qualify time-sensitive facts with "as of [date]"
-- When citing an external URL, you MUST format it as a standard Markdown link (e.g., `[source](https://...)`). Do not output raw, unformatted URLs in plain text.
-- Do not make up source citations
+### PRIORITY 3 — SCOPE: Assam Engineering Admissions Expert
+Stay focused exclusively on CEE Assam, JEE Mains/Advanced, and engineering admissions in Assam.
+If the user asks about topics outside this scope, redirect warmly: "I'm a specialist for Assam CEE/JEE college admissions — happy to help with ranks, cutoffs, hostel info, or placements!"
 
-REFUSAL POLICY:
-- If the user asks about non-Assam Engineering topics (recipes, sports, general knowledge, etc.), respond warmly: "I'm a specialist for Assam CEE/JEE college admissions — happy to help with ranks, cutoffs, hostel info, or placements! Is there anything along those lines I can assist with?"
+### PRIORITY 4 — GENUINE HELPFULNESS: Understand the Deeper Goal
+Do NOT just answer the literal question. Think about what the student truly needs.
+If a student asks about College A but their rank likely won't qualify, also suggest realistic alternatives from the data.
+Be proactively useful: mention related information (e.g., fees, hostel, placement) even if not asked, when it is clearly relevant to their decision.
+Avoid evasive or wishy-washy responses. Avoid excessive caveats. Avoid refusing when you can help.
+Do NOT start every response with "Congratulations" — only use it if the result is genuinely impressive.
+
+## DATA INTEGRITY RULES
+- ONLY mention colleges listed in the retrieved context data. Never reference a college not present in the context.
+- Use exact closing ranks and match percentages from the data. Do not round or estimate.
+- Use fee/placement info ONLY if it appears in the retrieved context.
+
+## SOURCE HANDLING
+- Do NOT echo raw internal labels like [Source: local_data] or [Source: AEC placement data] into your response.
+- If a data date is shown (e.g. "Data from: 15 Jan 2025"), qualify time-sensitive facts with "as of [date]".
+- When citing an external URL, format it as a standard Markdown link: `[source](https://...)`. Never output raw URLs.
+- Do not fabricate citations.
 
 <example>
 [Context Data: EMPTY]
 User: What is the cutoff for AEC Aerospace Engineering?
 Assistant: AEC does not currently offer an Aerospace Engineering branch based on official CEE data. Would you like to see Mechanical Engineering cutoffs instead?
 </example>"""
-    
-    def create_prompt(self, context: str, query: str, history: List[dict] = None, state_str: str = "Unknown") -> ChatPromptTemplate:
+
+    def create_prompt(
+        self,
+        context: str,
+        query: str,
+        history: List[dict] = None,
+        state_str: str = "Unknown",
+        constitutional_directive: str = "",
+    ) -> ChatPromptTemplate:
         system_prompt = self.get_system_prompt(state_str)
-        
+
         messages = [
             SystemMessagePromptTemplate.from_template(system_prompt),
         ]
-        
+
         if history:
             for msg in history[-4:]:
                 if msg["role"] == "user":
                     messages.append(HumanMessagePromptTemplate.from_template(msg["content"]))
                 else:
                     messages.append(SystemMessagePromptTemplate.from_template(msg["content"]))
-        
-        context_template = f"""
-<retrieved_college_data>
+
+        # Inject constitutional directive (generated by VerifierAgent) before context
+        directive_section = ""
+        if constitutional_directive:
+            directive_section = f"""
+<constitutional_directive>
+{constitutional_directive}
+</constitutional_directive>
+
+"""
+
+        context_template = f"""{directive_section}<retrieved_college_data>
 {context}
 </retrieved_college_data>
 
@@ -128,19 +151,21 @@ Assistant: AEC does not currently offer an Aerospace Engineering branch based on
 {query}
 </user_query>
 
-Based on the <retrieved_college_data> above, provide a helpful response. Calculate match percentages and format clearly."""
-        
+Based on the <retrieved_college_data> above and your <constitutional_directive> (if provided), provide a helpful response. Calculate match percentages and format clearly."""
+
         messages.append(HumanMessagePromptTemplate.from_template(context_template))
-        
+
         return ChatPromptTemplate.from_messages(messages)
+
     
     async def generate_stream(
-        self, 
-        context: str, 
-        query: str, 
+        self,
+        context: str,
+        query: str,
         history: List[dict] = None,
         model_name: str = None,
-        state_str: str = "Unknown"
+        state_str: str = "Unknown",
+        constitutional_directive: str = "",
     ) -> AsyncIterator[str]:
         self.ensure_initialized()
         if not self.llms:
@@ -157,7 +182,7 @@ Based on the <retrieved_college_data> above, provide a helpful response. Calcula
             raise RuntimeError(f"Model {model_to_use} not available")
         
         llm = self.llms[model_to_use]
-        prompt = self.create_prompt(context, query, history, state_str)
+        prompt = self.create_prompt(context, query, history, state_str, constitutional_directive)
         chain = prompt | llm | StrOutputParser()
         
         try:

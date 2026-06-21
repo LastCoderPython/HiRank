@@ -231,7 +231,10 @@ class SupremeOrchestrator:
 
         # ── Step 6: Build final response ────────────────────────────
         trace.start_stage("synthesis")
-        result = await self._synthesize(frame, prediction_output, web_output, history)
+        result = await self._synthesize(
+            frame, prediction_output, web_output, history,
+            constitutional_directive=verifier_output.constitutional_directive,
+        )
         trace.end_stage()
 
         trace.log()
@@ -272,6 +275,7 @@ class SupremeOrchestrator:
         prediction: Optional[PredictionAgentOutput],
         web_knowledge: Optional[WebKnowledgeOutput],
         history: Optional[List[Dict[str, str]]],
+        constitutional_directive: str = "",
     ) -> Dict[str, Any]:
         """Synthesize the final answer from agent outputs.
 
@@ -382,6 +386,7 @@ class SupremeOrchestrator:
                 "colleges": colleges_for_display,
                 "is_off_topic": False,
                 "prediction": prediction.model_dump() if prediction else None,
+                "constitutional_directive": constitutional_directive,
             }
 
         # ── BUG-09 FIX: Out-of-range rank — honest framing ────────────
