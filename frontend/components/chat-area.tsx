@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth-context';
 import { TypewriterGreeting } from '@/components/typewriter-greeting';
 import { SimulatorModal } from '@/components/simulator-modal';
+import { UpdateModal } from '@/components/update-modal';
 import { Message } from '@/lib/types';
 
 import ReactMarkdown from 'react-markdown';
@@ -74,6 +75,36 @@ export function ChatArea({
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingMessages, setStreamingMessages] = useState<Message[] | null>(null);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
+
+  // ── Update Notification ────────────────────────────────────────────
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [changelogTitle, setChangelogTitle] = useState('');
+  const [changelogBody, setChangelogBody] = useState('');
+
+  useEffect(() => {
+    fetch('/changelog.json')
+      .then((res) => res.json())
+      .then((data: { version: string; title: string; body: string }) => {
+        const STORAGE_KEY = 'rankroute_update_version';
+        const lastSeen = localStorage.getItem(STORAGE_KEY);
+        if (lastSeen !== data.version) {
+          setChangelogTitle(data.title);
+          setChangelogBody(data.body);
+          toast.info('RankRoute AI has been upgraded!', {
+            duration: 10000,
+            position: 'top-center',
+            description: 'Click to see what\'s new.',
+            action: {
+              label: 'Read More',
+              onClick: () => setShowUpdateModal(true),
+            },
+            onDismiss: () => localStorage.setItem(STORAGE_KEY, data.version),
+            onAutoClose: () => localStorage.setItem(STORAGE_KEY, data.version),
+          });
+        }
+      })
+      .catch(() => { /* Silently fail — never block the chat */ });
+  }, []);
 
   const handleSimulatorSend = (msg: string) => {
     setInputValue(msg);
@@ -225,6 +256,16 @@ export function ChatArea({
 
   return (
     <div className="flex flex-col h-full w-full relative">
+      {/* ── Update Release Notes Modal ────────────────────────── */}
+      <UpdateModal
+        isOpen={showUpdateModal}
+        onClose={() => {
+          setShowUpdateModal(false);
+          localStorage.setItem('rankroute_update_version', 'v1.1-constitutional-ai');
+        }}
+        title={changelogTitle}
+        body={changelogBody}
+      />
       <header className="sticky top-0 z-10 flex items-center justify-between px-4 h-14 w-full text-gray-100 bg-neutral-900">
         <div className="flex items-center gap-2">
           {!isSidebarOpen && (
