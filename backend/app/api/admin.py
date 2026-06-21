@@ -619,3 +619,108 @@ async def toggle_maintenance(req: MaintenanceToggleRequest, payload: dict = Depe
         {"active": req.active}, source="admin.maintenance", actor_id=admin_id, actor_role="admin")
         
     return {"success": True, "active": req.active}
+
+
+# ── System Alerts ─────────────────────────────────────────────────────
+
+
+class CreateAlertRequest(BaseModel):
+    content: str
+
+
+@router.get("/alerts")
+async def list_alerts(admin: Dict[str, Any] = Depends(require_admin)):
+    """Return all system alerts ordered by creation date descending."""
+    from app.services.alert_context_service import alert_context_service
+    return {"alerts": alert_context_service.list_alerts()}
+
+
+@router.post("/alerts", status_code=201)
+async def create_alert(
+    req: CreateAlertRequest,
+    admin: Dict[str, Any] = Depends(require_admin),
+):
+    """Create a new system alert (inactive by default)."""
+    from app.services.alert_context_service import alert_context_service
+    from app.services.log_service import log_service
+
+    if not req.content.strip():
+        raise HTTPException(status_code=422, detail="Alert content cannot be empty.")
+
+    alert = alert_context_service.create_alert(req.content.strip())
+    if not alert:
+        raise HTTPException(status_code=500, detail="Failed to create alert.")
+
+    admin_id = admin.get("sub", "")
+    log_service.insert(
+        "admin_action", "info",
+        "System alert created",
+        {"alert_id": alert.get("id"), "content_preview": req.content[:100]},
+        source="admin.alerts", actor_id=admin_id, actor_role="admin",
+    )
+    return alert
+
+
+@router.patch("/alerts/{alert_id}/activate")
+async def activate_alert(
+    alert_id: str,
+    admin: Dict[str, Any] = Depends(require_admin),
+):
+    """Activate a specific alert and deactivate all others."""
+    from app.services.alert_context_service import alert_context_service
+    from app.services.log_service import log_service
+
+    ok = alert_context_service.set_active_alert(alert_id)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to activate alert.")
+
+    admin_id = admin.get("sub", "")
+    log_service.insert(
+        "admin_action", "info",
+        "System alert activated",
+        {"alert_id": alert_id},
+        source="admin.alerts", actor_id=admin_id, actor_role="admin",
+    )
+    return {"success": True, "alert_id": alert_id}
+
+
+@router.patch("/alerts/deactivate-all")
+async def deactivate_all_alerts(admin: Dict[str, Any] = Depends(require_admin)):
+    """Deactivate all alerts — clears the LLM injection."""
+    from app.services.alert_context_service import alert_context_service
+    from app.services.log_service import log_service
+
+    ok = alert_context_service.deactivate_all()
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to deactivate alerts.")
+
+    admin_id = admin.get("sub", "")
+    log_service.insert(
+        "admin_action", "info",
+        "All system alerts deactivated",
+        {},
+        source="admin.alerts", actor_id=admin_id, actor_role="admin",
+    )
+    return {"success": True}
+
+
+@router.delete("/alerts/{alert_id}", status_code=204)
+async def delete_alert(
+    alert_id: str,
+    admin: Dict[str, Any] = Depends(require_admin),
+):
+    """Delete a system alert permanently."""
+    from app.services.alert_context_service import alert_context_service
+    from app.services.log_service import log_service
+
+    ok = alert_context_service.delete_alert(alert_id)
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to delete alert.")
+
+    admin_id = admin.get("sub", "")
+    log_service.insert(
+        "admin_action", "warning",
+        "System alert deleted",
+        {"alert_id": alert_id},
+        source="admin.alerts", actor_id=admin_id, actor_role="admin",
+    )

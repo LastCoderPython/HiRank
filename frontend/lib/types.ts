@@ -123,6 +123,17 @@ export interface LogQueryResult {
   offset: number;
 }
 
+export interface SystemAlert {
+  id: string;
+  content: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface AlertsListResponse {
+  alerts: SystemAlert[];
+}
+
 export interface SimulatedOption {
   college_name: string;
   college_code: string;

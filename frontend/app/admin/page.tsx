@@ -1,8 +1,6 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
-import { Upload, Database, Archive, Shield, Filter, BarChart3, Database as DatabaseIcon, Loader2 } from 'lucide-react';
+import { Upload, Database, Archive, Shield, Filter, BarChart3, Database as DatabaseIcon, Loader2, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import type { CutoffStatusResponse } from '@/lib/types';
@@ -13,7 +11,9 @@ const cards = [
   { href: '/admin/backups', icon: Archive, title: 'Backups', desc: 'View and restore data backups' },
   { href: '/admin/analytics', icon: BarChart3, title: 'Analytics', desc: 'Usage insights, trends, and prediction stats' },
   { href: '/admin/logs', icon: Filter, title: 'Event Log', desc: 'View system events, admin actions, and alerts' },
+  { href: '/admin/alerts', icon: Bell, title: 'System Alerts', desc: 'Pin critical facts into the AI\'s brain instantly' },
 ];
+
 
 export default function AdminDashboard() {
   const { user } = useAuth();

@@ -231,9 +231,12 @@ class SupremeOrchestrator:
 
         # ── Step 6: Build final response ────────────────────────────
         trace.start_stage("synthesis")
+        from app.services.alert_context_service import alert_context_service
+        system_alert_context = alert_context_service.get_active_alert() or ""
         result = await self._synthesize(
             frame, prediction_output, web_output, history,
             constitutional_directive=verifier_output.constitutional_directive,
+            system_alert_context=system_alert_context,
         )
         trace.end_stage()
 
@@ -276,6 +279,7 @@ class SupremeOrchestrator:
         web_knowledge: Optional[WebKnowledgeOutput],
         history: Optional[List[Dict[str, str]]],
         constitutional_directive: str = "",
+        system_alert_context: str = "",
     ) -> Dict[str, Any]:
         """Synthesize the final answer from agent outputs.
 
@@ -387,6 +391,7 @@ class SupremeOrchestrator:
                 "is_off_topic": False,
                 "prediction": prediction.model_dump() if prediction else None,
                 "constitutional_directive": constitutional_directive,
+                "system_alert_context": system_alert_context,
             }
 
         # ── BUG-09 FIX: Out-of-range rank — honest framing ────────────

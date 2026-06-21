@@ -16,6 +16,7 @@ import {
   DailyAnalytics,
   PredictionAnalytics,
   CutoffStatusResponse,
+  AlertsListResponse,
 } from './types';
 
 const getApiUrl = () => process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
@@ -144,4 +145,14 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ active }),
   }),
+
+  // System Alerts
+  getAlerts:           () => fetchApi<AlertsListResponse>('/api/v1/admin/alerts'),
+  createAlert:         (content: string) => fetchApi<AlertsListResponse>('/api/v1/admin/alerts', {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+  }),
+  activateAlert:       (alertId: string) => fetchApi<{ success: boolean; alert_id: string }>(`/api/v1/admin/alerts/${alertId}/activate`, { method: 'PATCH' }),
+  deactivateAllAlerts: () => fetchApi<{ success: boolean }>('/api/v1/admin/alerts/deactivate-all', { method: 'PATCH' }),
+  deleteAlert:         (alertId: string) => fetchApi<void>(`/api/v1/admin/alerts/${alertId}`, { method: 'DELETE' }),
 };

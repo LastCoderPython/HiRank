@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import logging
 import re
+from datetime import datetime
 from typing import List, Optional
 
 from app.orchestration.types import IntentAgentOutput, RequestFrame
@@ -37,16 +38,22 @@ COLLEGE_CODES = {
     "guist": "GUIST", "gauhati university": "GU", "gauhati": "GU",
 }
 
-# ── Keywords that indicate descriptive / web-context queries ─────────
+# ── Keywords that indicate descriptive / web-context queries ─────────────
+_current_year = datetime.now().year
 WEB_CONTEXT_KEYWORDS = [
     "fee", "fees", "fee structure", "placement", "package", "salary",
     "hostel", "campus", "facility", "facilities", "library", "sports",
     "about", "details", "info", "information", "admission process",
     "how to apply", "documents", "scholarship", "notice", "update",
     "infrastructure", "lab", "workshop", "canteen", "mess",
+    # Temporal / time-sensitive keywords — dynamically include current + next year
+    "date", "dates", "deadline", "deadlines", "schedule", "calendar",
+    "upcoming", "current", "this year", "next year", "phase 1", "phase 2",
+    "phase 3", "counseling date", "result date", "merit list",
+    str(_current_year), str(_current_year + 1),
 ]
 
-# ── Intent patterns ──────────────────────────────────────────────────
+# ── Intent patterns ────────────────────────────────────────────────────────────────────────────────
 INTENT_PATTERNS = {
     r"which\s*college|college\s*(?:can|will|could)\s*i\s*get|chance|predict": "college_prediction",
     r"cutoff|cut[\s-]?off|closing\s*rank|opening\s*rank": "cutoff_inquiry",
@@ -58,6 +65,11 @@ INTENT_PATTERNS = {
     r"notice|update|latest|recent|new|announcement": "recent_update",
     r"branch|course|program|stream": "branch_inquiry",
     r"seat\s*matrix|total\s*seats|intake": "seat_inquiry",
+    # Future-proof: any 4-digit year starting with 20 (e.g. 2026, 2032, 2045)
+    # forces web search to avoid relying on stale local data.
+    r"\b20\d{2}\b": "recent_update",
+    # Time-relative expressions that imply live/current information
+    r"when\s*is|what\s*are\s*the\s*dates?|deadline|schedule|counseling\s*date": "recent_update",
 }
 
 # ── Rank extraction patterns ─────────────────────────────────────────
