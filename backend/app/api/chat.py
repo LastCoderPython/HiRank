@@ -195,7 +195,7 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
                             event_type="system_event",
                             severity="warning",
                             summary="Guardrail Warning: Unauthorized college mentioned",
-                            details={"query": query.query, "response_excerpt": final_text[:200]},
+                            details={"query": message, "response_excerpt": final_text[:200]},
                             source="api.chat"
                         )
                     except Exception as e:
