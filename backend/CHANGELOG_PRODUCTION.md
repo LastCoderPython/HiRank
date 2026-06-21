@@ -3064,3 +3064,177 @@ A comprehensive sweep of remaining issues from the previous 5-phase audit uncove
 | `backend/scripts/benchmark_latency.py` | `--url` default → `localhost/api/v1/chat` |
 | `backend/scripts/benchmark_latency.k6.js` | `BASE_URL` default → `localhost`; `CHAT_URL` → `/api/v1/chat` |
 
+
+---
+
+## Phase 20: Constitutional AI Integration & User Notification System ✅
+
+### Date
+2026-06-22
+
+### Problem Solved
+The LLM system prompt was a flat, unordered list of ad-hoc rules with no priority hierarchy. When evidence was ambiguous — a student's rank was borderline, or no web data was available — the LLM had no principled way to decide between being "safe" (refusing to answer) and being "genuinely helpful" (pivoting to alternatives). Additionally, users had no way to be informed about new updates to the platform.
+
+---
+
+### Part A: Constitutional AI Prioritization
+
+#### Design Philosophy
+Inspired by Anthropic's model specification, we adopted a **4-priority ranked Constitution** that the LLM must follow in order. The goal is to eliminate vagueness and evasiveness: the LLM should behave like a wise, empathetic academic counselor, not a liability-averse chatbot.
+
+| Priority | Principle | What it means in practice |
+|----------|-----------|---------------------------|
+| 1 | **Safety** | Zero academic hallucination. Never invent ranks, cutoffs, or deadlines. |
+| 2 | **Ethics** | Unbiased, fair guidance across all reservation categories (General/OBC/SC/ST/EWS/STH/STP). |
+| 3 | **Scope** | Stay focused on Assam CEE/JEE engineering admissions. |
+| 4 | **Genuine Helpfulness** | Understand the student's deeper goal, not just the literal question. Proactively suggest alternatives. |
+
+#### Pre-Flight Directive Architecture
+Because responses are streamed in real-time, we cannot critique-then-rewrite (the classic Constitutional AI approach). Instead, the `VerifierAgent` generates a behavioral **pre-flight directive** synchronously *before* streaming begins. This directive is injected into the LLM context as a `<constitutional_directive>` XML block.
+
+This means:
+- **Zero latency added** — no extra LLM call, no blocking
+- **Tone and strategy guidance is request-specific** — based on the actual evidence bundle
+- **The LLM receives the directive before seeing any college data** — ensuring it frames its response correctly from the start
+
+#### Directive Logic (5 Evidence Scenarios)
+| # | Evidence State | Directive Generated |
+|---|---------------|---------------------|
+| 1 | Rank exceeds every known cutoff | Empathetic pivot: acknowledge difficulty, suggest private colleges and retake options |
+| 2 | ≥3 safe options, no ambitious | Celebratory but substantive: highlight branch quality and placement trends |
+| 3 | Mix of safe + ambitious options | Strategic framing: lock in a safe choice, ambitious is a stretch not impossible |
+| 4 | Only ambitious options (no safe backup) | Honest: these are long shots, keep a backup plan |
+| 5 | Descriptive/informational query, no web data | Transparent gap acknowledgment, redirect to what data is available |
+
+---
+
+### Part B: User Notification System
+
+#### Design
+A lightweight, non-blocking announcement system driven by a static JSON file served from the Next.js CDN. When users open the app, the app compares the version in the JSON file against the version in their browser's `localStorage`. If the version is newer, a toast notification is triggered. Clicking "Read More" opens a detailed modal with the full release notes.
+
+#### Key Design Decisions
+| Decision | Rationale |
+|----------|-----------|
+| Static `changelog.json` in `public/` (not Supabase DB) | Zero database queries on every page load. Vercel CDN caches it. Deployments are atomic — the announcement goes live exactly when the code deploys. |
+| `localStorage` version flag (not cookies) | No server round-trip needed. Works for both authenticated and anonymous users. |
+| `react-markdown` for the modal body | Allows rich formatting (bullet lists, bold text) without hardcoding HTML. |
+| Silent `catch` on the fetch | A failed `/changelog.json` fetch must never block or error the chat interface. |
+| Version string format: `v{major}.{minor}-{slug}` | Human-readable in localStorage for debugging (`v1.1-constitutional-ai`). |
+
+---
+
+### Changes Made
+
+#### Backend
+
+##### [MODIFY] `app/core/llm_client.py`
+- **Replaced** the flat ad-hoc rule list in `get_system_prompt()` with a structured **4-priority RankRoute Constitution**:
+  - `PRIORITY 1 — SAFETY`: Zero hallucination mandate
+  - `PRIORITY 2 — ETHICS`: Unbiased guidance across all categories
+  - `PRIORITY 3 — SCOPE`: CEE/JEE Assam focus
+  - `PRIORITY 4 — GENUINE HELPFULNESS`: Pivot to alternatives, avoid evasiveness
+- **Added** `constitutional_directive: str = ""` parameter to both `create_prompt()` and `generate_stream()`
+- When `constitutional_directive` is non-empty, it is injected as a `<constitutional_directive>` XML block in the prompt, positioned *before* the evidence context
+
+##### [MODIFY] `app/orchestration/types.py`
+- Added `constitutional_directive: str = ""` field to `VerifierOutput`
+- Default of `""` ensures zero breaking changes to existing tests or callers
+
+##### [MODIFY] `app/orchestration/agents/verifier_agent.py`
+- Added private method `_build_constitutional_directive(evidence_bundle: EvidenceBundle) -> str`
+- Evaluates 5 scenarios based on `prediction_output` and `web_output` fields of the evidence bundle
+- Called synchronously inside `verify()` — the directive is attached to `VerifierOutput` before returning
+- No extra LLM calls or I/O
+
+##### [MODIFY] `app/orchestration/orchestrator.py`
+- `_synthesize()` now accepts `constitutional_directive: str = ""` parameter
+- At Step 6 (build final response), `verifier_output.constitutional_directive` is passed into `_synthesize()`
+- The directive is included in the returned response dict under the `"constitutional_directive"` key
+
+##### [MODIFY] `app/api/chat.py`
+- In `_generate_stream()`, extracts `constitutional_directive` from the orchestrator result
+- Passes it as `constitutional_directive=constitutional_directive` to `llm_client.generate_stream()`
+- Completes the full pipeline from `VerifierAgent` → `LLMClient`
+
+#### Frontend
+
+##### [NEW] `frontend/public/changelog.json`
+Single source of truth for the current update announcement:
+```json
+{
+  "version": "v1.1-constitutional-ai",
+  "title": "RankRoute v1.1: A Better Counseling Experience",
+  "body": "..."
+}
+```
+**To announce a future update:** change `version` and `body` in this file and push. No React code changes required.
+
+##### [NEW] `frontend/components/update-modal.tsx`
+Custom modal component:
+- Animated open using a CSS keyframe (`modalFadeIn`) — no extra npm packages
+- Dark glassmorphic design with a blue-violet gradient accent strip at the top
+- Header: `Sparkles` icon, "What's New" label, title, and close button
+- Body: Rendered via `react-markdown` + `remark-gfm` (already installed)
+- Footer: "Got it" button closes the modal and persists the version to `localStorage`
+- Clicking the backdrop also closes the modal
+
+##### [MODIFY] `frontend/components/chat-area.tsx`
+- **Import**: Added `UpdateModal` import
+- **State**: Added `showUpdateModal`, `changelogTitle`, `changelogBody`
+- **`useEffect`**: On mount, fetches `/changelog.json`. If the fetched `version` differs from `localStorage['rankroute_update_version']`:
+  - Sets `changelogTitle` and `changelogBody` from the JSON
+  - Triggers `toast.info()` at `position: "top-center"` with a "Read More" action button
+  - `onDismiss` and `onAutoClose` handlers persist the version to `localStorage` (so the toast never appears again)
+- **JSX**: `<UpdateModal>` is rendered at the top of the component tree, above the `<header>`
+
+---
+
+### Full Data Flow
+
+```
+VerifierAgent._build_constitutional_directive()
+    → VerifierOutput.constitutional_directive
+        → orchestrator._synthesize(constitutional_directive=...)
+            → orchestrator result["constitutional_directive"]
+                → chat.py _generate_stream()
+                    → llm_client.generate_stream(constitutional_directive=...)
+                        → create_prompt() injects <constitutional_directive> block
+                            → LLM streams with guided tone & strategy
+```
+
+```
+Vercel CDN serves /changelog.json
+    → chat-area.tsx useEffect fetches on mount
+        → compares version with localStorage
+            → toast.info() with "Read More" action
+                → onClick: setShowUpdateModal(true)
+                    → <UpdateModal> renders with animated open
+                        → "Got it" button: persists version, closes modal
+```
+
+---
+
+### Verification
+- **`pytest tests/`**: `159 passed, 6 skipped, 0 failed` — all tests green, zero regressions
+- **`tsc --noEmit`**: Zero TypeScript type errors in the frontend
+- The new `constitutional_directive` field on `VerifierOutput` defaults to `""` — all existing tests pass without modification
+
+### New Files (2)
+| File | Purpose |
+|------|---------|
+| `frontend/public/changelog.json` | Static update notification source of truth |
+| `frontend/components/update-modal.tsx` | Animated "What's New" modal component |
+
+### Modified Files (5 backend + 1 frontend)
+| File | Change |
+|------|--------|
+| `backend/app/core/llm_client.py` | 4-priority Constitution system prompt + `constitutional_directive` parameter |
+| `backend/app/orchestration/types.py` | `constitutional_directive` field added to `VerifierOutput` |
+| `backend/app/orchestration/agents/verifier_agent.py` | `_build_constitutional_directive()` pre-flight method |
+| `backend/app/orchestration/orchestrator.py` | Thread directive through `_synthesize()` and response dict |
+| `backend/app/api/chat.py` | Extract and pass directive to `generate_stream()` |
+| `frontend/components/chat-area.tsx` | Changelog fetch `useEffect`, modal state, `<UpdateModal>` render |
+
+### Dependencies
+No new Python packages. No new npm packages. All features use already-installed libraries (`react-markdown`, `remark-gfm`, `sonner`, `lucide-react`).
