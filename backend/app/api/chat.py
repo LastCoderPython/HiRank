@@ -189,9 +189,18 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
                             break
                 
                 if unauthorized_mentioned:
-                    correction = "\n\n*(Guardrail Warning: The response above mentions a college that is not in your eligible safe/target list. Please rely only on the structured data.)*"
-                    yield f"data: {json.dumps({'type': 'token', 'data': correction})}\n\n"
-                    final_text += correction
+                    try:
+                        from app.services.log_service import log_service
+                        log_service.insert(
+                            event_type="system_event",
+                            severity="warning",
+                            summary="Guardrail Warning: Unauthorized college mentioned",
+                            details={"query": query.query, "response_excerpt": final_text[:200]},
+                            source="api.chat"
+                        )
+                    except Exception as e:
+                        # Fail silently if logging fails so we don't break the stream
+                        pass
 
             cache_service.set("answer", cache_key, final_text, ttl=900)
         
