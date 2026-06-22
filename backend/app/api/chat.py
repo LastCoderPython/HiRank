@@ -200,7 +200,7 @@ async def _generate_stream(message: str, history, session_id, user_id: Optional[
                             details={"query": message, "response_excerpt": final_text[:200]},
                             source="api.chat"
                         )
-                    except Exception as e:
+                    except Exception:
                         # Fail silently if logging fails so we don't break the stream
                         pass
 
