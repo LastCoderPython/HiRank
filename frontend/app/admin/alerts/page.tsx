@@ -121,7 +121,7 @@ export default function AlertsPage() {
           </button>
         </div>
         <p className="text-sm text-neutral-500 mb-6 ml-11">
-          The active alert is silently injected into the AI's context on every chat request. Only one alert can be active at a time.
+          The active alert is silently injected into the AI&apos;s context on every chat request. Only one alert can be active at a time.
         </p>
 
         {/* Active alert banner */}
@@ -248,7 +248,7 @@ export default function AlertsPage() {
                 className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-sm text-neutral-200 placeholder-neutral-600 resize-none focus:outline-none focus:border-amber-500/50"
               />
               <p className="text-xs text-neutral-600 mt-2">
-                Keep it concise. The alert is injected as a sentence or two into the AI's brain, not displayed to users.
+                Keep it concise. The alert is injected as a sentence or two into the AI&apos;s brain, not displayed to users.
               </p>
             </div>
             <div className="flex justify-end gap-3 px-6 py-4 border-t border-neutral-800">
