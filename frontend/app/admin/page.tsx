@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { Upload, Database, Archive, Shield, Filter, BarChart3, Database as DatabaseIcon, Loader2, Bell } from 'lucide-react';
