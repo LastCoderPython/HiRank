@@ -60,3 +60,15 @@ backend/logs/
 # Empty runtime directories
 data/archive/
 data/backups/
+
+# Ignore specific config and log files removed from git history
+api_logs.txt
+cert.pem
+certificate.pfx
+chroma_logs.txt
+FUTURE_CHANGES.md
+key.pem
+redis.yaml
+redis2.yaml
+worker_patched.json
+worker.json
