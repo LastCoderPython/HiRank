@@ -27,8 +27,6 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
           extra_args: --debug --only-verified
         # We allow this to fail without breaking the PR deployment 
         # so developers can review findings non-blockingly.
