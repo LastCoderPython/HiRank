@@ -177,7 +177,7 @@ async def discover_subpages(
         Dict mapping each homepage URL to its list of discovered subpage URLs.
     """
     headers = {
-        "User-Agent": "RankRoute/2.0 (Educational Counseling Bot; +https://rankroute.in)",
+        "User-Agent": "Aariv/2.0 (Educational Counseling Bot; +https://aariv.in)",
         "Accept": "text/html,application/xhtml+xml",
     }
 

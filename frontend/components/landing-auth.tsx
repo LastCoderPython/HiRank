@@ -190,9 +190,9 @@ export function LandingAuth() {
         <div>
           <div className="flex items-center gap-3 mb-16">
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg shadow-white/10">
-              <span className="text-black font-bold text-xl">R</span>
+              <span className="text-black font-bold text-xl">A</span>
             </div>
-            <span className="text-2xl font-bold tracking-tight">RankRoute</span>
+            <span className="text-2xl font-bold tracking-tight">Aariv</span>
           </div>
           <h1 className="text-5xl font-bold leading-[1.1] tracking-tight mb-6">
             Your personal guide to <br/>
@@ -230,9 +230,9 @@ export function LandingAuth() {
           }`}>
             <div className="md:hidden flex items-center gap-3 mb-8">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <span className="text-black font-bold">R</span>
+                <span className="text-black font-bold">A</span>
               </div>
-              <span className="text-xl font-bold">RankRoute</span>
+              <span className="text-xl font-bold">Aariv</span>
             </div>
             
             <h2 className="text-2xl font-semibold mb-2">Welcome back</h2>

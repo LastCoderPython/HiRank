@@ -61,7 +61,7 @@ async def fetch_page(url: str, timeout: float = 15.0) -> ScrapeResult:
             timeout=timeout,
             follow_redirects=True,
             headers={
-                "User-Agent": "RankRoute/2.0 (Educational Counseling Bot; +https://rankroute.in)",
+                "User-Agent": "Aariv/2.0 (Educational Counseling Bot; +https://aariv.in)",
                 "Accept": "text/html,application/xhtml+xml",
             },
         ) as client:

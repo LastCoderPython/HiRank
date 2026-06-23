@@ -18,7 +18,7 @@ test.describe('Authentication Flow', () => {
     await page.reload();
 
     // Wait for the app to load
-    await page.waitForSelector('textarea[placeholder="Message RankRoute AI"]');
+    await page.waitForSelector('textarea[placeholder="Message Aariv AI"]');
 
     // Click settings to see auth options
     await page.click('button[title="Settings"]');

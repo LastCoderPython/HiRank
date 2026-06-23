@@ -90,7 +90,7 @@ export function ChatArea({
         if (lastSeen !== data.version) {
           setChangelogTitle(data.title);
           setChangelogBody(data.body);
-          toast.info('RankRoute AI has been upgraded!', {
+          toast.info('Aariv AI has been upgraded!', {
             duration: 10000,
             position: 'top-center',
             description: 'Click to see what\'s new.',
@@ -279,7 +279,7 @@ export function ChatArea({
           )}
 
           <button className="flex items-center gap-1 hover:bg-neutral-800 rounded-lg px-2 py-1.5 transition-colors text-sm font-semibold text-neutral-200 group">
-            RankRoute AI
+            Aariv AI
             <ChevronDown size={16} className="text-neutral-400 group-hover:text-neutral-200" />
           </button>
         </div>
@@ -304,7 +304,7 @@ export function ChatArea({
         ) : displayMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-full px-4 pt-10 sm:pt-20 pb-40">
             <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-8 p-1 shadow-sm">
-                <Image src="https://picsum.photos/seed/rankroute/64/64" alt="RankRoute AI Logo" width={56} height={56} className="rounded-full invert" referrerPolicy="no-referrer" />
+                <Image src="https://picsum.photos/seed/rankroute/64/64" alt="Aariv AI Logo" width={56} height={56} className="rounded-full invert" referrerPolicy="no-referrer" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-semibold mb-12 text-center h-10">
               <TypewriterGreeting />
@@ -343,7 +343,7 @@ export function ChatArea({
                 )}>
                   {msg.role === 'assistant' && (
                     <div className="shrink-0 w-8 h-8 bg-white rounded-full flex items-center justify-center border border-neutral-200">
-                      <Image src="https://picsum.photos/seed/rankroute/32/32" alt="RankRoute AI logo" width={24} height={24} className="rounded-full invert" referrerPolicy="no-referrer" />
+                      <Image src="https://picsum.photos/seed/rankroute/32/32" alt="Aariv AI logo" width={24} height={24} className="rounded-full invert" referrerPolicy="no-referrer" />
                     </div>
                   )}
 
@@ -427,7 +427,7 @@ export function ChatArea({
               onChange={handleInput}
               onKeyDown={handleKeyDown}
               disabled={isStreaming}
-              placeholder="Message RankRoute AI"
+              placeholder="Message Aariv AI"
               aria-label="Message input"
               className="grow max-h-[200px] bg-transparent border-0 resize-none outline-none focus:ring-0 py-3.5 px-2 text-[15px] text-zinc-100 placeholder:text-zinc-400 custom-scrollbar wrap disabled:opacity-50"
               rows={1}
@@ -451,7 +451,7 @@ export function ChatArea({
           
           <div className="text-center mt-2 px-4">
             <span className="text-[11px] text-neutral-400">
-              RankRoute AI can make mistakes. Always verify with official DTE Assam or JoSAA guidelines.
+              Aariv AI can make mistakes. Always verify with official DTE Assam or JoSAA guidelines.
             </span>
           </div>
         </div>

@@ -32,7 +32,7 @@ test.describe('Chat Streaming interface', () => {
     await page.goto('/');
 
     // Type a message
-    const textarea = page.locator('textarea[placeholder="Message RankRoute AI"]');
+    const textarea = page.locator('textarea[placeholder="Message Aariv AI"]');
     await textarea.fill('What is AEC?');
     
     // Press enter or click send
@@ -56,7 +56,7 @@ test.describe('Chat Streaming interface', () => {
 
     await page.goto('/');
 
-    await page.locator('textarea[placeholder="Message RankRoute AI"]').fill('What is AEC?');
+    await page.locator('textarea[placeholder="Message Aariv AI"]').fill('What is AEC?');
     await page.keyboard.press('Enter');
 
     // Verify the toast appears

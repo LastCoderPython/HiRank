@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'RankRoute AI',
+  title: 'Aariv AI',
   description: 'Intelligent admission counseling system for engineering aspirants',
 };
 

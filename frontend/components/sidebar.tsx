@@ -197,7 +197,7 @@ export function Sidebar({
           >
             <div className="flex items-center gap-2">
               <div className="bg-white rounded-full p-[2px]">
-                <Image src="https://picsum.photos/seed/rankroute/32/32" alt="RankRoute AI logo" width={24} height={24} className="rounded-full invert" referrerPolicy="no-referrer" />
+                <Image src="https://picsum.photos/seed/rankroute/32/32" alt="Aariv AI logo" width={24} height={24} className="rounded-full invert" referrerPolicy="no-referrer" />
               </div>
               <span>New Session</span>
             </div>
