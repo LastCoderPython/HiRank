@@ -120,6 +120,7 @@ async def get_session(
     if not sb_access_token:
         return {"authenticated": False, "user": None}
     
+    user = None
     payload = verify_jwt(sb_access_token)
     if payload:
         user_id = payload.get("sub")
@@ -133,60 +134,26 @@ async def get_session(
             "avatar_url": user_metadata.get("avatar_url") or user_metadata.get("picture"),
             "role": "user" # default
         }
+    else:
+        fetched_user = await fetch_user_from_supabase(sb_access_token)
+        if fetched_user:
+            user = fetched_user
+            user["role"] = "user" # default
 
-        try:
-            from app.db.supabase import get_user_by_id
-            profile = await get_user_by_id(user_id)
-            if profile:
-                user["role"] = profile.get("role", "user")
-        except Exception as e:
-            logger.error("Failed to fetch profile in get_session: %s", e)
-
-        return {"authenticated": True, "user": user}
-
-    user = await fetch_user_from_supabase(sb_access_token)
+    # If we successfully parsed the user (either via fast JWT or slow Supabase fetch),
+    # grab their actual role from the database.
     if user:
-        user["role"] = "user"
         try:
             from app.db.supabase import get_user_by_id
             profile = await get_user_by_id(user.get("id"))
             if profile:
                 user["role"] = profile.get("role", "user")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error("Failed to fetch profile in get_session: %s", e)
+            
         return {"authenticated": True, "user": user}
 
     return {"authenticated": False, "user": None}
-
-@router.get("/login")
-async def login(request: Request):
-    project_url = _get_supabase_project_url()
-    if not project_url:
-        raise HTTPException(status_code=500, detail="Supabase not configured")
-
-    redirect_uri = f"{settings.backend_url.rstrip('/')}/api/v1/auth/callback"
-
-    # C-02: Generate CSRF state token
-    state = secrets.token_urlsafe(32)
-
-    auth_url = (
-        f"{project_url}/auth/v1/authorize"
-        f"?provider=google"
-        f"&redirect_to={redirect_uri}"
-        f"&state={state}"
-    )
-
-    response = RedirectResponse(url=auth_url)
-    response.set_cookie(
-        key="oauth_state",
-        value=state,
-        httponly=True,
-        secure=not settings.debug,
-        samesite="lax",
-        max_age=300,
-        path="/",
-    )
-    return response
 
 @router.get("/callback")
 async def auth_callback(
