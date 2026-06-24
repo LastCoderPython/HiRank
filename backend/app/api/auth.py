@@ -130,13 +130,30 @@ async def get_session(
             "id": user_id,
             "email": email,
             "name": user_metadata.get("full_name") or user_metadata.get("name") or email.split("@")[0],
-            "avatar_url": user_metadata.get("avatar_url") or user_metadata.get("picture")
+            "avatar_url": user_metadata.get("avatar_url") or user_metadata.get("picture"),
+            "role": "user" # default
         }
+
+        try:
+            from app.db.supabase import get_user_by_id
+            profile = await get_user_by_id(user_id)
+            if profile:
+                user["role"] = profile.get("role", "user")
+        except Exception as e:
+            logger.error("Failed to fetch profile in get_session: %s", e)
 
         return {"authenticated": True, "user": user}
 
     user = await fetch_user_from_supabase(sb_access_token)
     if user:
+        user["role"] = "user"
+        try:
+            from app.db.supabase import get_user_by_id
+            profile = await get_user_by_id(user.get("id"))
+            if profile:
+                user["role"] = profile.get("role", "user")
+        except Exception:
+            pass
         return {"authenticated": True, "user": user}
 
     return {"authenticated": False, "user": None}
