@@ -48,8 +48,11 @@ class MaintenanceMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         path = request.url.path
         
-        # Always allow these paths
-        if path.startswith("/api/v1/admin") or path in ("/api/v1/health", "/", "/docs", "/redoc", "/openapi.json"):
+        # Always allow OPTIONS (for CORS) and auth/admin paths
+        if request.method == "OPTIONS" or \
+           path.startswith("/api/v1/admin") or \
+           path.startswith("/api/v1/auth") or \
+           path in ("/api/v1/health", "/", "/docs", "/redoc", "/openapi.json"):
             return await call_next(request)
 
         self._ensure_redis()
