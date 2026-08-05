@@ -81,7 +81,7 @@ colorama==0.4.6
     #   uvicorn
 courlan==1.4.0
     # via trafilatura
-cryptography==48.0.1
+cryptography==50.0.0
     # via
     #   -r requirements.txt
     #   pyjwt
