@@ -129,7 +129,7 @@ h2==4.3.0
     # via
     #   -r requirements.txt
     #   httpx
-hpack==4.1.0
+hpack==4.2.0
     # via h2
 htmldate==1.10.0
     # via trafilatura
