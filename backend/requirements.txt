@@ -22,7 +22,7 @@ httpx>=0.28.1
 
 # Authentication
 supabase>=2.0.0
-PyJWT>=2.13.0
+PyJWT>=2.15.0
 
 # Production server
 gunicorn>=22.0.0
