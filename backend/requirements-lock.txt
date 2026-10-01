@@ -413,7 +413,7 @@ tokenizers==0.22.2
     #   chromadb
     #   langchain-huggingface
     #   transformers
-tornado==6.5.7
+tornado==6.5.9
     # via flower
 tqdm==4.68.2
     # via
