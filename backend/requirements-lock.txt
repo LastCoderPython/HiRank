@@ -43,7 +43,7 @@ celery[redis]==5.6.3
     # via
     #   -r requirements.txt
     #   flower
-certifi==2026.5.20
+certifi==2026.10.19
     # via
     #   httpcore
     #   httpx
